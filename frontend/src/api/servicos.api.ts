@@ -1,7 +1,8 @@
 import { authFetch, handleResponse } from '../lib/api';
+import { API_BASE } from '../lib/config';
 import { CreateServicoForm, Servico, StatusServico, TipoServico } from '../types';
 
-const BASE = '/api/servicos';
+const BASE = `${API_BASE}/api/servicos`;
 
 interface ListParams {
   status?: StatusServico;

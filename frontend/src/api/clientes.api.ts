@@ -1,7 +1,8 @@
 import { authFetch, handleResponse } from '../lib/api';
+import { API_BASE } from '../lib/config';
 import { Cliente, Veiculo } from '../types';
 
-const BASE = '/api/clientes';
+const BASE = `${API_BASE}/api/clientes`;
 
 export const clientesApi = {
   list(search?: string): Promise<(Cliente & { veiculos: Veiculo[] })[]> {

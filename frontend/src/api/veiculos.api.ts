@@ -1,7 +1,8 @@
 import { authFetch, handleResponse } from '../lib/api';
+import { API_BASE } from '../lib/config';
 import { Servico, Veiculo } from '../types';
 
-const BASE = '/api/veiculos';
+const BASE = `${API_BASE}/api/veiculos`;
 
 export interface VeiculoComHistorico extends Veiculo {
   cliente: import('../types').Cliente;
