@@ -1,0 +1,75 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+enum TipoServico {
+  INCLUSAO_VEICULO_NOVO
+  TRANSFERENCIA
+  INTENCAO_DE_VENDA
+  OUTROS
+}
+
+enum StatusServico {
+  PENDENTE
+  EM_ANDAMENTO
+  CONCLUIDO
+}
+
+model Cliente {
+  id        String    @id @default(uuid())
+  nome      String
+  telefone  String?
+  cpfCnpj  String    @unique @map("cpf_cnpj")
+  veiculos  Veiculo[]
+  servicos  Servico[]
+  createdAt DateTime  @default(now()) @map("created_at")
+  updatedAt DateTime  @updatedAt @map("updated_at")
+
+  @@map("clientes")
+}
+
+model Veiculo {
+  id        String    @id @default(uuid())
+  placa     String    @unique
+  modelo    String
+  renavam   String    @unique
+  clienteId String    @map("cliente_id")
+  cliente   Cliente   @relation(fields: [clienteId], references: [id], onDelete: Cascade)
+  servicos  Servico[]
+  createdAt DateTime  @default(now()) @map("created_at")
+  updatedAt DateTime  @updatedAt @map("updated_at")
+
+  @@map("veiculos")
+}
+
+model Servico {
+  id          String        @id @default(uuid())
+  tipo        TipoServico
+  status      StatusServico @default(PENDENTE)
+  dataLimite  DateTime      @map("data_limite") @db.Date
+  observacoes String?
+  clienteId   String        @map("cliente_id")
+  cliente     Cliente       @relation(fields: [clienteId], references: [id])
+  veiculoId   String        @map("veiculo_id")
+  veiculo     Veiculo       @relation(fields: [veiculoId], references: [id])
+  createdAt   DateTime      @default(now()) @map("created_at")
+  updatedAt   DateTime      @updatedAt @map("updated_at")
+
+  @@map("servicos")
+}
+
+model Usuario {
+  id        String   @id @default(uuid())
+  nome      String
+  email     String   @unique
+  senhaHash String   @map("senha_hash")
+  createdAt DateTime @default(now()) @map("created_at")
+  updatedAt DateTime @updatedAt @map("updated_at")
+
+  @@map("usuarios")
+}
