@@ -31,6 +31,23 @@ export function errorHandler(
     return;
   }
 
+  const prismaErrorCode = 'code' in err && typeof err.code === 'string' ? err.code : undefined;
+  const databaseUnavailable =
+    err instanceof Prisma.PrismaClientInitializationError ||
+    prismaErrorCode === 'P1000' ||
+    prismaErrorCode === 'P1001' ||
+    prismaErrorCode === 'P1002' ||
+    prismaErrorCode === 'P1017';
+
+  if (databaseUnavailable) {
+    console.error('[Banco indisponivel]', {
+      code: prismaErrorCode,
+      message: err.message,
+    });
+    res.status(503).json({ message: 'Banco de dados temporariamente indisponivel.' });
+    return;
+  }
+
   if (err instanceof Prisma.PrismaClientKnownRequestError) {
     if (err.code === 'P2002') {
       res.status(409).json({ message: 'Registro já existe (violação de unicidade).' });
