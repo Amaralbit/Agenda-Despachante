@@ -51,6 +51,19 @@ export const ProcessoModal: React.FC<Props> = ({ onClose, onSubmit, isLoading })
 
           <div>
             <label className="mb-1 block text-sm font-medium text-slate-700">
+              Solicitante da montagem <span className="text-red-500">*</span>
+            </label>
+            <input
+              required
+              value={solicitantePa2}
+              onChange={(e) => setSolicitantePa2(e.target.value)}
+              placeholder="Nome de quem solicitou"
+              className="w-full rounded-lg border border-slate-200 bg-white px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-indigo-400"
+            />
+          </div>
+
+          <div>
+            <label className="mb-1 block text-sm font-medium text-slate-700">
               Atendimento Detran <span className="text-red-500">*</span>
             </label>
             <input
@@ -58,19 +71,6 @@ export const ProcessoModal: React.FC<Props> = ({ onClose, onSubmit, isLoading })
               value={numeroAtendimento}
               onChange={(e) => setNumeroAtendimento(e.target.value)}
               placeholder="Numero do atendimento"
-              className="w-full rounded-lg border border-slate-200 bg-white px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-indigo-400"
-            />
-          </div>
-
-          <div>
-            <label className="mb-1 block text-sm font-medium text-slate-700">
-              Solicitante da montagem <span className="text-red-500">*</span>
-            </label>
-            <input
-              required
-              value={solicitantePa2}
-              onChange={(e) => setSolicitantePa2(e.target.value)}
-              placeholder="Nome do solicitante"
               className="w-full rounded-lg border border-slate-200 bg-white px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-indigo-400"
             />
           </div>
