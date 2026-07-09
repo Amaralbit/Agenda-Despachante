@@ -12,8 +12,8 @@ export interface CreateServicoBody {
   tipo: TipoServico;
   dataLimite: string;
   observacoes?: string;
+  chassi: string;
   clienteId: string;
-  veiculoId: string;
 }
 
 export interface UpdateServicoBody {
@@ -21,6 +21,7 @@ export interface UpdateServicoBody {
   status?: StatusServico;
   dataLimite?: string;
   observacoes?: string | null;
+  chassi?: string;
 }
 
 export interface UpdateServicoStatusBody {

@@ -63,8 +63,9 @@ CREATE TABLE servicos (
   status      status_servico NOT NULL DEFAULT 'PENDENTE',
   data_limite DATE NOT NULL,
   observacoes TEXT,
+  chassi      VARCHAR(30),
   cliente_id  UUID NOT NULL,
-  veiculo_id  UUID NOT NULL,
+  veiculo_id  UUID,
   created_at  TIMESTAMPTZ NOT NULL DEFAULT NOW(),
   updated_at  TIMESTAMPTZ NOT NULL DEFAULT NOW(),
 

@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import React, { useState } from 'react';
 import { useQuery } from '@tanstack/react-query';
 import { clientesApi } from '../../api/clientes.api';
 import { CreateServicoForm, Servico, TIPO_LABELS, TipoServico } from '../../types';
@@ -14,7 +14,7 @@ const TIPOS = Object.entries(TIPO_LABELS) as [TipoServico, string][];
 
 export const ServicoModal: React.FC<Props> = ({ servico, onClose, onSubmit, isLoading }) => {
   const [clienteId, setClienteId] = useState(servico?.clienteId ?? '');
-  const [veiculoId, setVeiculoId] = useState(servico?.veiculoId ?? '');
+  const [chassi, setChassi] = useState(servico?.chassi ?? '');
   const [tipo, setTipo] = useState<TipoServico>(servico?.tipo ?? 'TRANSFERENCIA');
   const [dataLimite, setDataLimite] = useState(
     servico ? servico.dataLimite.split('T')[0] : '',
@@ -26,19 +26,15 @@ export const ServicoModal: React.FC<Props> = ({ servico, onClose, onSubmit, isLo
     queryFn: () => clientesApi.list(),
   });
 
-  const { data: veiculos = [] } = useQuery({
-    queryKey: ['veiculos', clienteId],
-    queryFn: () => clientesApi.listVeiculos(clienteId),
-    enabled: !!clienteId,
-  });
-
-  useEffect(() => {
-    setVeiculoId('');
-  }, [clienteId]);
-
   function handleSubmit(e: React.FormEvent) {
     e.preventDefault();
-    onSubmit({ tipo, dataLimite, observacoes: observacoes || undefined, clienteId, veiculoId });
+    onSubmit({
+      tipo,
+      dataLimite,
+      observacoes: observacoes || undefined,
+      clienteId,
+      chassi: chassi.trim().toUpperCase(),
+    });
   }
 
   return (
@@ -95,27 +91,21 @@ export const ServicoModal: React.FC<Props> = ({ servico, onClose, onSubmit, isLo
             </select>
           </div>
 
-          {/* Veículo */}
+          {/* Chassi */}
           <div>
             <label className="block text-sm font-medium text-gray-700 mb-1">
-              Veículo <span className="text-red-500">*</span>
+              Chassi <span className="text-red-500">*</span>
             </label>
-            <select
+            <input
+              type="text"
               required
-              value={veiculoId}
-              onChange={(e) => setVeiculoId(e.target.value)}
-              disabled={!clienteId}
-              className="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-indigo-400 disabled:bg-gray-50 disabled:text-gray-400"
-            >
-              <option value="">
-                {clienteId ? 'Selecione um veículo...' : 'Selecione um cliente primeiro'}
-              </option>
-              {veiculos.map((v) => (
-                <option key={v.id} value={v.id}>
-                  {v.placa} — {v.modelo}
-                </option>
-              ))}
-            </select>
+              minLength={6}
+              maxLength={30}
+              value={chassi}
+              onChange={(e) => setChassi(e.target.value.toUpperCase())}
+              placeholder="Ex: 9BWZZZ377VT004251"
+              className="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm uppercase tracking-wide focus:outline-none focus:ring-2 focus:ring-indigo-400"
+            />
           </div>
 
           {/* Data Limite */}

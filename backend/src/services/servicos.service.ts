@@ -20,6 +20,7 @@ class ServicosService {
           OR: [
             { cliente: { nome: { contains: search, mode: 'insensitive' } } },
             { veiculo: { placa: { contains: search, mode: 'insensitive' } } },
+            { chassi: { contains: search, mode: 'insensitive' } },
             { cliente: { cpfCnpj: { contains: search, mode: 'insensitive' } } },
           ],
         }),
@@ -46,8 +47,8 @@ class ServicosService {
         tipo: data.tipo,
         dataLimite: new Date(data.dataLimite),
         observacoes: data.observacoes,
+        chassi: data.chassi.toUpperCase(),
         clienteId: data.clienteId,
-        veiculoId: data.veiculoId,
       },
       include: includeRelations,
     });
@@ -63,6 +64,7 @@ class ServicosService {
         ...(data.status && { status: data.status }),
         ...(data.dataLimite && { dataLimite: new Date(data.dataLimite) }),
         ...(data.observacoes !== undefined && { observacoes: data.observacoes }),
+        ...(data.chassi && { chassi: data.chassi.toUpperCase() }),
       },
       include: includeRelations,
     });

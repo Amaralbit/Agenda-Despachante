@@ -33,10 +33,11 @@ export interface Servico {
   status: StatusServico;
   dataLimite: string;
   observacoes?: string | null;
+  chassi?: string | null;
   clienteId: string;
   cliente: Cliente;
-  veiculoId: string;
-  veiculo: Veiculo;
+  veiculoId?: string | null;
+  veiculo?: Veiculo | null;
   createdAt: string;
   updatedAt: string;
 }
@@ -46,7 +47,7 @@ export interface CreateServicoForm {
   dataLimite: string;
   observacoes?: string;
   clienteId: string;
-  veiculoId: string;
+  chassi: string;
 }
 
 export const TIPO_LABELS: Record<TipoServico, string> = {

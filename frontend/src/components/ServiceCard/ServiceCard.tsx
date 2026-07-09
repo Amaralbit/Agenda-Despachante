@@ -5,6 +5,7 @@ import { Servico, StatusServico, TIPO_LABELS } from '../../types';
 const TIPO_BADGE: Record<string, string> = {
   INCLUSAO_VEICULO_NOVO: 'bg-blue-100 text-blue-700',
   TRANSFERENCIA:         'bg-purple-100 text-purple-700',
+  PA2:                   'bg-emerald-100 text-emerald-700',
   INTENCAO_DE_VENDA:    'bg-amber-100 text-amber-700',
   OUTROS:                'bg-gray-100 text-gray-600',
 };
@@ -12,6 +13,7 @@ const TIPO_BADGE: Record<string, string> = {
 const TIPO_BORDER: Record<string, string> = {
   INCLUSAO_VEICULO_NOVO: 'border-l-blue-500',
   TRANSFERENCIA:         'border-l-purple-500',
+  PA2:                   'border-l-emerald-500',
   INTENCAO_DE_VENDA:    'border-l-amber-500',
   OUTROS:                'border-l-gray-400',
 };
@@ -98,14 +100,25 @@ export const ServiceCard: React.FC<Props> = ({
 
       {/* Veículo */}
       <div className="flex items-center gap-2 mb-3">
-        <Link
-          to={`/veiculos/${servico.veiculo.id}/historico`}
-          onClick={(e) => e.stopPropagation()}
-          className="bg-gray-900 hover:bg-gray-700 text-white text-xs font-mono font-bold px-2 py-0.5 rounded tracking-widest transition-colors"
-        >
-          {servico.veiculo.placa}
-        </Link>
-        <span className="text-xs text-gray-500 truncate">{servico.veiculo.modelo}</span>
+        {servico.veiculo ? (
+          <>
+            <Link
+              to={`/veiculos/${servico.veiculo.id}/historico`}
+              onClick={(e) => e.stopPropagation()}
+              className="bg-gray-900 hover:bg-gray-700 text-white text-xs font-mono font-bold px-2 py-0.5 rounded tracking-widest transition-colors"
+            >
+              {servico.veiculo.placa}
+            </Link>
+            <span className="text-xs text-gray-500 truncate">{servico.veiculo.modelo}</span>
+          </>
+        ) : (
+          <>
+            <span className="bg-gray-900 text-white text-[10px] font-bold px-2 py-0.5 rounded uppercase tracking-wide">
+              Chassi
+            </span>
+            <span className="text-xs text-gray-600 font-mono truncate">{servico.chassi}</span>
+          </>
+        )}
       </div>
 
       {/* Observações */}

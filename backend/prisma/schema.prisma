@@ -54,10 +54,11 @@ model Servico {
   status      StatusServico @default(PENDENTE)
   dataLimite  DateTime      @map("data_limite") @db.Date
   observacoes String?
+  chassi      String?
   clienteId   String        @map("cliente_id")
   cliente     Cliente       @relation(fields: [clienteId], references: [id])
-  veiculoId   String        @map("veiculo_id")
-  veiculo     Veiculo       @relation(fields: [veiculoId], references: [id])
+  veiculoId   String?       @map("veiculo_id")
+  veiculo     Veiculo?      @relation(fields: [veiculoId], references: [id])
   createdAt   DateTime      @default(now()) @map("created_at")
   updatedAt   DateTime      @updatedAt @map("updated_at")
 

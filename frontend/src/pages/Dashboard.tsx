@@ -22,7 +22,8 @@ export const Dashboard: React.FC = () => {
       const searchLower   = search.toLowerCase();
       const matchesSearch = !search ||
         s.cliente.nome.toLowerCase().includes(searchLower) ||
-        s.veiculo.placa.toLowerCase().includes(searchLower) ||
+        (s.veiculo?.placa.toLowerCase().includes(searchLower) ?? false) ||
+        (s.chassi?.toLowerCase().includes(searchLower) ?? false) ||
         s.cliente.cpfCnpj.toLowerCase().includes(searchLower);
 
       return matchesTipo && matchesSearch;

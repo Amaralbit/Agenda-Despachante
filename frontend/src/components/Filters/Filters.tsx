@@ -25,7 +25,7 @@ export const Filters: React.FC<Props> = ({
         </span>
         <input
           type="text"
-          placeholder="Buscar por placa, cliente ou CPF..."
+          placeholder="Buscar por placa, chassi, cliente ou CPF..."
           value={search}
           onChange={(e) => onSearchChange(e.target.value)}
           className="w-full pl-9 pr-3 py-2 text-sm border border-gray-300 rounded-lg bg-white focus:outline-none focus:ring-2 focus:ring-indigo-400 focus:border-transparent placeholder-gray-400"
