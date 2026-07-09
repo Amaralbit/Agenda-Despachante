@@ -19,7 +19,7 @@ export const Filters: React.FC<Props> = ({
   return (
     <div className="flex flex-wrap items-center gap-3">
       {/* Campo de busca */}
-      <div className="relative flex-1 min-w-[220px] max-w-xs">
+      <div className="relative min-w-[220px] max-w-xs flex-1">
         <span className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400 text-sm">
           🔍
         </span>
@@ -28,7 +28,7 @@ export const Filters: React.FC<Props> = ({
           placeholder="Buscar por placa, chassi, cliente ou CPF..."
           value={search}
           onChange={(e) => onSearchChange(e.target.value)}
-          className="w-full pl-9 pr-3 py-2 text-sm border border-gray-300 rounded-lg bg-white focus:outline-none focus:ring-2 focus:ring-indigo-400 focus:border-transparent placeholder-gray-400"
+          className="w-full rounded-lg border border-slate-200 bg-white/90 py-2 pl-9 pr-3 text-sm text-slate-800 shadow-sm shadow-slate-200/50 placeholder-slate-400 transition focus:border-transparent focus:outline-none focus:ring-2 focus:ring-indigo-400"
         />
         {search && (
           <button
@@ -44,7 +44,7 @@ export const Filters: React.FC<Props> = ({
       <select
         value={tipoFilter}
         onChange={(e) => onTipoChange(e.target.value as TipoServico | '')}
-        className="text-sm border border-gray-300 rounded-lg bg-white px-3 py-2 focus:outline-none focus:ring-2 focus:ring-indigo-400 text-gray-700"
+        className="rounded-lg border border-slate-200 bg-white/90 px-3 py-2 text-sm text-slate-700 shadow-sm shadow-slate-200/50 transition focus:outline-none focus:ring-2 focus:ring-indigo-400"
       >
         <option value="">Todos os tipos</option>
         {tipos.map(([value, label]) => (

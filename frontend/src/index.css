@@ -9,6 +9,66 @@
 
   body {
     @apply bg-slate-100 text-gray-900 antialiased;
+    min-height: 100vh;
+  }
+}
+
+@layer components {
+  .ambient-backdrop {
+    position: fixed;
+    inset: 0;
+    z-index: 0;
+    pointer-events: none;
+    overflow: hidden;
+    background:
+      linear-gradient(115deg, rgba(15, 23, 42, 0.05), transparent 42%),
+      linear-gradient(180deg, #f8fbff 0%, #eef4f9 46%, #f6f8fb 100%);
+  }
+
+  .ambient-backdrop::before {
+    content: '';
+    position: absolute;
+    inset: -35% -10%;
+    background:
+      repeating-linear-gradient(
+        118deg,
+        transparent 0 54px,
+        rgba(79, 70, 229, 0.1) 55px 56px,
+        transparent 57px 120px
+      ),
+      repeating-linear-gradient(
+        28deg,
+        transparent 0 88px,
+        rgba(20, 184, 166, 0.08) 89px 90px,
+        transparent 91px 176px
+      );
+    animation: route-drift 24s linear infinite;
+    opacity: 0.85;
+  }
+
+  .ambient-backdrop::after {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background:
+      linear-gradient(
+        100deg,
+        transparent 0%,
+        rgba(255, 255, 255, 0.62) 38%,
+        rgba(99, 102, 241, 0.1) 48%,
+        rgba(20, 184, 166, 0.08) 58%,
+        transparent 78%
+      );
+    transform: translateX(-58%);
+    animation: soft-sweep 18s ease-in-out infinite;
+  }
+
+  .glass-panel {
+    @apply border border-white/70 bg-white/80 shadow-sm shadow-slate-200/70 backdrop-blur-xl;
+  }
+
+  .metric-card {
+    @apply border border-white/70 bg-white/90 shadow-sm shadow-slate-200/70 backdrop-blur-xl;
   }
 }
 
@@ -29,5 +89,40 @@
   .scrollbar-thin::-webkit-scrollbar-thumb {
     background-color: #cbd5e1;
     border-radius: 3px;
+  }
+}
+
+@keyframes route-drift {
+  from {
+    transform: translate3d(-2%, -1%, 0);
+  }
+
+  to {
+    transform: translate3d(6%, 3%, 0);
+  }
+}
+
+@keyframes soft-sweep {
+  0%,
+  18% {
+    transform: translateX(-62%);
+    opacity: 0;
+  }
+
+  42% {
+    opacity: 1;
+  }
+
+  72%,
+  100% {
+    transform: translateX(58%);
+    opacity: 0;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .ambient-backdrop::before,
+  .ambient-backdrop::after {
+    animation: none;
   }
 }

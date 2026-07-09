@@ -9,8 +9,8 @@ interface NavItem {
 }
 
 const NAV_ITEMS: NavItem[] = [
-  { to: '/',         label: 'Dashboard',  icon: '📋' },
-  { to: '/clientes', label: 'Clientes',   icon: '👥' },
+  { to: '/', label: 'Dashboard', icon: 'DB' },
+  { to: '/clientes', label: 'Clientes', icon: 'CL' },
 ];
 
 export const Layout: React.FC<{ children: React.ReactNode }> = ({ children }) => {
@@ -18,81 +18,81 @@ export const Layout: React.FC<{ children: React.ReactNode }> = ({ children }) =>
   const { usuario, logout } = useAuth();
 
   return (
-    <div className="min-h-screen flex bg-slate-100">
-      {/* Sidebar */}
-      <aside className="w-60 shrink-0 bg-white border-r border-gray-200 flex flex-col fixed inset-y-0 left-0 z-30">
-        {/* Logo */}
-        <div className="flex items-center gap-3 px-5 py-5 border-b border-gray-100">
-          <div className="w-8 h-8 bg-indigo-600 rounded-lg flex items-center justify-center shrink-0 text-base">
-            🚗
-          </div>
-          <div>
-            <p className="font-bold text-gray-900 text-sm leading-tight">Agenda</p>
-            <p className="text-gray-400 text-xs">Despachante</p>
-          </div>
-        </div>
+    <div className="relative min-h-screen overflow-hidden bg-slate-100">
+      <div className="ambient-backdrop" />
 
-        {/* Navegação */}
-        <nav className="flex-1 px-3 py-4 flex flex-col gap-1">
-          {NAV_ITEMS.map((item) => {
-            const isActive =
-              item.to === '/'
-                ? pathname === '/'
-                : pathname.startsWith(item.to);
-
-            return (
-              <Link
-                key={item.to}
-                to={item.to}
-                className={`
-                  flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm font-medium transition-colors
-                  ${isActive
-                    ? 'bg-indigo-50 text-indigo-700'
-                    : 'text-gray-600 hover:bg-gray-100 hover:text-gray-900'}
-                `}
-              >
-                <span className="text-base">{item.icon}</span>
-                {item.label}
-              </Link>
-            );
-          })}
-        </nav>
-
-        {/* Usuário + Logout */}
-        <div className="border-t border-gray-100 px-4 py-4">
-          <div className="flex items-center gap-3 mb-3">
-            <div className="w-8 h-8 rounded-full bg-indigo-100 text-indigo-600 font-bold text-xs flex items-center justify-center shrink-0">
-              {usuario?.nome.charAt(0).toUpperCase()}
+      <div className="relative z-10 flex min-h-screen">
+        <aside className="fixed inset-y-0 left-0 z-30 flex w-60 shrink-0 flex-col border-r border-white/10 bg-slate-950/95 text-white shadow-2xl shadow-slate-950/20">
+          <div className="flex items-center gap-3 border-b border-white/10 px-5 py-5">
+            <div className="flex h-9 w-9 shrink-0 items-center justify-center rounded-lg bg-white text-sm font-black tracking-tight text-slate-950 shadow-sm">
+              AD
             </div>
-            <div className="flex-1 min-w-0">
-              <p className="text-sm font-medium text-gray-900 truncate">{usuario?.nome}</p>
-              <p className="text-xs text-gray-400 truncate">{usuario?.email}</p>
+            <div>
+              <p className="text-sm font-bold leading-tight text-white">Agenda</p>
+              <p className="text-xs text-slate-400">Despachante</p>
             </div>
           </div>
-          <button
-            onClick={logout}
-            className="w-full text-xs text-gray-500 hover:text-red-600 font-medium text-left transition-colors"
-          >
-            Sair
-          </button>
-        </div>
-      </aside>
 
-      {/* Conteúdo principal */}
-      <main className="flex-1 ml-60 flex flex-col min-h-screen">
-        {/* Barra de título da página */}
-        <header className="bg-white border-b border-gray-200 px-8 py-5 sticky top-0 z-20">
-          <h1 className="text-lg font-bold text-gray-900">
-            {pathname === '/'          && 'Dashboard — Kanban de Serviços'}
-            {pathname === '/clientes'  && 'Gestão de Clientes e Veículos'}
-            {pathname.includes('/historico') && 'Histórico do Veículo'}
-          </h1>
-        </header>
+          <nav className="flex flex-1 flex-col gap-1 px-3 py-4">
+            {NAV_ITEMS.map((item) => {
+              const isActive = item.to === '/' ? pathname === '/' : pathname.startsWith(item.to);
 
-        <div className="flex-1 px-8 py-6">
-          {children}
-        </div>
-      </main>
+              return (
+                <Link
+                  key={item.to}
+                  to={item.to}
+                  className={`
+                    flex items-center gap-3 rounded-lg px-3 py-2.5 text-sm font-medium transition-all duration-200
+                    ${isActive
+                      ? 'bg-white text-slate-950 shadow-sm'
+                      : 'text-slate-300 hover:bg-white/10 hover:text-white'}
+                  `}
+                >
+                  <span
+                    className={`
+                      flex h-6 w-6 items-center justify-center rounded-md text-[10px] font-black tracking-tight
+                      ${isActive ? 'bg-slate-950 text-white' : 'bg-white/10 text-slate-300'}
+                    `}
+                  >
+                    {item.icon}
+                  </span>
+                  {item.label}
+                </Link>
+              );
+            })}
+          </nav>
+
+          <div className="border-t border-white/10 px-4 py-4">
+            <div className="mb-3 flex items-center gap-3">
+              <div className="flex h-8 w-8 shrink-0 items-center justify-center rounded-lg bg-cyan-400/15 text-xs font-bold text-cyan-200 ring-1 ring-cyan-300/25">
+                {usuario?.nome.charAt(0).toUpperCase()}
+              </div>
+              <div className="min-w-0 flex-1">
+                <p className="truncate text-sm font-medium text-white">{usuario?.nome}</p>
+                <p className="truncate text-xs text-slate-400">{usuario?.email}</p>
+              </div>
+            </div>
+            <button
+              onClick={logout}
+              className="w-full text-left text-xs font-medium text-slate-400 transition-colors hover:text-red-300"
+            >
+              Sair
+            </button>
+          </div>
+        </aside>
+
+        <main className="ml-60 flex min-h-screen flex-1 flex-col">
+          <header className="sticky top-0 z-20 border-b border-white/70 bg-white/80 px-8 py-5 shadow-sm shadow-slate-200/60 backdrop-blur-xl">
+            <h1 className="text-lg font-bold text-slate-950">
+              {pathname === '/' && 'Dashboard - Kanban de Servicos'}
+              {pathname === '/clientes' && 'Gestao de Clientes e Veiculos'}
+              {pathname.includes('/historico') && 'Historico do Veiculo'}
+            </h1>
+          </header>
+
+          <div className="flex-1 px-8 py-6">{children}</div>
+        </main>
+      </div>
     </div>
   );
 };

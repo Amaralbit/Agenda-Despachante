@@ -59,7 +59,7 @@ export const HistoricoVeiculo: React.FC = () => {
       </Link>
 
       {/* Card do veículo */}
-      <div className="bg-white rounded-2xl border border-gray-200 shadow-sm p-6">
+      <div className="rounded-lg border border-white/80 bg-white/90 p-6 shadow-sm shadow-slate-200/70 backdrop-blur-xl">
         <div className="flex items-start justify-between gap-4">
           <div>
             <div className="flex items-center gap-3 mb-1">
@@ -124,7 +124,7 @@ export const HistoricoVeiculo: React.FC = () => {
                   </div>
 
                   {/* Card */}
-                  <div className="flex-1 bg-white rounded-xl border border-gray-200 shadow-sm p-4">
+                  <div className="flex-1 rounded-lg border border-white/80 bg-white/90 p-4 shadow-sm shadow-slate-200/70 backdrop-blur-xl">
                     <div className="flex items-start justify-between gap-2 mb-2">
                       <span className={`text-xs font-semibold px-2 py-0.5 rounded-full ${TIPO_COLOR[s.tipo]}`}>
                         {TIPO_LABELS[s.tipo]}

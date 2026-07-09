@@ -29,7 +29,7 @@ export const VeiculoModal: React.FC<Props> = ({
     <div className="fixed inset-0 z-50 flex items-center justify-center p-4">
       <div className="absolute inset-0 bg-black/40 backdrop-blur-sm" onClick={onClose} />
 
-      <div className="relative bg-white rounded-2xl shadow-xl w-full max-w-md">
+      <div className="relative w-full max-w-md rounded-lg border border-white/80 bg-white/95 shadow-2xl shadow-slate-950/15 backdrop-blur-xl">
         <div className="flex items-center justify-between px-6 py-4 border-b border-gray-100">
           <div>
             <h2 className="font-bold text-gray-900 text-lg">

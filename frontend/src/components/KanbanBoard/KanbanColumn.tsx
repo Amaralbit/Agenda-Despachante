@@ -6,17 +6,17 @@ const COLUMN_STYLES: Record<StatusServico, { header: string; dot: string; bg: st
   PENDENTE: {
     header: 'text-slate-700',
     dot:    'bg-slate-400',
-    bg:     'bg-slate-200/60',
+    bg:     'bg-white/60 border-slate-200/80',
   },
   EM_ANDAMENTO: {
     header: 'text-amber-700',
     dot:    'bg-amber-400',
-    bg:     'bg-amber-50/60',
+    bg:     'bg-amber-50/70 border-amber-100/80',
   },
   CONCLUIDO: {
     header: 'text-emerald-700',
     dot:    'bg-emerald-400',
-    bg:     'bg-emerald-50/60',
+    bg:     'bg-emerald-50/70 border-emerald-100/80',
   },
 };
 
@@ -71,7 +71,7 @@ export const KanbanColumn: React.FC<Props> = ({
         <h2 className={`font-semibold text-sm uppercase tracking-wide ${style.header}`}>
           {STATUS_LABELS[status]}
         </h2>
-        <span className="ml-auto bg-white border border-gray-200 text-gray-600 text-xs font-bold px-2 py-0.5 rounded-full">
+        <span className="ml-auto rounded-full border border-white/80 bg-white/80 px-2 py-0.5 text-xs font-bold text-slate-600 shadow-sm">
           {servicos.length}
         </span>
         {overdueCount > 0 && (
@@ -87,9 +87,9 @@ export const KanbanColumn: React.FC<Props> = ({
         onDragLeave={handleDragLeave}
         onDrop={handleDrop}
         className={`
-          flex-1 rounded-2xl p-3 transition-all duration-150 min-h-[200px]
+          min-h-[200px] flex-1 rounded-lg border p-3 shadow-sm shadow-slate-200/60 backdrop-blur-xl transition-all duration-200
           ${style.bg}
-          ${isDragOver ? 'ring-2 ring-indigo-400 ring-offset-2 scale-[1.01]' : ''}
+          ${isDragOver ? 'scale-[1.01] ring-2 ring-indigo-400 ring-offset-2 ring-offset-white/60' : ''}
         `}
       >
         <div className="flex flex-col gap-3">

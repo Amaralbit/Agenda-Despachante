@@ -46,27 +46,32 @@ export const Login: React.FC = () => {
     }
   }
 
+  const inputClass =
+    'w-full rounded-lg border border-slate-200 bg-white/90 px-3 py-2.5 text-sm text-slate-900 shadow-sm shadow-slate-200/50 placeholder-slate-400 transition focus:border-transparent focus:outline-none focus:ring-2 focus:ring-indigo-400';
+
   return (
-    <div className="min-h-screen bg-slate-100 flex items-center justify-center p-4">
-      <div className="w-full max-w-sm">
-        <div className="text-center mb-8">
-          <div className="inline-flex items-center justify-center w-14 h-14 bg-indigo-600 rounded-2xl shadow-lg mb-4 text-3xl">
-            🚗
+    <div className="relative flex min-h-screen items-center justify-center overflow-hidden bg-slate-100 p-4">
+      <div className="ambient-backdrop" />
+
+      <div className="relative z-10 w-full max-w-sm">
+        <div className="mb-8 text-center">
+          <div className="mb-4 inline-flex h-14 w-14 items-center justify-center rounded-lg bg-slate-950 text-lg font-black tracking-tight text-white shadow-xl shadow-slate-950/20">
+            AD
           </div>
-          <h1 className="text-2xl font-bold text-gray-900">Agenda Despachante</h1>
-          <p className="text-gray-500 text-sm mt-1">Gestao de Servicos Veiculares</p>
+          <h1 className="text-2xl font-black text-slate-950">Agenda Despachante</h1>
+          <p className="mt-1 text-sm text-slate-500">Gestao de Servicos Veiculares</p>
         </div>
 
-        <div className="bg-white rounded-2xl shadow-sm border border-gray-200 p-8">
-          <div className="flex rounded-xl bg-slate-100 p-1 mb-6">
+        <div className="glass-panel rounded-lg p-8">
+          <div className="mb-6 flex rounded-lg border border-white/80 bg-slate-100/80 p-1">
             <button
               type="button"
               onClick={() => {
                 setModo('login');
                 setErro('');
               }}
-              className={`flex-1 rounded-lg px-3 py-2 text-sm font-medium transition-colors ${
-                modo === 'login' ? 'bg-white text-slate-900 shadow-sm' : 'text-slate-500'
+              className={`flex-1 rounded-md px-3 py-2 text-sm font-medium transition-all ${
+                modo === 'login' ? 'bg-white text-slate-950 shadow-sm' : 'text-slate-500 hover:text-slate-800'
               }`}
             >
               Entrar
@@ -77,25 +82,25 @@ export const Login: React.FC = () => {
                 setModo('cadastro');
                 setErro('');
               }}
-              className={`flex-1 rounded-lg px-3 py-2 text-sm font-medium transition-colors ${
-                modo === 'cadastro' ? 'bg-white text-slate-900 shadow-sm' : 'text-slate-500'
+              className={`flex-1 rounded-md px-3 py-2 text-sm font-medium transition-all ${
+                modo === 'cadastro' ? 'bg-white text-slate-950 shadow-sm' : 'text-slate-500 hover:text-slate-800'
               }`}
             >
               Criar conta
             </button>
           </div>
 
-          <h2 className="text-lg font-semibold text-gray-900 mb-2">
+          <h2 className="mb-2 text-lg font-bold text-slate-950">
             {modo === 'login' ? 'Entrar na conta' : 'Criar nova conta'}
           </h2>
-          <p className="text-sm text-gray-500 mb-6">
+          <p className="mb-6 text-sm text-slate-500">
             {modo === 'login'
               ? 'Acesse para gerenciar clientes, veiculos e servicos.'
               : 'Seu cadastro faz login automaticamente ao terminar.'}
           </p>
 
           {erro && (
-            <div className="mb-4 px-4 py-3 bg-red-50 border border-red-200 text-red-700 rounded-lg text-sm">
+            <div className="mb-4 rounded-lg border border-red-200 bg-red-50 px-4 py-3 text-sm text-red-700">
               {erro}
             </div>
           )}
@@ -103,7 +108,7 @@ export const Login: React.FC = () => {
           <form onSubmit={handleSubmit} className="flex flex-col gap-4">
             {modo === 'cadastro' && (
               <div>
-                <label className="block text-sm font-medium text-gray-700 mb-1">Nome</label>
+                <label className="mb-1 block text-sm font-medium text-slate-700">Nome</label>
                 <input
                   type="text"
                   required
@@ -111,13 +116,13 @@ export const Login: React.FC = () => {
                   value={nome}
                   onChange={(e) => setNome(e.target.value)}
                   placeholder="Seu nome completo"
-                  className="w-full border border-gray-300 rounded-lg px-3 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-indigo-400 focus:border-transparent"
+                  className={inputClass}
                 />
               </div>
             )}
 
             <div>
-              <label className="block text-sm font-medium text-gray-700 mb-1">E-mail</label>
+              <label className="mb-1 block text-sm font-medium text-slate-700">E-mail</label>
               <input
                 type="email"
                 required
@@ -125,32 +130,32 @@ export const Login: React.FC = () => {
                 value={email}
                 onChange={(e) => setEmail(e.target.value)}
                 placeholder="seu@email.com"
-                className="w-full border border-gray-300 rounded-lg px-3 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-indigo-400 focus:border-transparent"
+                className={inputClass}
               />
             </div>
 
             <div>
-              <label className="block text-sm font-medium text-gray-700 mb-1">Senha</label>
+              <label className="mb-1 block text-sm font-medium text-slate-700">Senha</label>
               <input
                 type="password"
                 required
                 value={senha}
                 onChange={(e) => setSenha(e.target.value)}
                 placeholder="Digite sua senha"
-                className="w-full border border-gray-300 rounded-lg px-3 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-indigo-400 focus:border-transparent"
+                className={inputClass}
               />
             </div>
 
             {modo === 'cadastro' && (
               <div>
-                <label className="block text-sm font-medium text-gray-700 mb-1">Confirmar senha</label>
+                <label className="mb-1 block text-sm font-medium text-slate-700">Confirmar senha</label>
                 <input
                   type="password"
                   required
                   value={confirmarSenha}
                   onChange={(e) => setConfirmarSenha(e.target.value)}
                   placeholder="Repita sua senha"
-                  className="w-full border border-gray-300 rounded-lg px-3 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-indigo-400 focus:border-transparent"
+                  className={inputClass}
                 />
               </div>
             )}
@@ -158,7 +163,7 @@ export const Login: React.FC = () => {
             <button
               type="submit"
               disabled={loading}
-              className="w-full bg-indigo-600 hover:bg-indigo-700 disabled:bg-indigo-300 text-white font-semibold py-2.5 rounded-lg transition-colors mt-2"
+              className="mt-2 w-full rounded-lg bg-slate-950 py-2.5 font-semibold text-white shadow-lg shadow-slate-950/20 transition-all duration-200 hover:-translate-y-0.5 hover:bg-slate-800 disabled:translate-y-0 disabled:bg-slate-400"
             >
               {loading
                 ? modo === 'login'
@@ -170,7 +175,7 @@ export const Login: React.FC = () => {
             </button>
           </form>
 
-          <p className="text-center text-xs text-gray-400 mt-6">
+          <p className="mt-6 text-center text-xs text-slate-400">
             Usuario padrao para teste: admin@despachante.com / admin123
           </p>
         </div>

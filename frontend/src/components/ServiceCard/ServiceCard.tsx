@@ -64,17 +64,17 @@ export const ServiceCard: React.FC<Props> = ({
       draggable
       onDragStart={handleDragStart}
       className={`
-        bg-white rounded-xl shadow-sm border border-gray-200 border-l-4
+        bg-white/90 rounded-lg shadow-sm shadow-slate-200/70 border border-white/80 border-l-4 backdrop-blur-xl
         ${TIPO_BORDER[servico.tipo]}
         p-4 cursor-grab active:cursor-grabbing hover:shadow-md
-        transition-all duration-150 select-none
+        transition-all duration-200 select-none hover:-translate-y-0.5
         ${isPending ? 'opacity-60 pointer-events-none' : ''}
       `}
     >
       {/* Header */}
       <div className="flex items-start justify-between gap-2 mb-3">
         <span
-          className={`text-xs font-semibold px-2 py-0.5 rounded-full ${TIPO_BADGE[servico.tipo]}`}
+          className={`rounded-md px-2 py-0.5 text-xs font-semibold ${TIPO_BADGE[servico.tipo]}`}
         >
           {TIPO_LABELS[servico.tipo]}
         </span>
@@ -123,7 +123,7 @@ export const ServiceCard: React.FC<Props> = ({
 
       {/* Observações */}
       {servico.observacoes && (
-        <div className="mb-3 px-2 py-1.5 bg-yellow-50 border border-yellow-200 rounded-md text-xs text-yellow-800 leading-snug">
+        <div className="mb-3 rounded-md border border-yellow-200 bg-yellow-50 px-2 py-1.5 text-xs leading-snug text-yellow-800">
           <span className="font-semibold">Obs: </span>
           {servico.observacoes}
         </div>

@@ -65,21 +65,22 @@ export const Dashboard: React.FC = () => {
       <div className="flex items-start justify-between gap-4">
         <div className="grid grid-cols-2 sm:grid-cols-4 gap-3 flex-1">
           {[
-            { label: 'Total',        value: servicos.length,                                              color: 'text-gray-700' },
-            { label: 'Para Fazer',   value: servicos.filter((s) => s.status === 'PENDENTE').length,        color: 'text-slate-600' },
-            { label: 'Em Andamento', value: servicos.filter((s) => s.status === 'EM_ANDAMENTO').length,    color: 'text-amber-600' },
-            { label: 'Atrasados',    value: totalAtrasados,                                                color: totalAtrasados > 0 ? 'text-red-600' : 'text-gray-400' },
+            { label: 'Total',        value: servicos.length,                                              color: 'text-slate-900', accent: 'from-slate-950 to-slate-700' },
+            { label: 'Para Fazer',   value: servicos.filter((s) => s.status === 'PENDENTE').length,        color: 'text-indigo-700', accent: 'from-indigo-500 to-sky-500' },
+            { label: 'Em Andamento', value: servicos.filter((s) => s.status === 'EM_ANDAMENTO').length,    color: 'text-amber-600', accent: 'from-amber-400 to-orange-500' },
+            { label: 'Atrasados',    value: totalAtrasados,                                                color: totalAtrasados > 0 ? 'text-red-600' : 'text-slate-400', accent: 'from-rose-500 to-red-500' },
           ].map((m) => (
-            <div key={m.label} className="bg-white rounded-xl border border-gray-200 px-4 py-3">
-              <p className="text-xs text-gray-400 font-medium">{m.label}</p>
-              <p className={`text-2xl font-bold ${m.color}`}>{m.value}</p>
+            <div key={m.label} className="metric-card relative overflow-hidden rounded-lg px-4 py-3">
+              <div className={`absolute inset-x-0 top-0 h-1 bg-gradient-to-r ${m.accent}`} />
+              <p className="text-xs font-medium text-slate-500">{m.label}</p>
+              <p className={`mt-1 text-2xl font-black ${m.color}`}>{m.value}</p>
             </div>
           ))}
         </div>
 
         <button
           onClick={() => setIsModalOpen(true)}
-          className="flex items-center gap-2 bg-indigo-600 hover:bg-indigo-700 text-white font-semibold text-sm px-4 py-2 rounded-lg transition-colors shadow-sm shrink-0 self-end mb-0.5"
+          className="mb-0.5 flex shrink-0 items-center gap-2 self-end rounded-lg bg-slate-950 px-4 py-2 text-sm font-semibold text-white shadow-lg shadow-slate-950/20 transition-all duration-200 hover:-translate-y-0.5 hover:bg-slate-800 hover:shadow-slate-950/30"
         >
           <span className="text-lg leading-none">+</span>
           Novo Serviço
@@ -87,7 +88,7 @@ export const Dashboard: React.FC = () => {
       </div>
 
       {/* Filtros */}
-      <div className="bg-white rounded-xl border border-gray-200 px-4 py-3">
+      <div className="glass-panel rounded-lg px-4 py-3">
         <Filters
           search={search}
           onSearchChange={setSearch}

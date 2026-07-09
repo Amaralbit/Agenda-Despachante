@@ -53,12 +53,12 @@ export const Clientes: React.FC = () => {
             placeholder="Buscar por nome ou CPF/CNPJ..."
             value={search}
             onChange={(e) => setSearch(e.target.value)}
-            className="w-full pl-9 pr-3 py-2 text-sm border border-gray-300 rounded-lg bg-white focus:outline-none focus:ring-2 focus:ring-indigo-400"
+            className="w-full rounded-lg border border-slate-200 bg-white/90 py-2 pl-9 pr-3 text-sm text-slate-800 shadow-sm shadow-slate-200/50 focus:outline-none focus:ring-2 focus:ring-indigo-400"
           />
         </div>
         <button
           onClick={() => setClienteModal({ open: true })}
-          className="flex items-center gap-2 bg-indigo-600 hover:bg-indigo-700 text-white font-semibold text-sm px-4 py-2 rounded-lg transition-colors"
+          className="flex items-center gap-2 rounded-lg bg-slate-950 px-4 py-2 text-sm font-semibold text-white shadow-lg shadow-slate-950/20 transition-all duration-200 hover:-translate-y-0.5 hover:bg-slate-800"
         >
           <span>+</span> Novo Cliente
         </button>
@@ -82,14 +82,14 @@ export const Clientes: React.FC = () => {
           {clientes.map((cliente) => {
             const isOpen = expanded === cliente.id;
             return (
-              <div key={cliente.id} className="bg-white rounded-xl border border-gray-200 shadow-sm overflow-hidden">
+              <div key={cliente.id} className="overflow-hidden rounded-lg border border-white/80 bg-white/90 shadow-sm shadow-slate-200/70 backdrop-blur-xl transition-all duration-200 hover:-translate-y-0.5 hover:shadow-md">
                 {/* Header do cliente */}
                 <div className="flex items-center gap-3 px-5 py-4">
                   <button
                     onClick={() => setExpanded(isOpen ? null : cliente.id)}
                     className="flex-1 flex items-start gap-3 text-left"
                   >
-                    <div className="w-9 h-9 rounded-full bg-indigo-100 text-indigo-600 font-bold text-sm flex items-center justify-center shrink-0 mt-0.5">
+                    <div className="mt-0.5 flex h-9 w-9 shrink-0 items-center justify-center rounded-lg bg-slate-950 text-sm font-bold text-white">
                       {cliente.nome.charAt(0).toUpperCase()}
                     </div>
                     <div className="flex-1 min-w-0">
@@ -100,7 +100,7 @@ export const Clientes: React.FC = () => {
                       )}
                     </div>
                     <div className="flex items-center gap-2 shrink-0">
-                      <span className="text-xs bg-gray-100 text-gray-600 px-2 py-0.5 rounded-full">
+                      <span className="rounded-md bg-slate-100 px-2 py-0.5 text-xs text-slate-600">
                         {cliente.veiculos.length} veículo{cliente.veiculos.length !== 1 ? 's' : ''}
                       </span>
                       <span className="text-gray-400 text-xs">{isOpen ? '▲' : '▼'}</span>
@@ -126,7 +126,7 @@ export const Clientes: React.FC = () => {
 
                 {/* Veículos (expandido) */}
                 {isOpen && (
-                  <div className="border-t border-gray-100 px-5 pb-4 pt-3 bg-slate-50">
+                  <div className="border-t border-slate-100 bg-slate-50/80 px-5 pb-4 pt-3">
                     <div className="flex items-center justify-between mb-3">
                       <p className="text-xs font-semibold text-gray-500 uppercase tracking-wide">Veículos</p>
                       <button
@@ -142,7 +142,7 @@ export const Clientes: React.FC = () => {
                     ) : (
                       <div className="flex flex-col gap-2">
                         {cliente.veiculos.map((v) => (
-                          <div key={v.id} className="flex items-center gap-3 bg-white rounded-lg border border-gray-200 px-3 py-2.5">
+                          <div key={v.id} className="flex items-center gap-3 rounded-lg border border-white/80 bg-white/90 px-3 py-2.5 shadow-sm shadow-slate-200/50">
                             <span className="bg-gray-900 text-white text-xs font-mono font-bold px-2 py-0.5 rounded tracking-widest">
                               {v.placa}
                             </span>
