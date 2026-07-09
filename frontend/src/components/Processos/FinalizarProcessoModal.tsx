@@ -103,7 +103,7 @@ export const FinalizarProcessoModal: React.FC<Props> = ({
 
           {(pdfObrigatorio || pdfOpcional) && (
             <div className="flex flex-col gap-2 rounded-lg bg-slate-50 p-3">
-              {[pdfObrigatorio, pdfOpcional].filter(Boolean).map((file) => (
+              {[pdfObrigatorio, pdfOpcional].filter((file): file is File => Boolean(file)).map((file) => (
                 <div key={`${file.name}-${file.size}`} className="flex items-center justify-between gap-3 text-xs">
                   <span className="truncate font-medium text-slate-700">{file.name}</span>
                   <span className="shrink-0 text-slate-400">{Math.ceil(file.size / 1024)} KB</span>

@@ -64,7 +64,7 @@ export const ProcessoModal: React.FC<Props> = ({ onClose, onSubmit, isLoading })
 
           <div>
             <label className="mb-1 block text-sm font-medium text-slate-700">
-              Solicitante do PA2 <span className="text-red-500">*</span>
+              Solicitante da montagem <span className="text-red-500">*</span>
             </label>
             <input
               required
