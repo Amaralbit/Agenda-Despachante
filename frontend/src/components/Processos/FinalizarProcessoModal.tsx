@@ -14,32 +14,44 @@ export const FinalizarProcessoModal: React.FC<Props> = ({
   onSubmit,
   isLoading,
 }) => {
-  const [files, setFiles] = useState<File[]>([]);
+  const [pdfObrigatorio, setPdfObrigatorio] = useState<File | null>(null);
+  const [pdfOpcional, setPdfOpcional] = useState<File | null>(null);
   const [erro, setErro] = useState('');
 
-  function handleFileChange(e: React.ChangeEvent<HTMLInputElement>) {
-    const selected = Array.from(e.target.files ?? []);
-    const invalid = selected.find((file) => file.type !== 'application/pdf');
+  function validatePdf(file?: File) {
+    if (!file) return true;
+    return file.type === 'application/pdf' || file.name.toLowerCase().endsWith('.pdf');
+  }
 
-    if (invalid) {
+  function handleFileChange(
+    e: React.ChangeEvent<HTMLInputElement>,
+    slot: 'obrigatorio' | 'opcional',
+  ) {
+    const file = e.target.files?.[0] ?? null;
+
+    if (file && !validatePdf(file)) {
       setErro('Anexe somente arquivos PDF.');
-      setFiles([]);
+      e.target.value = '';
+      if (slot === 'obrigatorio') setPdfObrigatorio(null);
+      if (slot === 'opcional') setPdfOpcional(null);
       return;
     }
 
     setErro('');
-    setFiles(selected);
+    if (slot === 'obrigatorio') setPdfObrigatorio(file);
+    if (slot === 'opcional') setPdfOpcional(file);
   }
 
   function handleSubmit(e: React.FormEvent) {
     e.preventDefault();
+    const selectedFiles = [pdfObrigatorio, pdfOpcional].filter(Boolean) as File[];
 
-    if (processo.anexos.length + files.length === 0) {
-      setErro('Anexe pelo menos um PDF para concluir.');
+    if (processo.anexos.length === 0 && !pdfObrigatorio) {
+      setErro('Anexe o PDF obrigatório para concluir.');
       return;
     }
 
-    onSubmit(files);
+    onSubmit(selectedFiles);
   }
 
   return (
@@ -66,20 +78,32 @@ export const FinalizarProcessoModal: React.FC<Props> = ({
 
           <div>
             <label className="mb-1 block text-sm font-medium text-slate-700">
-              Arquivos PDF <span className="text-red-500">*</span>
+              PDF obrigatório <span className="text-red-500">*</span>
             </label>
             <input
               type="file"
               accept="application/pdf,.pdf"
-              multiple
-              onChange={handleFileChange}
+              required={processo.anexos.length === 0}
+              onChange={(e) => handleFileChange(e, 'obrigatorio')}
               className="w-full rounded-lg border border-dashed border-slate-300 bg-white px-3 py-3 text-sm text-slate-600 file:mr-3 file:rounded-md file:border-0 file:bg-slate-950 file:px-3 file:py-1.5 file:text-sm file:font-semibold file:text-white"
             />
           </div>
 
-          {files.length > 0 && (
+          <div>
+            <label className="mb-1 block text-sm font-medium text-slate-700">
+              PDF adicional <span className="text-slate-400">(opcional)</span>
+            </label>
+            <input
+              type="file"
+              accept="application/pdf,.pdf"
+              onChange={(e) => handleFileChange(e, 'opcional')}
+              className="w-full rounded-lg border border-dashed border-slate-300 bg-white px-3 py-3 text-sm text-slate-600 file:mr-3 file:rounded-md file:border-0 file:bg-slate-950 file:px-3 file:py-1.5 file:text-sm file:font-semibold file:text-white"
+            />
+          </div>
+
+          {(pdfObrigatorio || pdfOpcional) && (
             <div className="flex flex-col gap-2 rounded-lg bg-slate-50 p-3">
-              {files.map((file) => (
+              {[pdfObrigatorio, pdfOpcional].filter(Boolean).map((file) => (
                 <div key={`${file.name}-${file.size}`} className="flex items-center justify-between gap-3 text-xs">
                   <span className="truncate font-medium text-slate-700">{file.name}</span>
                   <span className="shrink-0 text-slate-400">{Math.ceil(file.size / 1024)} KB</span>

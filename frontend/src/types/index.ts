@@ -62,6 +62,7 @@ export interface ProcessoMontagem {
   id: string;
   placa: string;
   numeroAtendimento: string;
+  solicitantePa2: string;
   status: StatusServico;
   anexos: ProcessoAnexo[];
   createdAt: string;
@@ -71,6 +72,7 @@ export interface ProcessoMontagem {
 export interface CreateProcessoMontagemForm {
   placa: string;
   numeroAtendimento: string;
+  solicitantePa2: string;
 }
 
 export interface ProcessoAnexoUpload {

@@ -10,12 +10,14 @@ interface Props {
 export const ProcessoModal: React.FC<Props> = ({ onClose, onSubmit, isLoading }) => {
   const [placa, setPlaca] = useState('');
   const [numeroAtendimento, setNumeroAtendimento] = useState('');
+  const [solicitantePa2, setSolicitantePa2] = useState('');
 
   function handleSubmit(e: React.FormEvent) {
     e.preventDefault();
     onSubmit({
       placa: placa.trim().toUpperCase(),
       numeroAtendimento: numeroAtendimento.trim(),
+      solicitantePa2: solicitantePa2.trim(),
     });
   }
 
@@ -56,6 +58,19 @@ export const ProcessoModal: React.FC<Props> = ({ onClose, onSubmit, isLoading })
               value={numeroAtendimento}
               onChange={(e) => setNumeroAtendimento(e.target.value)}
               placeholder="Numero do atendimento"
+              className="w-full rounded-lg border border-slate-200 bg-white px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-indigo-400"
+            />
+          </div>
+
+          <div>
+            <label className="mb-1 block text-sm font-medium text-slate-700">
+              Solicitante do PA2 <span className="text-red-500">*</span>
+            </label>
+            <input
+              required
+              value={solicitantePa2}
+              onChange={(e) => setSolicitantePa2(e.target.value)}
+              placeholder="Nome do solicitante"
               className="w-full rounded-lg border border-slate-200 bg-white px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-indigo-400"
             />
           </div>

@@ -44,6 +44,7 @@ export interface CreateVeiculoBody {
 export interface CreateProcessoMontagemBody {
   placa: string;
   numeroAtendimento: string;
+  solicitantePa2: string;
 }
 
 export interface CreateProcessoAnexoBody {

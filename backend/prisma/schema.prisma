@@ -69,6 +69,7 @@ model ProcessoMontagem {
   id                String          @id @default(uuid())
   placa             String
   numeroAtendimento String          @map("numero_atendimento")
+  solicitantePa2    String          @default("") @map("solicitante_pa2")
   status            StatusServico   @default(PENDENTE)
   anexos            ProcessoAnexo[]
   createdAt         DateTime        @default(now()) @map("created_at")

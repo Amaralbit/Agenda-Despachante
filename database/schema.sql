@@ -79,6 +79,7 @@ CREATE TABLE processos_montagem (
   id                  UUID PRIMARY KEY DEFAULT gen_random_uuid(),
   placa               VARCHAR(10) NOT NULL,
   numero_atendimento  VARCHAR(100) NOT NULL,
+  solicitante_pa2     VARCHAR(255) NOT NULL DEFAULT '',
   status              status_servico NOT NULL DEFAULT 'PENDENTE',
   created_at          TIMESTAMPTZ NOT NULL DEFAULT NOW(),
   updated_at          TIMESTAMPTZ NOT NULL DEFAULT NOW()

@@ -14,6 +14,7 @@ const querySchema = z.object({
 const createSchema = z.object({
   placa: z.string().trim().min(7, 'Placa invalida').max(10, 'Placa invalida'),
   numeroAtendimento: z.string().trim().min(1, 'Numero do atendimento obrigatorio'),
+  solicitantePa2: z.string().trim().min(1, 'Nome do solicitante obrigatorio'),
 });
 
 const anexoSchema = z.object({

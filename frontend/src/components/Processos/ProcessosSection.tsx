@@ -73,6 +73,7 @@ const ProcessoCard: React.FC<ProcessoCardProps> = ({
         <div>
           <p className="font-mono text-base font-black tracking-wide text-slate-950">{processo.placa}</p>
           <p className="text-xs text-slate-500">Atendimento {processo.numeroAtendimento}</p>
+          <p className="text-xs font-medium text-slate-700">Solicitante: {processo.solicitantePa2 || '-'}</p>
         </div>
         <span className="rounded-md bg-slate-950 px-2 py-0.5 text-[10px] font-bold uppercase tracking-wide text-white">
           Detran

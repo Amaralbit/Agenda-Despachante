@@ -27,6 +27,7 @@ class ProcessosService {
           OR: [
             { placa: { contains: search, mode: 'insensitive' } },
             { numeroAtendimento: { contains: search, mode: 'insensitive' } },
+            { solicitantePa2: { contains: search, mode: 'insensitive' } },
           ],
         }),
       },
@@ -51,6 +52,7 @@ class ProcessosService {
       data: {
         placa: data.placa.toUpperCase(),
         numeroAtendimento: data.numeroAtendimento.trim(),
+        solicitantePa2: data.solicitantePa2.trim(),
       },
       include: includeSummary,
     });
