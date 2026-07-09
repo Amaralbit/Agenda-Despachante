@@ -3,7 +3,7 @@ import { z } from 'zod';
 import servicosService from '../services/servicos.service';
 
 const createSchema = z.object({
-  tipo: z.enum(['INCLUSAO_VEICULO_NOVO', 'TRANSFERENCIA', 'INTENCAO_DE_VENDA', 'OUTROS']),
+  tipo: z.enum(['INCLUSAO_VEICULO_NOVO', 'TRANSFERENCIA', 'PA2', 'INTENCAO_DE_VENDA', 'OUTROS']),
   dataLimite: z.string().date('Data limite inválida (use YYYY-MM-DD)'),
   observacoes: z.string().optional(),
   clienteId: z.string().uuid('clienteId inválido'),
@@ -11,7 +11,7 @@ const createSchema = z.object({
 });
 
 const updateSchema = z.object({
-  tipo: z.enum(['INCLUSAO_VEICULO_NOVO', 'TRANSFERENCIA', 'INTENCAO_DE_VENDA', 'OUTROS']).optional(),
+  tipo: z.enum(['INCLUSAO_VEICULO_NOVO', 'TRANSFERENCIA', 'PA2', 'INTENCAO_DE_VENDA', 'OUTROS']).optional(),
   status: z.enum(['PENDENTE', 'EM_ANDAMENTO', 'CONCLUIDO']).optional(),
   dataLimite: z.string().date().optional(),
   observacoes: z.string().nullable().optional(),
@@ -23,7 +23,7 @@ const statusSchema = z.object({
 
 const querySchema = z.object({
   status: z.enum(['PENDENTE', 'EM_ANDAMENTO', 'CONCLUIDO']).optional(),
-  tipo: z.enum(['INCLUSAO_VEICULO_NOVO', 'TRANSFERENCIA', 'INTENCAO_DE_VENDA', 'OUTROS']).optional(),
+  tipo: z.enum(['INCLUSAO_VEICULO_NOVO', 'TRANSFERENCIA', 'PA2', 'INTENCAO_DE_VENDA', 'OUTROS']).optional(),
   search: z.string().optional(),
 });
 

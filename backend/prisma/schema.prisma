@@ -10,6 +10,7 @@ datasource db {
 enum TipoServico {
   INCLUSAO_VEICULO_NOVO
   TRANSFERENCIA
+  PA2
   INTENCAO_DE_VENDA
   OUTROS
 }

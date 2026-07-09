@@ -19,7 +19,27 @@ async function main() {
     },
   });
 
-  console.log('Seed concluido: usuario administrador criado sem dados de demonstracao');
+  await prisma.cliente.upsert({
+    where: { cpfCnpj: '00.000.000/0063-00' },
+    update: { nome: 'Mobile da T-63', telefone: null },
+    create: {
+      nome: 'Mobile da T-63',
+      cpfCnpj: '00.000.000/0063-00',
+      telefone: null,
+    },
+  });
+
+  await prisma.cliente.upsert({
+    where: { cpfCnpj: '00.000.000/0002-00' },
+    update: { nome: 'Mobile-Seminovos', telefone: null },
+    create: {
+      nome: 'Mobile-Seminovos',
+      cpfCnpj: '00.000.000/0002-00',
+      telefone: null,
+    },
+  });
+
+  console.log('Seed concluido: usuario administrador e clientes mobile criados/atualizados');
 }
 
 main()

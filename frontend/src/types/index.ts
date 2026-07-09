@@ -1,6 +1,7 @@
 export type TipoServico =
   | 'INCLUSAO_VEICULO_NOVO'
   | 'TRANSFERENCIA'
+  | 'PA2'
   | 'INTENCAO_DE_VENDA'
   | 'OUTROS';
 
@@ -51,6 +52,7 @@ export interface CreateServicoForm {
 export const TIPO_LABELS: Record<TipoServico, string> = {
   INCLUSAO_VEICULO_NOVO: 'Inclusão Veículo Novo',
   TRANSFERENCIA: 'Transferência',
+  PA2: 'PA2',
   INTENCAO_DE_VENDA: 'Intenção de Venda',
   OUTROS: 'Outros',
 };

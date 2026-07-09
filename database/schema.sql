@@ -11,6 +11,7 @@ CREATE EXTENSION IF NOT EXISTS "pgcrypto";
 CREATE TYPE tipo_servico AS ENUM (
   'INCLUSAO_VEICULO_NOVO',
   'TRANSFERENCIA',
+  'PA2',
   'INTENCAO_DE_VENDA',
   'OUTROS'
 );
@@ -130,7 +131,9 @@ CREATE TRIGGER trg_usuarios_updated_at
 INSERT INTO clientes (id, nome, telefone, cpf_cnpj) VALUES
   ('a1b2c3d4-0000-0000-0000-000000000001', 'João Silva',    '(11) 99999-1111', '123.456.789-00'),
   ('a1b2c3d4-0000-0000-0000-000000000002', 'Maria Souza',   '(11) 98888-2222', '987.654.321-00'),
-  ('a1b2c3d4-0000-0000-0000-000000000003', 'Carlos Mendes', '(11) 97777-3333', '12.345.678/0001-99');
+  ('a1b2c3d4-0000-0000-0000-000000000003', 'Carlos Mendes', '(11) 97777-3333', '12.345.678/0001-99'),
+  ('a1b2c3d4-0000-0000-0000-000000000004', 'Mobile da T-63', NULL,             '00.000.000/0063-00'),
+  ('a1b2c3d4-0000-0000-0000-000000000005', 'Mobile-Seminovos', NULL,           '00.000.000/0002-00');
 
 INSERT INTO veiculos (id, placa, modelo, renavam, cliente_id) VALUES
   ('b1b2c3d4-0000-0000-0000-000000000001', 'ABC-1234', 'Honda Civic 2022',   '12345678901', 'a1b2c3d4-0000-0000-0000-000000000001'),
