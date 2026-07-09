@@ -10,7 +10,7 @@ const apiBasePath = isVercelRuntime ? '/' : (process.env.API_BASE_PATH ?? '/api'
 
 app.use(helmet());
 app.use(cors({ origin: process.env.FRONTEND_URL ?? 'http://localhost:5173' }));
-app.use(express.json());
+app.use(express.json({ limit: '25mb' }));
 
 app.use(apiBasePath, routes);
 

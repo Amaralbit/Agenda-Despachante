@@ -40,3 +40,15 @@ export interface CreateVeiculoBody {
   renavam: string;
   clienteId: string;
 }
+
+export interface CreateProcessoMontagemBody {
+  placa: string;
+  numeroAtendimento: string;
+}
+
+export interface CreateProcessoAnexoBody {
+  nome: string;
+  mimeType: string;
+  tamanho: number;
+  conteudoBase64: string;
+}

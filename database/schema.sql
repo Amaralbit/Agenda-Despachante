@@ -75,12 +75,37 @@ CREATE TABLE servicos (
     REFERENCES veiculos (id)
 );
 
+CREATE TABLE processos_montagem (
+  id                  UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+  placa               VARCHAR(10) NOT NULL,
+  numero_atendimento  VARCHAR(100) NOT NULL,
+  status              status_servico NOT NULL DEFAULT 'PENDENTE',
+  created_at          TIMESTAMPTZ NOT NULL DEFAULT NOW(),
+  updated_at          TIMESTAMPTZ NOT NULL DEFAULT NOW()
+);
+
+CREATE TABLE processos_anexos (
+  id          UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+  nome        TEXT NOT NULL,
+  mime_type   TEXT NOT NULL,
+  tamanho     INTEGER NOT NULL,
+  conteudo    BYTEA NOT NULL,
+  processo_id UUID NOT NULL,
+  created_at  TIMESTAMPTZ NOT NULL DEFAULT NOW(),
+
+  CONSTRAINT processos_anexos_processo_fk FOREIGN KEY (processo_id)
+    REFERENCES processos_montagem (id) ON DELETE CASCADE
+);
+
 -- ============================================================
 -- Índices de performance
 -- ============================================================
 CREATE INDEX idx_servicos_status     ON servicos (status);
 CREATE INDEX idx_servicos_tipo       ON servicos (tipo);
 CREATE INDEX idx_servicos_data_limite ON servicos (data_limite);
+CREATE INDEX idx_processos_montagem_status ON processos_montagem (status);
+CREATE INDEX idx_processos_montagem_placa  ON processos_montagem (placa);
+CREATE INDEX idx_processos_anexos_processo ON processos_anexos (processo_id);
 CREATE INDEX idx_veiculos_placa      ON veiculos (placa);
 CREATE INDEX idx_clientes_nome       ON clientes USING gin (to_tsvector('portuguese', nome));
 CREATE INDEX idx_clientes_cpf_cnpj   ON clientes (cpf_cnpj);
@@ -106,6 +131,10 @@ CREATE TRIGGER trg_veiculos_updated_at
 
 CREATE TRIGGER trg_servicos_updated_at
   BEFORE UPDATE ON servicos
+  FOR EACH ROW EXECUTE FUNCTION fn_set_updated_at();
+
+CREATE TRIGGER trg_processos_montagem_updated_at
+  BEFORE UPDATE ON processos_montagem
   FOR EACH ROW EXECUTE FUNCTION fn_set_updated_at();
 
 -- ============================================================

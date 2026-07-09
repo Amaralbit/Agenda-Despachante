@@ -50,6 +50,36 @@ export interface CreateServicoForm {
   chassi: string;
 }
 
+export interface ProcessoAnexo {
+  id: string;
+  nome: string;
+  mimeType: string;
+  tamanho: number;
+  createdAt: string;
+}
+
+export interface ProcessoMontagem {
+  id: string;
+  placa: string;
+  numeroAtendimento: string;
+  status: StatusServico;
+  anexos: ProcessoAnexo[];
+  createdAt: string;
+  updatedAt: string;
+}
+
+export interface CreateProcessoMontagemForm {
+  placa: string;
+  numeroAtendimento: string;
+}
+
+export interface ProcessoAnexoUpload {
+  nome: string;
+  mimeType: 'application/pdf';
+  tamanho: number;
+  conteudoBase64: string;
+}
+
 export const TIPO_LABELS: Record<TipoServico, string> = {
   INCLUSAO_VEICULO_NOVO: 'Inclusão Veículo Novo',
   TRANSFERENCIA: 'Transferência',

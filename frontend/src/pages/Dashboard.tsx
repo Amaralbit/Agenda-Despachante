@@ -1,6 +1,7 @@
 import React, { useMemo, useState } from 'react';
 import { Filters } from '../components/Filters/Filters';
 import { KanbanBoard } from '../components/KanbanBoard/KanbanBoard';
+import { ProcessosSection } from '../components/Processos/ProcessosSection';
 import { ServicoModal } from '../components/ServicoModal/ServicoModal';
 import { useServicos, useUpdateStatus, useCreateServico, useDeleteServico } from '../hooks/useServicos';
 import { CreateServicoForm, Servico, StatusServico, TipoServico } from '../types';
@@ -123,6 +124,8 @@ export const Dashboard: React.FC = () => {
           isUpdating={updateStatus.isPending}
         />
       )}
+
+      <ProcessosSection />
 
       {isModalOpen && (
         <ServicoModal

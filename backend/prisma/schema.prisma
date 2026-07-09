@@ -65,6 +65,31 @@ model Servico {
   @@map("servicos")
 }
 
+model ProcessoMontagem {
+  id                String          @id @default(uuid())
+  placa             String
+  numeroAtendimento String          @map("numero_atendimento")
+  status            StatusServico   @default(PENDENTE)
+  anexos            ProcessoAnexo[]
+  createdAt         DateTime        @default(now()) @map("created_at")
+  updatedAt         DateTime        @updatedAt @map("updated_at")
+
+  @@map("processos_montagem")
+}
+
+model ProcessoAnexo {
+  id         String           @id @default(uuid())
+  nome       String
+  mimeType   String           @map("mime_type")
+  tamanho    Int
+  conteudo   Bytes
+  processoId String           @map("processo_id")
+  processo   ProcessoMontagem @relation(fields: [processoId], references: [id], onDelete: Cascade)
+  createdAt  DateTime         @default(now()) @map("created_at")
+
+  @@map("processos_anexos")
+}
+
 model Usuario {
   id        String   @id @default(uuid())
   nome      String
