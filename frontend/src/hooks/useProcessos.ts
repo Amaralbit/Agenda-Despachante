@@ -3,7 +3,7 @@ import { processosApi } from '../api/processos.api';
 import {
   CreateProcessoMontagemForm,
   ProcessoAnexoUpload,
-  StatusServico,
+  StatusProcessoMontagem,
 } from '../types';
 
 const QUERY_KEY = 'processos';
@@ -34,7 +34,7 @@ export function useUpdateProcessoStatus() {
       senhaConfirmacao,
     }: {
       id: string;
-      status: StatusServico;
+      status: StatusProcessoMontagem;
       senhaConfirmacao?: string;
     }) => processosApi.updateStatus(id, status, senhaConfirmacao),
     onSuccess: () => qc.invalidateQueries({ queryKey: [QUERY_KEY] }),

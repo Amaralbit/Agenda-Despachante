@@ -13,15 +13,20 @@ import {
   ProcessoAnexo,
   ProcessoAnexoUpload,
   ProcessoMontagem,
-  StatusServico,
-  STATUS_LABELS,
+  StatusProcessoMontagem,
+  PROCESSO_STATUS_LABELS,
 } from '../../types';
 import { FinalizarProcessoModal } from './FinalizarProcessoModal';
 import { ProcessoModal } from './ProcessoModal';
 
-const COLUMNS: StatusServico[] = ['PENDENTE', 'EM_ANDAMENTO', 'CONCLUIDO'];
+const COLUMNS: StatusProcessoMontagem[] = [
+  'PENDENTE',
+  'EM_ANDAMENTO',
+  'AGUARDANDO_IMPRESSAO',
+  'CONCLUIDO',
+];
 
-const COLUMN_STYLES: Record<StatusServico, { header: string; dot: string; bg: string }> = {
+const COLUMN_STYLES: Record<StatusProcessoMontagem, { header: string; dot: string; bg: string }> = {
   PENDENTE: {
     header: 'text-slate-700',
     dot: 'bg-slate-400',
@@ -31,6 +36,11 @@ const COLUMN_STYLES: Record<StatusServico, { header: string; dot: string; bg: st
     header: 'text-amber-700',
     dot: 'bg-amber-400',
     bg: 'bg-amber-50/70 border-amber-100/80',
+  },
+  AGUARDANDO_IMPRESSAO: {
+    header: 'text-blue-700',
+    dot: 'bg-blue-400',
+    bg: 'bg-blue-50/70 border-blue-100/80',
   },
   CONCLUIDO: {
     header: 'text-emerald-700',
@@ -58,6 +68,7 @@ function dateOnly(value: string) {
 interface ProcessoCardProps {
   processo: ProcessoMontagem;
   onStart: (id: string) => void;
+  onAwaitPrint: (id: string) => void;
   onFinalize: (processo: ProcessoMontagem) => void;
   onReopen: (processo: ProcessoMontagem) => void;
   onOpenAnexo: (processo: ProcessoMontagem, anexo: ProcessoAnexo) => void;
@@ -68,6 +79,7 @@ interface ProcessoCardProps {
 const ProcessoCard: React.FC<ProcessoCardProps> = ({
   processo,
   onStart,
+  onAwaitPrint,
   onFinalize,
   onReopen,
   onOpenAnexo,
@@ -124,6 +136,23 @@ const ProcessoCard: React.FC<ProcessoCardProps> = ({
         )}
 
         {processo.status === 'EM_ANDAMENTO' && (
+          <div className="flex items-center gap-2">
+            <button
+              onClick={() => onFinalize(processo)}
+              className="rounded-lg bg-blue-600 px-3 py-1.5 text-xs font-semibold text-white transition hover:bg-blue-700"
+            >
+              Ver
+            </button>
+            <button
+              onClick={() => onAwaitPrint(processo.id)}
+              className="rounded-lg bg-sky-600 px-3 py-1.5 text-xs font-semibold text-white transition hover:bg-sky-700"
+            >
+              Aguardar
+            </button>
+          </div>
+        )}
+
+        {processo.status === 'AGUARDANDO_IMPRESSAO' && (
           <button
             onClick={() => onFinalize(processo)}
             className="rounded-lg bg-blue-600 px-3 py-1.5 text-xs font-semibold text-white transition hover:bg-blue-700"
@@ -177,9 +206,10 @@ export const ProcessosSection: React.FC = () => {
   }, [processos, searchPlaca, searchSolicitante, dateFilter]);
 
   const byStatus = useMemo(() => {
-    const map: Record<StatusServico, ProcessoMontagem[]> = {
+    const map: Record<StatusProcessoMontagem, ProcessoMontagem[]> = {
       PENDENTE: [],
       EM_ANDAMENTO: [],
+      AGUARDANDO_IMPRESSAO: [],
       CONCLUIDO: [],
     };
     for (const processo of filteredProcessos) map[processo.status].push(processo);
@@ -195,6 +225,13 @@ export const ProcessosSection: React.FC = () => {
 
   function handleStart(id: string) {
     updateStatus.mutate({ id, status: 'EM_ANDAMENTO' });
+  }
+
+  function handleAwaitPrint(id: string) {
+    updateStatus.mutate(
+      { id, status: 'AGUARDANDO_IMPRESSAO' },
+      { onError: (error) => window.alert(error.message) },
+    );
   }
 
   function handleReopen(processo: ProcessoMontagem) {
@@ -362,7 +399,7 @@ export const ProcessosSection: React.FC = () => {
                 <div className="mb-3 flex items-center gap-2 px-1">
                   <div className={`h-2.5 w-2.5 rounded-full ${style.dot}`} />
                   <h3 className={`text-sm font-semibold uppercase tracking-wide ${style.header}`}>
-                    {STATUS_LABELS[status]}
+                    {PROCESSO_STATUS_LABELS[status]}
                   </h3>
                   <span className="ml-auto rounded-full border border-white/80 bg-white/80 px-2 py-0.5 text-xs font-bold text-slate-600 shadow-sm">
                     {items.length}
@@ -379,6 +416,7 @@ export const ProcessosSection: React.FC = () => {
                           key={processo.id}
                           processo={processo}
                           onStart={handleStart}
+                          onAwaitPrint={handleAwaitPrint}
                           onFinalize={setFinalizando}
                           onReopen={handleReopen}
                           onOpenAnexo={handleOpenAnexo}

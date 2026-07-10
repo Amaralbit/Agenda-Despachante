@@ -18,6 +18,7 @@ enum TipoServico {
 enum StatusServico {
   PENDENTE
   EM_ANDAMENTO
+  AGUARDANDO_IMPRESSAO
   CONCLUIDO
 }
 

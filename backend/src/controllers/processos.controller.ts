@@ -5,12 +5,12 @@ import authService from '../services/auth.service';
 import processosService from '../services/processos.service';
 
 const statusSchema = z.object({
-  status: z.enum(['PENDENTE', 'EM_ANDAMENTO', 'CONCLUIDO']),
+  status: z.enum(['PENDENTE', 'EM_ANDAMENTO', 'AGUARDANDO_IMPRESSAO', 'CONCLUIDO']),
   senhaConfirmacao: z.string().optional(),
 });
 
 const querySchema = z.object({
-  status: z.enum(['PENDENTE', 'EM_ANDAMENTO', 'CONCLUIDO']).optional(),
+  status: z.enum(['PENDENTE', 'EM_ANDAMENTO', 'AGUARDANDO_IMPRESSAO', 'CONCLUIDO']).optional(),
   search: z.string().optional(),
 });
 

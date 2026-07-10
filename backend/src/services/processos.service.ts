@@ -75,8 +75,11 @@ class ProcessosService {
   async finalizar(id: string, anexos: CreateProcessoAnexoBody[]) {
     const processo = await this.findById(id);
 
-    if (processo.status !== 'EM_ANDAMENTO') {
-      throw new AppError('A montagem precisa estar em andamento para ser concluida.', 422);
+    if (!['EM_ANDAMENTO', 'AGUARDANDO_IMPRESSAO'].includes(processo.status)) {
+      throw new AppError(
+        'A montagem precisa estar em andamento ou aguardando impressao para ser concluida.',
+        422,
+      );
     }
 
     if (processo.anexos.length + anexos.length === 0) {
@@ -107,8 +110,11 @@ class ProcessosService {
   async salvarAnexos(id: string, anexos: CreateProcessoAnexoBody[]) {
     const processo = await this.findById(id);
 
-    if (processo.status !== 'EM_ANDAMENTO') {
-      throw new AppError('A montagem precisa estar em andamento para salvar anexos.', 422);
+    if (!['EM_ANDAMENTO', 'AGUARDANDO_IMPRESSAO'].includes(processo.status)) {
+      throw new AppError(
+        'A montagem precisa estar em andamento ou aguardando impressao para salvar anexos.',
+        422,
+      );
     }
 
     if (anexos.length === 0) {

@@ -7,6 +7,10 @@ export type TipoServico =
 
 export type StatusServico = 'PENDENTE' | 'EM_ANDAMENTO' | 'CONCLUIDO';
 
+export type StatusProcessoMontagem =
+  | StatusServico
+  | 'AGUARDANDO_IMPRESSAO';
+
 export interface Cliente {
   id: string;
   nome: string;
@@ -63,7 +67,7 @@ export interface ProcessoMontagem {
   placa: string;
   numeroAtendimento: string;
   solicitantePa2: string;
-  status: StatusServico;
+  status: StatusProcessoMontagem;
   anexos: ProcessoAnexo[];
   createdAt: string;
   updatedAt: string;
@@ -88,6 +92,13 @@ export const TIPO_LABELS: Record<TipoServico, string> = {
   PA2: 'PA2',
   INTENCAO_DE_VENDA: 'Intenção de Venda',
   OUTROS: 'Outros',
+};
+
+export const PROCESSO_STATUS_LABELS: Record<StatusProcessoMontagem, string> = {
+  PENDENTE: 'Para Fazer',
+  EM_ANDAMENTO: 'Em Andamento',
+  AGUARDANDO_IMPRESSAO: 'Aguardando Impressão',
+  CONCLUIDO: 'Concluído',
 };
 
 export const STATUS_LABELS: Record<StatusServico, string> = {

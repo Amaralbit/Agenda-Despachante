@@ -4,7 +4,7 @@ import {
   CreateProcessoMontagemForm,
   ProcessoAnexoUpload,
   ProcessoMontagem,
-  StatusServico,
+  StatusProcessoMontagem,
 } from '../types';
 
 const BASE = `${API_BASE}/api/processos`;
@@ -23,7 +23,7 @@ export const processosApi = {
 
   updateStatus(
     id: string,
-    status: StatusServico,
+    status: StatusProcessoMontagem,
     senhaConfirmacao?: string,
   ): Promise<ProcessoMontagem> {
     return authFetch(`${BASE}/${id}/status`, {
