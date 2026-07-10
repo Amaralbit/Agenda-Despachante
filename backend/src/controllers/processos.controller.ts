@@ -78,6 +78,16 @@ export const processosController = {
     }
   },
 
+  async salvarAnexos(req: Request, res: Response, next: NextFunction) {
+    try {
+      const { anexos } = finalizarSchema.parse(req.body);
+      const processo = await processosService.salvarAnexos(req.params.id, anexos);
+      res.json(processo);
+    } catch (err) {
+      next(err);
+    }
+  },
+
   async getAnexo(req: Request, res: Response, next: NextFunction) {
     try {
       const anexo = await processosService.getAnexo(req.params.id, req.params.anexoId);

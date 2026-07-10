@@ -5,18 +5,23 @@ interface Props {
   processo: ProcessoMontagem;
   onClose: () => void;
   onSubmit: (files: File[]) => void;
+  onSave: (files: File[]) => void;
   isLoading: boolean;
+  isSaving: boolean;
 }
 
 export const FinalizarProcessoModal: React.FC<Props> = ({
   processo,
   onClose,
   onSubmit,
+  onSave,
   isLoading,
+  isSaving,
 }) => {
   const [pdfObrigatorio, setPdfObrigatorio] = useState<File | null>(null);
   const [pdfOpcional, setPdfOpcional] = useState<File | null>(null);
   const [erro, setErro] = useState('');
+  const isBusy = isLoading || isSaving;
 
   function validatePdf(file?: File) {
     if (!file) return true;
@@ -52,6 +57,18 @@ export const FinalizarProcessoModal: React.FC<Props> = ({
     }
 
     onSubmit(selectedFiles);
+  }
+
+  function handleSave() {
+    const selectedFiles = [pdfObrigatorio, pdfOpcional].filter(Boolean) as File[];
+
+    if (selectedFiles.length === 0) {
+      setErro('Selecione pelo menos um PDF para salvar.');
+      return;
+    }
+
+    setErro('');
+    onSave(selectedFiles);
   }
 
   return (
@@ -122,13 +139,22 @@ export const FinalizarProcessoModal: React.FC<Props> = ({
             <button
               type="button"
               onClick={onClose}
-              className="flex-1 rounded-lg border border-slate-200 py-2.5 text-sm font-medium text-slate-700 transition hover:bg-slate-50"
+              disabled={isBusy}
+              className="flex-1 rounded-lg border border-slate-200 py-2.5 text-sm font-medium text-slate-700 transition hover:bg-slate-50 disabled:opacity-60"
             >
               Cancelar
             </button>
             <button
+              type="button"
+              onClick={handleSave}
+              disabled={isBusy}
+              className="flex-1 rounded-lg bg-indigo-600 py-2.5 text-sm font-semibold text-white transition hover:bg-indigo-700 disabled:bg-indigo-300"
+            >
+              {isSaving ? 'Salvando...' : 'Salvar'}
+            </button>
+            <button
               type="submit"
-              disabled={isLoading}
+              disabled={isBusy}
               className="flex-1 rounded-lg bg-emerald-600 py-2.5 text-sm font-semibold text-white transition hover:bg-emerald-700 disabled:bg-emerald-300"
             >
               {isLoading ? 'Finalizando...' : 'Concluir'}

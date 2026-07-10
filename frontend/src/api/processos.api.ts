@@ -35,6 +35,13 @@ export const processosApi = {
     }).then((r) => handleResponse<ProcessoMontagem>(r));
   },
 
+  salvarAnexos(id: string, anexos: ProcessoAnexoUpload[]): Promise<ProcessoMontagem> {
+    return authFetch(`${BASE}/${id}/anexos`, {
+      method: 'POST',
+      body: JSON.stringify({ anexos }),
+    }).then((r) => handleResponse<ProcessoMontagem>(r));
+  },
+
   async getAnexoBlob(id: string, anexoId: string): Promise<Blob> {
     const res = await authFetch(`${BASE}/${id}/anexos/${anexoId}`);
     if (!res.ok) {

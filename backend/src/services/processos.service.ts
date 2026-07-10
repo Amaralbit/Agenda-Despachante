@@ -104,6 +104,30 @@ class ProcessosService {
     });
   }
 
+  async salvarAnexos(id: string, anexos: CreateProcessoAnexoBody[]) {
+    const processo = await this.findById(id);
+
+    if (processo.status !== 'EM_ANDAMENTO') {
+      throw new AppError('A montagem precisa estar em andamento para salvar anexos.', 422);
+    }
+
+    if (anexos.length === 0) {
+      throw new AppError('Selecione pelo menos um PDF para salvar.', 422);
+    }
+
+    await prisma.processoAnexo.createMany({
+      data: anexos.map((anexo) => ({
+        processoId: id,
+        nome: anexo.nome,
+        mimeType: anexo.mimeType,
+        tamanho: anexo.tamanho,
+        conteudo: Buffer.from(anexo.conteudoBase64, 'base64'),
+      })),
+    });
+
+    return this.findById(id);
+  }
+
   async getAnexo(processoId: string, anexoId: string) {
     await this.findById(processoId);
 

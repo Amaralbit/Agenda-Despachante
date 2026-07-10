@@ -44,6 +44,16 @@ export function useFinalizarProcesso() {
   });
 }
 
+export function useSalvarProcessoAnexos() {
+  const qc = useQueryClient();
+
+  return useMutation({
+    mutationFn: ({ id, anexos }: { id: string; anexos: ProcessoAnexoUpload[] }) =>
+      processosApi.salvarAnexos(id, anexos),
+    onSuccess: () => qc.invalidateQueries({ queryKey: [QUERY_KEY] }),
+  });
+}
+
 export function useDeleteProcesso() {
   const qc = useQueryClient();
 

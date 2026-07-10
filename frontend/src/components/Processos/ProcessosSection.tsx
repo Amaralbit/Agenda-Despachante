@@ -5,6 +5,7 @@ import {
   useDeleteProcesso,
   useFinalizarProcesso,
   useProcessos,
+  useSalvarProcessoAnexos,
   useUpdateProcessoStatus,
 } from '../../hooks/useProcessos';
 import {
@@ -84,7 +85,7 @@ const ProcessoCard: React.FC<ProcessoCardProps> = ({
         {processo.anexos.length} PDF{processo.anexos.length !== 1 ? 's' : ''} anexado{processo.anexos.length !== 1 ? 's' : ''}
       </div>
 
-      {processo.status === 'CONCLUIDO' && processo.anexos.length > 0 && (
+      {processo.anexos.length > 0 && (
         <div className="mb-3 flex flex-col gap-1.5">
           {processo.anexos.map((anexo) => (
             <button
@@ -137,6 +138,7 @@ export const ProcessosSection: React.FC = () => {
   const createProcesso = useCreateProcesso();
   const updateStatus = useUpdateProcessoStatus();
   const finalizarProcesso = useFinalizarProcesso();
+  const salvarAnexos = useSalvarProcessoAnexos();
   const deleteProcesso = useDeleteProcesso();
 
   const byStatus = useMemo(() => {
@@ -170,6 +172,24 @@ export const ProcessosSection: React.FC = () => {
     );
 
     finalizarProcesso.mutate(
+      { id: finalizando.id, anexos },
+      { onSuccess: () => setFinalizando(null) },
+    );
+  }
+
+  async function handleSalvarAnexos(files: File[]) {
+    if (!finalizando) return;
+
+    const anexos: ProcessoAnexoUpload[] = await Promise.all(
+      files.map(async (file) => ({
+        nome: file.name,
+        mimeType: 'application/pdf',
+        tamanho: file.size,
+        conteudoBase64: await fileToBase64(file),
+      })),
+    );
+
+    salvarAnexos.mutate(
       { id: finalizando.id, anexos },
       { onSuccess: () => setFinalizando(null) },
     );
@@ -247,6 +267,7 @@ export const ProcessosSection: React.FC = () => {
                           isUpdating={
                             updateStatus.isPending ||
                             finalizarProcesso.isPending ||
+                            salvarAnexos.isPending ||
                             deleteProcesso.isPending
                           }
                         />
@@ -273,7 +294,9 @@ export const ProcessosSection: React.FC = () => {
           processo={finalizando}
           onClose={() => setFinalizando(null)}
           onSubmit={handleFinalizar}
+          onSave={handleSalvarAnexos}
           isLoading={finalizarProcesso.isPending}
+          isSaving={salvarAnexos.isPending}
         />
       )}
     </section>
