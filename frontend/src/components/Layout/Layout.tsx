@@ -81,7 +81,7 @@ export const Layout: React.FC<{ children: React.ReactNode }> = ({ children }) =>
           </div>
         </aside>
 
-        <main className="ml-60 flex min-h-screen flex-1 flex-col">
+        <main className="ml-60 flex min-h-screen min-w-0 flex-1 flex-col">
           <header className="sticky top-0 z-20 border-b border-white/70 bg-white/80 px-8 py-5 shadow-sm shadow-slate-200/60 backdrop-blur-xl">
             <h1 className="text-lg font-bold text-slate-950">
               {pathname === '/' && 'Dashboard - Kanban de Servicos'}
@@ -90,7 +90,7 @@ export const Layout: React.FC<{ children: React.ReactNode }> = ({ children }) =>
             </h1>
           </header>
 
-          <div className="flex-1 px-8 py-6">{children}</div>
+          <div className="min-w-0 flex-1 px-8 py-6">{children}</div>
         </main>
       </div>
     </div>

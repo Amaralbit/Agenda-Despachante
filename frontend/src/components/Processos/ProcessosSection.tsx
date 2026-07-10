@@ -299,22 +299,22 @@ export const ProcessosSection: React.FC = () => {
 
   return (
     <section className="mt-2 flex flex-col gap-4">
-      <div className="flex items-center justify-between gap-4">
+      <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
         <div>
           <h2 className="text-base font-black text-slate-950">Montagens de Processo</h2>
           <p className="text-xs text-slate-500">Controle por placa, atendimento Detran e PDFs anexados.</p>
         </div>
         <button
           onClick={() => setIsModalOpen(true)}
-          className="flex shrink-0 items-center gap-2 rounded-lg bg-indigo-600 px-4 py-2 text-sm font-semibold text-white shadow-lg shadow-indigo-600/20 transition-all duration-200 hover:-translate-y-0.5 hover:bg-indigo-700"
+          className="flex w-fit shrink-0 items-center gap-2 rounded-lg bg-indigo-600 px-4 py-2 text-sm font-semibold text-white shadow-lg shadow-indigo-600/20 transition-all duration-200 hover:-translate-y-0.5 hover:bg-indigo-700"
         >
           <span className="text-lg leading-none">+</span>
           Montagem de Processo
         </button>
       </div>
 
-      <div className="glass-panel flex flex-wrap items-center gap-3 rounded-lg px-4 py-3">
-        <div className="relative min-w-[220px] max-w-xs flex-1">
+      <div className="glass-panel grid grid-cols-1 gap-3 rounded-lg px-4 py-3 md:grid-cols-[minmax(220px,1fr)_190px_minmax(260px,1.3fr)_auto]">
+        <div className="relative min-w-0">
           <input
             type="text"
             placeholder="Buscar montagem por placa..."
@@ -337,11 +337,11 @@ export const ProcessosSection: React.FC = () => {
           type="date"
           value={dateFilter}
           onChange={(e) => setDateFilter(e.target.value)}
-          className="rounded-lg border border-slate-200 bg-white/90 px-3 py-2 text-sm text-slate-700 shadow-sm shadow-slate-200/50 transition focus:outline-none focus:ring-2 focus:ring-indigo-400"
+          className="w-full rounded-lg border border-slate-200 bg-white/90 px-3 py-2 text-sm text-slate-700 shadow-sm shadow-slate-200/50 transition focus:outline-none focus:ring-2 focus:ring-indigo-400"
           title="Filtrar pela data de criacao"
         />
 
-        <div className="relative min-w-[260px] max-w-md flex-[1.2]">
+        <div className="relative min-w-0">
           <input
             type="text"
             placeholder="Buscar por solicitante..."
@@ -368,7 +368,7 @@ export const ProcessosSection: React.FC = () => {
               setSearchSolicitante('');
               setDateFilter('');
             }}
-            className="text-xs font-medium text-indigo-500 underline hover:text-indigo-700"
+            className="self-center justify-self-start text-xs font-medium text-indigo-500 underline hover:text-indigo-700 md:justify-self-end"
           >
             Limpar filtros
           </button>
@@ -386,7 +386,7 @@ export const ProcessosSection: React.FC = () => {
       )}
 
       {!isLoading && !isError && (
-        <div className="flex items-start gap-6 overflow-x-auto px-1 pb-6">
+        <div className="grid grid-cols-1 items-start gap-4 px-1 pb-6 sm:grid-cols-2 2xl:grid-cols-4">
           {COLUMNS.map((status) => {
             const style = COLUMN_STYLES[status];
             const items = byStatus[status];
@@ -395,10 +395,10 @@ export const ProcessosSection: React.FC = () => {
             const hiddenCount = items.length - visibleItems.length;
 
             return (
-              <div key={status} className="flex w-full min-w-[320px] max-w-sm flex-col">
-                <div className="mb-3 flex items-center gap-2 px-1">
-                  <div className={`h-2.5 w-2.5 rounded-full ${style.dot}`} />
-                  <h3 className={`text-sm font-semibold uppercase tracking-wide ${style.header}`}>
+              <div key={status} className="flex min-w-0 flex-col">
+                <div className="mb-3 flex min-w-0 items-center gap-2 px-1">
+                  <div className={`h-2.5 w-2.5 shrink-0 rounded-full ${style.dot}`} />
+                  <h3 className={`min-w-0 break-words text-sm font-semibold uppercase leading-tight tracking-wide ${style.header}`}>
                     {PROCESSO_STATUS_LABELS[status]}
                   </h3>
                   <span className="ml-auto rounded-full border border-white/80 bg-white/80 px-2 py-0.5 text-xs font-bold text-slate-600 shadow-sm">
