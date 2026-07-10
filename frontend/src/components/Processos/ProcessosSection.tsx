@@ -126,9 +126,9 @@ const ProcessoCard: React.FC<ProcessoCardProps> = ({
         {processo.status === 'EM_ANDAMENTO' && (
           <button
             onClick={() => onFinalize(processo)}
-            className="rounded-lg bg-emerald-600 px-3 py-1.5 text-xs font-semibold text-white transition hover:bg-emerald-700"
+            className="rounded-lg bg-blue-600 px-3 py-1.5 text-xs font-semibold text-white transition hover:bg-blue-700"
           >
-            Concluir
+            Ver.obs
           </button>
         )}
 
