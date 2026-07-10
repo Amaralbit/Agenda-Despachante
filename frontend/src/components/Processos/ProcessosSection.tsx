@@ -87,7 +87,7 @@ const ProcessoCard: React.FC<ProcessoCardProps> = ({
   isUpdating,
 }) => {
   return (
-    <div className={`rounded-lg border border-white/80 bg-white/90 p-4 shadow-sm shadow-slate-200/70 backdrop-blur-xl transition-all duration-200 hover:-translate-y-0.5 hover:shadow-md ${isUpdating ? 'pointer-events-none opacity-60' : ''}`}>
+    <div className={`rounded-lg border border-white/80 bg-white/90 p-3 shadow-sm shadow-slate-200/70 backdrop-blur-xl transition-all duration-200 hover:-translate-y-0.5 hover:shadow-md ${isUpdating ? 'pointer-events-none opacity-60' : ''}`}>
       <div className="mb-3 flex items-start justify-between gap-3">
         <div className="min-w-0">
           <p className="truncate font-mono text-base font-black tracking-wide text-slate-950">{processo.placa}</p>
@@ -139,13 +139,13 @@ const ProcessoCard: React.FC<ProcessoCardProps> = ({
           <div className="ml-auto flex flex-wrap items-center justify-end gap-2">
             <button
               onClick={() => onFinalize(processo)}
-              className="whitespace-nowrap rounded-lg bg-blue-600 px-3 py-1.5 text-xs font-semibold text-white transition hover:bg-blue-700"
+              className="whitespace-nowrap rounded-lg bg-blue-600 px-2.5 py-1.5 text-xs font-semibold text-white transition hover:bg-blue-700"
             >
               Ver
             </button>
             <button
               onClick={() => onAwaitPrint(processo.id)}
-              className="whitespace-nowrap rounded-lg bg-sky-600 px-3 py-1.5 text-xs font-semibold text-white transition hover:bg-sky-700"
+              className="whitespace-nowrap rounded-lg bg-sky-600 px-2.5 py-1.5 text-xs font-semibold text-white transition hover:bg-sky-700"
             >
               Aguardar
             </button>
@@ -389,10 +389,7 @@ export const ProcessosSection: React.FC = () => {
       )}
 
       {!isLoading && !isError && (
-        <div
-          className="grid items-start gap-4 px-1 pb-6"
-          style={{ gridTemplateColumns: 'repeat(auto-fit, minmax(min(100%, 260px), 1fr))' }}
-        >
+        <div className="grid grid-cols-1 items-start gap-4 px-1 pb-6 sm:grid-cols-2 lg:grid-cols-4">
           {COLUMNS.map((status) => {
             const style = COLUMN_STYLES[status];
             const items = byStatus[status];
