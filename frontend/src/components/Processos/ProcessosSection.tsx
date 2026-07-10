@@ -59,6 +59,7 @@ interface ProcessoCardProps {
   processo: ProcessoMontagem;
   onStart: (id: string) => void;
   onFinalize: (processo: ProcessoMontagem) => void;
+  onReopen: (processo: ProcessoMontagem) => void;
   onOpenAnexo: (processo: ProcessoMontagem, anexo: ProcessoAnexo) => void;
   onDelete: (id: string) => void;
   isUpdating: boolean;
@@ -68,6 +69,7 @@ const ProcessoCard: React.FC<ProcessoCardProps> = ({
   processo,
   onStart,
   onFinalize,
+  onReopen,
   onOpenAnexo,
   onDelete,
   isUpdating,
@@ -129,6 +131,15 @@ const ProcessoCard: React.FC<ProcessoCardProps> = ({
             Concluir
           </button>
         )}
+
+        {processo.status === 'CONCLUIDO' && (
+          <button
+            onClick={() => onReopen(processo)}
+            className="rounded-lg bg-amber-600 px-3 py-1.5 text-xs font-semibold text-white transition hover:bg-amber-700"
+          >
+            Reabrir
+          </button>
+        )}
       </div>
     </div>
   );
@@ -178,6 +189,21 @@ export const ProcessosSection: React.FC = () => {
 
   function handleStart(id: string) {
     updateStatus.mutate({ id, status: 'EM_ANDAMENTO' });
+  }
+
+  function handleReopen(processo: ProcessoMontagem) {
+    const senhaConfirmacao = window.prompt('Digite sua senha para reabrir a montagem:');
+    if (senhaConfirmacao === null) return;
+
+    if (!senhaConfirmacao.trim()) {
+      window.alert('Informe a senha para reabrir a montagem.');
+      return;
+    }
+
+    updateStatus.mutate(
+      { id: processo.id, status: 'EM_ANDAMENTO', senhaConfirmacao },
+      { onError: (error) => window.alert(error.message) },
+    );
   }
 
   async function handleFinalizar(files: File[], senhaConfirmacao: string) {
@@ -325,6 +351,7 @@ export const ProcessosSection: React.FC = () => {
                           processo={processo}
                           onStart={handleStart}
                           onFinalize={setFinalizando}
+                          onReopen={handleReopen}
                           onOpenAnexo={handleOpenAnexo}
                           onDelete={handleDelete}
                           isUpdating={

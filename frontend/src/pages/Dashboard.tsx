@@ -37,12 +37,15 @@ export const Dashboard: React.FC = () => {
     const servico = servicos.find((item) => item.id === id);
     if (servico?.status === status) return;
 
-    if (status === 'CONCLUIDO') {
-      const senhaConfirmacao = window.prompt('Digite sua senha para concluir o servico:');
+    const exigeSenha = status === 'CONCLUIDO' || servico?.status === 'CONCLUIDO';
+
+    if (exigeSenha) {
+      const acao = status === 'CONCLUIDO' ? 'concluir' : 'reabrir';
+      const senhaConfirmacao = window.prompt(`Digite sua senha para ${acao} o servico:`);
       if (senhaConfirmacao === null) return;
 
       if (!senhaConfirmacao.trim()) {
-        window.alert('Informe a senha para concluir o servico.');
+        window.alert(`Informe a senha para ${acao} o servico.`);
         return;
       }
 

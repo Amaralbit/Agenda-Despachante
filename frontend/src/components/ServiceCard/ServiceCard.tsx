@@ -21,11 +21,13 @@ const TIPO_BORDER: Record<string, string> = {
 const NEXT_STATUS: Partial<Record<StatusServico, StatusServico>> = {
   PENDENTE:     'EM_ANDAMENTO',
   EM_ANDAMENTO: 'CONCLUIDO',
+  CONCLUIDO:    'EM_ANDAMENTO',
 };
 
 const ACTION_LABEL: Partial<Record<StatusServico, string>> = {
   PENDENTE:     'Iniciar',
   EM_ANDAMENTO: 'Concluir',
+  CONCLUIDO:    'Reabrir',
 };
 
 interface Props {
@@ -53,6 +55,7 @@ export const ServiceCard: React.FC<Props> = ({
   const dataFormatada = limite.toLocaleDateString('pt-BR', { timeZone: 'UTC' });
   const nextStatus = NEXT_STATUS[servico.status];
   const actionLabel = ACTION_LABEL[servico.status];
+  const isCompleted = servico.status === 'CONCLUIDO';
 
   function handleDragStart(e: React.DragEvent) {
     e.dataTransfer.setData('servicoId', servico.id);
@@ -150,7 +153,11 @@ export const ServiceCard: React.FC<Props> = ({
         {nextStatus && actionLabel && (
           <button
             onClick={() => onStatusChange(servico.id, nextStatus)}
-            className="text-xs bg-indigo-600 hover:bg-indigo-700 text-white px-3 py-1.5 rounded-lg font-semibold transition-colors"
+            className={`text-xs text-white px-3 py-1.5 rounded-lg font-semibold transition-colors ${
+              isCompleted
+                ? 'bg-amber-600 hover:bg-amber-700'
+                : 'bg-indigo-600 hover:bg-indigo-700'
+            }`}
           >
             {actionLabel} →
           </button>

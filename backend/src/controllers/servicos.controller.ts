@@ -65,8 +65,9 @@ export const servicosController = {
   async update(req: Request, res: Response, next: NextFunction) {
     try {
       const body = updateSchema.parse(req.body);
-      if (body.status === 'CONCLUIDO') {
-        await confirmarSenhaParaConclusao(req.userId, body.senhaConfirmacao);
+      const statusAtual = body.status ? (await servicosService.findById(req.params.id)).status : undefined;
+      if (precisaConfirmarSenha(body.status, statusAtual)) {
+        await confirmarSenhaParaStatus(req.userId, body.senhaConfirmacao, body.status);
       }
       const servico = await servicosService.update(req.params.id, body);
       res.json(servico);
@@ -78,8 +79,9 @@ export const servicosController = {
   async updateStatus(req: Request, res: Response, next: NextFunction) {
     try {
       const { status, senhaConfirmacao } = statusSchema.parse(req.body);
-      if (status === 'CONCLUIDO') {
-        await confirmarSenhaParaConclusao(req.userId, senhaConfirmacao);
+      const statusAtual = (await servicosService.findById(req.params.id)).status;
+      if (precisaConfirmarSenha(status, statusAtual)) {
+        await confirmarSenhaParaStatus(req.userId, senhaConfirmacao, status);
       }
       const servico = await servicosService.updateStatus(req.params.id, status);
       res.json(servico);
@@ -98,9 +100,18 @@ export const servicosController = {
   },
 };
 
-async function confirmarSenhaParaConclusao(userId: string, senhaConfirmacao?: string) {
+function precisaConfirmarSenha(status?: string, statusAtual?: string) {
+  return status === 'CONCLUIDO' || (statusAtual === 'CONCLUIDO' && status !== 'CONCLUIDO');
+}
+
+async function confirmarSenhaParaStatus(
+  userId: string,
+  senhaConfirmacao: string | undefined,
+  status?: string,
+) {
   if (!senhaConfirmacao) {
-    throw new AppError('Informe a senha para concluir o servico.', 400);
+    const acao = status === 'CONCLUIDO' ? 'concluir' : 'reabrir';
+    throw new AppError(`Informe a senha para ${acao} o servico.`, 400);
   }
 
   await authService.confirmPassword(userId, senhaConfirmacao);

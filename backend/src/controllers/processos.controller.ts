@@ -65,8 +65,9 @@ export const processosController = {
   async updateStatus(req: Request, res: Response, next: NextFunction) {
     try {
       const { status, senhaConfirmacao } = statusSchema.parse(req.body);
-      if (status === 'CONCLUIDO') {
-        await confirmarSenhaParaConclusao(req.userId, senhaConfirmacao);
+      const statusAtual = (await processosService.findById(req.params.id)).status;
+      if (precisaConfirmarSenha(status, statusAtual)) {
+        await confirmarSenhaParaStatus(req.userId, senhaConfirmacao, status);
       }
       const processo = await processosService.updateStatus(req.params.id, status);
       res.json(processo);
@@ -78,7 +79,7 @@ export const processosController = {
   async finalizar(req: Request, res: Response, next: NextFunction) {
     try {
       const { anexos, senhaConfirmacao } = finalizarSchema.parse(req.body);
-      await confirmarSenhaParaConclusao(req.userId, senhaConfirmacao);
+      await confirmarSenhaParaStatus(req.userId, senhaConfirmacao, 'CONCLUIDO');
       const processo = await processosService.finalizar(req.params.id, anexos);
       res.json(processo);
     } catch (err) {
@@ -117,9 +118,18 @@ export const processosController = {
   },
 };
 
-async function confirmarSenhaParaConclusao(userId: string, senhaConfirmacao?: string) {
+function precisaConfirmarSenha(status?: string, statusAtual?: string) {
+  return status === 'CONCLUIDO' || (statusAtual === 'CONCLUIDO' && status !== 'CONCLUIDO');
+}
+
+async function confirmarSenhaParaStatus(
+  userId: string,
+  senhaConfirmacao: string | undefined,
+  status?: string,
+) {
   if (!senhaConfirmacao) {
-    throw new AppError('Informe a senha para concluir a montagem.', 400);
+    const acao = status === 'CONCLUIDO' ? 'concluir' : 'reabrir';
+    throw new AppError(`Informe a senha para ${acao} a montagem.`, 400);
   }
 
   await authService.confirmPassword(userId, senhaConfirmacao);
