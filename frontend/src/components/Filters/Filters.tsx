@@ -4,6 +4,8 @@ import { TipoServico, TIPO_LABELS } from '../../types';
 interface Props {
   search: string;
   onSearchChange: (v: string) => void;
+  dateFilter: string;
+  onDateChange: (v: string) => void;
   tipoFilter: TipoServico | '';
   onTipoChange: (v: TipoServico | '') => void;
 }
@@ -11,6 +13,8 @@ interface Props {
 export const Filters: React.FC<Props> = ({
   search,
   onSearchChange,
+  dateFilter,
+  onDateChange,
   tipoFilter,
   onTipoChange,
 }) => {
@@ -25,7 +29,7 @@ export const Filters: React.FC<Props> = ({
         </span>
         <input
           type="text"
-          placeholder="Buscar por placa, chassi, cliente ou CPF..."
+          placeholder="Buscar por chassi, placa, cliente ou CPF..."
           value={search}
           onChange={(e) => onSearchChange(e.target.value)}
           className="w-full rounded-lg border border-slate-200 bg-white/90 py-2 pl-9 pr-3 text-sm text-slate-800 shadow-sm shadow-slate-200/50 placeholder-slate-400 transition focus:border-transparent focus:outline-none focus:ring-2 focus:ring-indigo-400"
@@ -39,6 +43,14 @@ export const Filters: React.FC<Props> = ({
           </button>
         )}
       </div>
+
+      <input
+        type="date"
+        value={dateFilter}
+        onChange={(e) => onDateChange(e.target.value)}
+        className="rounded-lg border border-slate-200 bg-white/90 px-3 py-2 text-sm text-slate-700 shadow-sm shadow-slate-200/50 transition focus:outline-none focus:ring-2 focus:ring-indigo-400"
+        title="Filtrar por data limite"
+      />
 
       {/* Filtro por tipo */}
       <select
@@ -55,9 +67,9 @@ export const Filters: React.FC<Props> = ({
       </select>
 
       {/* Limpar filtros */}
-      {(search || tipoFilter) && (
+      {(search || dateFilter || tipoFilter) && (
         <button
-          onClick={() => { onSearchChange(''); onTipoChange(''); }}
+          onClick={() => { onSearchChange(''); onDateChange(''); onTipoChange(''); }}
           className="text-xs text-indigo-500 hover:text-indigo-700 font-medium underline"
         >
           Limpar filtros

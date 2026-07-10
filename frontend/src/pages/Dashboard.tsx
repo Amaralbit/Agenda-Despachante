@@ -8,6 +8,7 @@ import { CreateServicoForm, Servico, StatusServico, TipoServico } from '../types
 
 export const Dashboard: React.FC = () => {
   const [search, setSearch] = useState('');
+  const [dateFilter, setDateFilter] = useState('');
   const [tipoFilter, setTipoFilter] = useState<TipoServico | ''>('');
   const [editingServico, setEditingServico] = useState<Servico | null>(null);
   const [isModalOpen, setIsModalOpen] = useState(false);
@@ -26,10 +27,11 @@ export const Dashboard: React.FC = () => {
         (s.veiculo?.placa.toLowerCase().includes(searchLower) ?? false) ||
         (s.chassi?.toLowerCase().includes(searchLower) ?? false) ||
         s.cliente.cpfCnpj.toLowerCase().includes(searchLower);
+      const matchesDate = !dateFilter || s.dataLimite.slice(0, 10) === dateFilter;
 
-      return matchesTipo && matchesSearch;
+      return matchesTipo && matchesSearch && matchesDate;
     });
-  }, [servicos, search, tipoFilter]);
+  }, [servicos, search, dateFilter, tipoFilter]);
 
   function handleStatusChange(id: string, status: StatusServico) {
     updateStatus.mutate({ id, status });
@@ -93,6 +95,8 @@ export const Dashboard: React.FC = () => {
         <Filters
           search={search}
           onSearchChange={setSearch}
+          dateFilter={dateFilter}
+          onDateChange={setDateFilter}
           tipoFilter={tipoFilter}
           onTipoChange={setTipoFilter}
         />

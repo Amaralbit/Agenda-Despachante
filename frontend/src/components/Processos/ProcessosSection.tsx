@@ -51,6 +51,10 @@ function fileToBase64(file: File): Promise<string> {
   });
 }
 
+function dateOnly(value: string) {
+  return value.slice(0, 10);
+}
+
 interface ProcessoCardProps {
   processo: ProcessoMontagem;
   onStart: (id: string) => void;
@@ -133,6 +137,9 @@ const ProcessoCard: React.FC<ProcessoCardProps> = ({
 export const ProcessosSection: React.FC = () => {
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [finalizando, setFinalizando] = useState<ProcessoMontagem | null>(null);
+  const [searchPlaca, setSearchPlaca] = useState('');
+  const [dateFilter, setDateFilter] = useState('');
+  const [showAllCompleted, setShowAllCompleted] = useState(false);
 
   const { data: processos = [], isLoading, isError } = useProcessos();
   const createProcesso = useCreateProcesso();
@@ -141,15 +148,29 @@ export const ProcessosSection: React.FC = () => {
   const salvarAnexos = useSalvarProcessoAnexos();
   const deleteProcesso = useDeleteProcesso();
 
+  const filteredProcessos = useMemo(() => {
+    const search = searchPlaca.trim().toLowerCase();
+
+    return processos.filter((processo) => {
+      const matchesPlaca = !search || processo.placa.toLowerCase().includes(search);
+      const matchesDate = !dateFilter || dateOnly(processo.createdAt) === dateFilter;
+
+      return matchesPlaca && matchesDate;
+    });
+  }, [processos, searchPlaca, dateFilter]);
+
   const byStatus = useMemo(() => {
     const map: Record<StatusServico, ProcessoMontagem[]> = {
       PENDENTE: [],
       EM_ANDAMENTO: [],
       CONCLUIDO: [],
     };
-    for (const processo of processos) map[processo.status].push(processo);
+    for (const processo of filteredProcessos) map[processo.status].push(processo);
+    map.CONCLUIDO.sort(
+      (a, b) => new Date(b.updatedAt).getTime() - new Date(a.updatedAt).getTime(),
+    );
     return map;
-  }, [processos]);
+  }, [filteredProcessos]);
 
   function handleCreate(data: CreateProcessoMontagemForm) {
     createProcesso.mutate(data, { onSuccess: () => setIsModalOpen(false) });
@@ -223,6 +244,45 @@ export const ProcessosSection: React.FC = () => {
         </button>
       </div>
 
+      <div className="glass-panel flex flex-wrap items-center gap-3 rounded-lg px-4 py-3">
+        <div className="relative min-w-[220px] max-w-xs flex-1">
+          <input
+            type="text"
+            placeholder="Buscar montagem por placa..."
+            value={searchPlaca}
+            onChange={(e) => setSearchPlaca(e.target.value)}
+            className="w-full rounded-lg border border-slate-200 bg-white/90 px-3 py-2 text-sm text-slate-800 shadow-sm shadow-slate-200/50 placeholder-slate-400 transition focus:border-transparent focus:outline-none focus:ring-2 focus:ring-indigo-400"
+          />
+          {searchPlaca && (
+            <button
+              type="button"
+              onClick={() => setSearchPlaca('')}
+              className="absolute right-3 top-1/2 -translate-y-1/2 text-xs text-gray-400 hover:text-gray-600"
+            >
+              x
+            </button>
+          )}
+        </div>
+
+        <input
+          type="date"
+          value={dateFilter}
+          onChange={(e) => setDateFilter(e.target.value)}
+          className="rounded-lg border border-slate-200 bg-white/90 px-3 py-2 text-sm text-slate-700 shadow-sm shadow-slate-200/50 transition focus:outline-none focus:ring-2 focus:ring-indigo-400"
+          title="Filtrar pela data de criacao"
+        />
+
+        {(searchPlaca || dateFilter) && (
+          <button
+            type="button"
+            onClick={() => { setSearchPlaca(''); setDateFilter(''); }}
+            className="text-xs font-medium text-indigo-500 underline hover:text-indigo-700"
+          >
+            Limpar filtros
+          </button>
+        )}
+      </div>
+
       {isLoading && (
         <div className="py-10 text-center text-sm text-slate-400">Carregando montagens...</div>
       )}
@@ -238,6 +298,9 @@ export const ProcessosSection: React.FC = () => {
           {COLUMNS.map((status) => {
             const style = COLUMN_STYLES[status];
             const items = byStatus[status];
+            const visibleItems =
+              status === 'CONCLUIDO' && !showAllCompleted ? items.slice(0, 5) : items;
+            const hiddenCount = items.length - visibleItems.length;
 
             return (
               <div key={status} className="flex w-full min-w-[320px] max-w-sm flex-col">
@@ -256,7 +319,7 @@ export const ProcessosSection: React.FC = () => {
                     {items.length === 0 ? (
                       <div className="py-10 text-center text-xs text-slate-400">Nenhuma montagem</div>
                     ) : (
-                      items.map((processo) => (
+                      visibleItems.map((processo) => (
                         <ProcessoCard
                           key={processo.id}
                           processo={processo}
@@ -272,6 +335,16 @@ export const ProcessosSection: React.FC = () => {
                           }
                         />
                       ))
+                    )}
+
+                    {status === 'CONCLUIDO' && items.length > 5 && (
+                      <button
+                        type="button"
+                        onClick={() => setShowAllCompleted((current) => !current)}
+                        className="rounded-lg border border-emerald-200 bg-white/80 px-3 py-2 text-xs font-semibold text-emerald-700 transition hover:bg-emerald-50"
+                      >
+                        {showAllCompleted ? 'Fechar' : `Abrir tudo (${hiddenCount} oculto${hiddenCount !== 1 ? 's' : ''})`}
+                      </button>
                     )}
                   </div>
                 </div>

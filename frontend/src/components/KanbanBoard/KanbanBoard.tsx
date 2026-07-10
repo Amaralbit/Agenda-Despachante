@@ -26,6 +26,9 @@ export const KanbanBoard: React.FC<Props> = ({
       CONCLUIDO:    [],
     };
     for (const s of servicos) map[s.status].push(s);
+    map.CONCLUIDO.sort(
+      (a, b) => new Date(b.updatedAt).getTime() - new Date(a.updatedAt).getTime(),
+    );
     return map;
   }, [servicos]);
 

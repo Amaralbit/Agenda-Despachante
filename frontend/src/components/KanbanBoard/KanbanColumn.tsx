@@ -38,7 +38,11 @@ export const KanbanColumn: React.FC<Props> = ({
   isUpdating,
 }) => {
   const [isDragOver, setIsDragOver] = useState(false);
+  const [showAllCompleted, setShowAllCompleted] = useState(false);
   const style = COLUMN_STYLES[status];
+  const isCompleted = status === 'CONCLUIDO';
+  const visibleServicos = isCompleted && !showAllCompleted ? servicos.slice(0, 5) : servicos;
+  const hiddenCount = servicos.length - visibleServicos.length;
 
   function handleDragOver(e: React.DragEvent) {
     e.preventDefault();
@@ -103,7 +107,7 @@ export const KanbanColumn: React.FC<Props> = ({
               </p>
             </div>
           ) : (
-            servicos.map((servico) => (
+            visibleServicos.map((servico) => (
               <ServiceCard
                 key={servico.id}
                 servico={servico}
@@ -113,6 +117,16 @@ export const KanbanColumn: React.FC<Props> = ({
                 isPending={isUpdating}
               />
             ))
+          )}
+
+          {isCompleted && servicos.length > 5 && (
+            <button
+              type="button"
+              onClick={() => setShowAllCompleted((current) => !current)}
+              className="rounded-lg border border-emerald-200 bg-white/80 px-3 py-2 text-xs font-semibold text-emerald-700 transition hover:bg-emerald-50"
+            >
+              {showAllCompleted ? 'Fechar' : `Abrir tudo (${hiddenCount} oculto${hiddenCount !== 1 ? 's' : ''})`}
+            </button>
           )}
         </div>
       </div>
