@@ -228,6 +228,10 @@ export const ProcessosSection: React.FC = () => {
   }
 
   function handleAwaitPrint(id: string) {
+    if (!window.confirm('Tem certeza que quer mover essa montagem para aguardando impressão?')) {
+      return;
+    }
+
     updateStatus.mutate(
       { id, status: 'AGUARDANDO_IMPRESSAO' },
       { onError: (error) => window.alert(error.message) },
