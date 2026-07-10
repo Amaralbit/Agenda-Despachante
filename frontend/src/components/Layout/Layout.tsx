@@ -18,7 +18,7 @@ export const Layout: React.FC<{ children: React.ReactNode }> = ({ children }) =>
   const { usuario, logout } = useAuth();
 
   return (
-    <div className="relative min-h-screen overflow-hidden bg-slate-100">
+    <div className="relative min-h-screen overflow-x-hidden bg-slate-100">
       <div className="ambient-backdrop" />
 
       <div className="relative z-10 flex min-h-screen">
@@ -90,7 +90,7 @@ export const Layout: React.FC<{ children: React.ReactNode }> = ({ children }) =>
             </h1>
           </header>
 
-          <div className="min-w-0 flex-1 px-8 py-6">{children}</div>
+          <div className="min-w-0 flex-1 px-4 py-6 lg:px-8">{children}</div>
         </main>
       </div>
     </div>

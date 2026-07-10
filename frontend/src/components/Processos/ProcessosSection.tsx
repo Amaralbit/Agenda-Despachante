@@ -89,12 +89,12 @@ const ProcessoCard: React.FC<ProcessoCardProps> = ({
   return (
     <div className={`rounded-lg border border-white/80 bg-white/90 p-4 shadow-sm shadow-slate-200/70 backdrop-blur-xl transition-all duration-200 hover:-translate-y-0.5 hover:shadow-md ${isUpdating ? 'pointer-events-none opacity-60' : ''}`}>
       <div className="mb-3 flex items-start justify-between gap-3">
-        <div>
-          <p className="font-mono text-base font-black tracking-wide text-slate-950">{processo.placa}</p>
+        <div className="min-w-0">
+          <p className="truncate font-mono text-base font-black tracking-wide text-slate-950">{processo.placa}</p>
           <p className="text-xs text-slate-500">Atendimento {processo.numeroAtendimento}</p>
-          <p className="text-xs font-medium text-slate-700">Solicitante: {processo.solicitantePa2 || '-'}</p>
+          <p className="break-words text-xs font-medium text-slate-700">Solicitante: {processo.solicitantePa2 || '-'}</p>
         </div>
-        <span className="rounded-md bg-slate-950 px-2 py-0.5 text-[10px] font-bold uppercase tracking-wide text-white">
+        <span className="shrink-0 rounded-md bg-slate-950 px-2 py-0.5 text-[10px] font-bold uppercase tracking-wide text-white">
           Detran
         </span>
       </div>
@@ -118,7 +118,7 @@ const ProcessoCard: React.FC<ProcessoCardProps> = ({
         </div>
       )}
 
-      <div className="flex items-center justify-between border-t border-slate-100 pt-3">
+      <div className="flex flex-wrap items-center gap-3 border-t border-slate-100 pt-3">
         <button
           onClick={() => onDelete(processo.id)}
           className="text-xs font-medium text-red-400 hover:text-red-600"
@@ -129,23 +129,23 @@ const ProcessoCard: React.FC<ProcessoCardProps> = ({
         {processo.status === 'PENDENTE' && (
           <button
             onClick={() => onStart(processo.id)}
-            className="rounded-lg bg-slate-950 px-3 py-1.5 text-xs font-semibold text-white transition hover:bg-slate-800"
+            className="ml-auto whitespace-nowrap rounded-lg bg-slate-950 px-3 py-1.5 text-xs font-semibold text-white transition hover:bg-slate-800"
           >
             Iniciar
           </button>
         )}
 
         {processo.status === 'EM_ANDAMENTO' && (
-          <div className="flex items-center gap-2">
+          <div className="ml-auto flex flex-wrap items-center justify-end gap-2">
             <button
               onClick={() => onFinalize(processo)}
-              className="rounded-lg bg-blue-600 px-3 py-1.5 text-xs font-semibold text-white transition hover:bg-blue-700"
+              className="whitespace-nowrap rounded-lg bg-blue-600 px-3 py-1.5 text-xs font-semibold text-white transition hover:bg-blue-700"
             >
               Ver
             </button>
             <button
               onClick={() => onAwaitPrint(processo.id)}
-              className="rounded-lg bg-sky-600 px-3 py-1.5 text-xs font-semibold text-white transition hover:bg-sky-700"
+              className="whitespace-nowrap rounded-lg bg-sky-600 px-3 py-1.5 text-xs font-semibold text-white transition hover:bg-sky-700"
             >
               Aguardar
             </button>
@@ -155,7 +155,7 @@ const ProcessoCard: React.FC<ProcessoCardProps> = ({
         {processo.status === 'AGUARDANDO_IMPRESSAO' && (
           <button
             onClick={() => onFinalize(processo)}
-            className="rounded-lg bg-blue-600 px-3 py-1.5 text-xs font-semibold text-white transition hover:bg-blue-700"
+            className="ml-auto whitespace-nowrap rounded-lg bg-blue-600 px-3 py-1.5 text-xs font-semibold text-white transition hover:bg-blue-700"
           >
             Ver
           </button>
@@ -164,7 +164,7 @@ const ProcessoCard: React.FC<ProcessoCardProps> = ({
         {processo.status === 'CONCLUIDO' && (
           <button
             onClick={() => onReopen(processo)}
-            className="rounded-lg bg-amber-600 px-3 py-1.5 text-xs font-semibold text-white transition hover:bg-amber-700"
+            className="ml-auto whitespace-nowrap rounded-lg bg-amber-600 px-3 py-1.5 text-xs font-semibold text-white transition hover:bg-amber-700"
           >
             Reabrir
           </button>
@@ -313,7 +313,10 @@ export const ProcessosSection: React.FC = () => {
         </button>
       </div>
 
-      <div className="glass-panel grid grid-cols-1 gap-3 rounded-lg px-4 py-3 md:grid-cols-[minmax(220px,1fr)_190px_minmax(260px,1.3fr)_auto]">
+      <div
+        className="glass-panel grid gap-3 rounded-lg px-4 py-3"
+        style={{ gridTemplateColumns: 'repeat(auto-fit, minmax(min(100%, 220px), 1fr))' }}
+      >
         <div className="relative min-w-0">
           <input
             type="text"
@@ -368,7 +371,7 @@ export const ProcessosSection: React.FC = () => {
               setSearchSolicitante('');
               setDateFilter('');
             }}
-            className="self-center justify-self-start text-xs font-medium text-indigo-500 underline hover:text-indigo-700 md:justify-self-end"
+            className="self-center justify-self-start text-xs font-medium text-indigo-500 underline hover:text-indigo-700"
           >
             Limpar filtros
           </button>
@@ -386,7 +389,10 @@ export const ProcessosSection: React.FC = () => {
       )}
 
       {!isLoading && !isError && (
-        <div className="grid grid-cols-1 items-start gap-4 px-1 pb-6 sm:grid-cols-2 2xl:grid-cols-4">
+        <div
+          className="grid items-start gap-4 px-1 pb-6"
+          style={{ gridTemplateColumns: 'repeat(auto-fit, minmax(min(100%, 260px), 1fr))' }}
+        >
           {COLUMNS.map((status) => {
             const style = COLUMN_STYLES[status];
             const items = byStatus[status];
