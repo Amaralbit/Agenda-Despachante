@@ -1,9 +1,12 @@
 import { Request, Response, NextFunction } from 'express';
 import { z } from 'zod';
+import { AppError } from '../middleware/errorHandler';
+import authService from '../services/auth.service';
 import processosService from '../services/processos.service';
 
 const statusSchema = z.object({
   status: z.enum(['PENDENTE', 'EM_ANDAMENTO', 'CONCLUIDO']),
+  senhaConfirmacao: z.string().optional(),
 });
 
 const querySchema = z.object({
@@ -26,6 +29,7 @@ const anexoSchema = z.object({
 
 const finalizarSchema = z.object({
   anexos: z.array(anexoSchema).default([]),
+  senhaConfirmacao: z.string().optional(),
 });
 
 export const processosController = {
@@ -60,7 +64,10 @@ export const processosController = {
 
   async updateStatus(req: Request, res: Response, next: NextFunction) {
     try {
-      const { status } = statusSchema.parse(req.body);
+      const { status, senhaConfirmacao } = statusSchema.parse(req.body);
+      if (status === 'CONCLUIDO') {
+        await confirmarSenhaParaConclusao(req.userId, senhaConfirmacao);
+      }
       const processo = await processosService.updateStatus(req.params.id, status);
       res.json(processo);
     } catch (err) {
@@ -70,7 +77,8 @@ export const processosController = {
 
   async finalizar(req: Request, res: Response, next: NextFunction) {
     try {
-      const { anexos } = finalizarSchema.parse(req.body);
+      const { anexos, senhaConfirmacao } = finalizarSchema.parse(req.body);
+      await confirmarSenhaParaConclusao(req.userId, senhaConfirmacao);
       const processo = await processosService.finalizar(req.params.id, anexos);
       res.json(processo);
     } catch (err) {
@@ -108,3 +116,11 @@ export const processosController = {
     }
   },
 };
+
+async function confirmarSenhaParaConclusao(userId: string, senhaConfirmacao?: string) {
+  if (!senhaConfirmacao) {
+    throw new AppError('Informe a senha para concluir a montagem.', 400);
+  }
+
+  await authService.confirmPassword(userId, senhaConfirmacao);
+}

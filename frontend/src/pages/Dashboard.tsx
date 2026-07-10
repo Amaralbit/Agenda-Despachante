@@ -34,7 +34,29 @@ export const Dashboard: React.FC = () => {
   }, [servicos, search, dateFilter, tipoFilter]);
 
   function handleStatusChange(id: string, status: StatusServico) {
-    updateStatus.mutate({ id, status });
+    const servico = servicos.find((item) => item.id === id);
+    if (servico?.status === status) return;
+
+    if (status === 'CONCLUIDO') {
+      const senhaConfirmacao = window.prompt('Digite sua senha para concluir o servico:');
+      if (senhaConfirmacao === null) return;
+
+      if (!senhaConfirmacao.trim()) {
+        window.alert('Informe a senha para concluir o servico.');
+        return;
+      }
+
+      updateStatus.mutate(
+        { id, status, senhaConfirmacao },
+        { onError: (error) => window.alert(error.message) },
+      );
+      return;
+    }
+
+    updateStatus.mutate(
+      { id, status },
+      { onError: (error) => window.alert(error.message) },
+    );
   }
 
   function handleEdit(servico: Servico) {

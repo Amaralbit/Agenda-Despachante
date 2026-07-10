@@ -4,10 +4,11 @@ import { ProcessoMontagem } from '../../types';
 interface Props {
   processo: ProcessoMontagem;
   onClose: () => void;
-  onSubmit: (files: File[]) => void;
+  onSubmit: (files: File[], senhaConfirmacao: string) => void;
   onSave: (files: File[]) => void;
   isLoading: boolean;
   isSaving: boolean;
+  errorMessage?: string;
 }
 
 export const FinalizarProcessoModal: React.FC<Props> = ({
@@ -17,9 +18,11 @@ export const FinalizarProcessoModal: React.FC<Props> = ({
   onSave,
   isLoading,
   isSaving,
+  errorMessage,
 }) => {
   const [pdfObrigatorio, setPdfObrigatorio] = useState<File | null>(null);
   const [pdfOpcional, setPdfOpcional] = useState<File | null>(null);
+  const [senhaConfirmacao, setSenhaConfirmacao] = useState('');
   const [erro, setErro] = useState('');
   const isBusy = isLoading || isSaving;
 
@@ -56,7 +59,12 @@ export const FinalizarProcessoModal: React.FC<Props> = ({
       return;
     }
 
-    onSubmit(selectedFiles);
+    if (!senhaConfirmacao.trim()) {
+      setErro('Informe sua senha para concluir.');
+      return;
+    }
+
+    onSubmit(selectedFiles, senhaConfirmacao);
   }
 
   function handleSave() {
@@ -118,6 +126,21 @@ export const FinalizarProcessoModal: React.FC<Props> = ({
             />
           </div>
 
+          <div>
+            <label className="mb-1 block text-sm font-medium text-slate-700">
+              Senha para concluir <span className="text-red-500">*</span>
+            </label>
+            <input
+              type="password"
+              value={senhaConfirmacao}
+              onChange={(e) => setSenhaConfirmacao(e.target.value)}
+              disabled={isBusy}
+              autoComplete="current-password"
+              className="w-full rounded-lg border border-slate-200 bg-white px-3 py-2.5 text-sm text-slate-700 shadow-sm shadow-slate-200/50 transition focus:border-transparent focus:outline-none focus:ring-2 focus:ring-emerald-400 disabled:opacity-60"
+              placeholder="Digite sua senha"
+            />
+          </div>
+
           {(pdfObrigatorio || pdfOpcional) && (
             <div className="flex flex-col gap-2 rounded-lg bg-slate-50 p-3">
               {[pdfObrigatorio, pdfOpcional].filter((file): file is File => Boolean(file)).map((file) => (
@@ -129,9 +152,9 @@ export const FinalizarProcessoModal: React.FC<Props> = ({
             </div>
           )}
 
-          {erro && (
+          {(erro || errorMessage) && (
             <div className="rounded-lg border border-red-200 bg-red-50 px-3 py-2 text-sm text-red-700">
-              {erro}
+              {erro || errorMessage}
             </div>
           )}
 

@@ -180,7 +180,7 @@ export const ProcessosSection: React.FC = () => {
     updateStatus.mutate({ id, status: 'EM_ANDAMENTO' });
   }
 
-  async function handleFinalizar(files: File[]) {
+  async function handleFinalizar(files: File[], senhaConfirmacao: string) {
     if (!finalizando) return;
 
     const anexos: ProcessoAnexoUpload[] = await Promise.all(
@@ -193,7 +193,7 @@ export const ProcessosSection: React.FC = () => {
     );
 
     finalizarProcesso.mutate(
-      { id: finalizando.id, anexos },
+      { id: finalizando.id, anexos, senhaConfirmacao },
       { onSuccess: () => setFinalizando(null) },
     );
   }
@@ -370,6 +370,7 @@ export const ProcessosSection: React.FC = () => {
           onSave={handleSalvarAnexos}
           isLoading={finalizarProcesso.isPending}
           isSaving={salvarAnexos.isPending}
+          errorMessage={finalizarProcesso.error?.message}
         />
       )}
     </section>

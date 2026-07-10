@@ -22,10 +22,12 @@ export interface UpdateServicoBody {
   dataLimite?: string;
   observacoes?: string | null;
   chassi?: string;
+  senhaConfirmacao?: string;
 }
 
 export interface UpdateServicoStatusBody {
   status: StatusServico;
+  senhaConfirmacao?: string;
 }
 
 export interface CreateClienteBody {

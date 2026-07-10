@@ -21,17 +21,25 @@ export const processosApi = {
     }).then((r) => handleResponse<ProcessoMontagem>(r));
   },
 
-  updateStatus(id: string, status: StatusServico): Promise<ProcessoMontagem> {
+  updateStatus(
+    id: string,
+    status: StatusServico,
+    senhaConfirmacao?: string,
+  ): Promise<ProcessoMontagem> {
     return authFetch(`${BASE}/${id}/status`, {
       method: 'PATCH',
-      body: JSON.stringify({ status }),
+      body: JSON.stringify({ status, ...(senhaConfirmacao && { senhaConfirmacao }) }),
     }).then((r) => handleResponse<ProcessoMontagem>(r));
   },
 
-  finalizar(id: string, anexos: ProcessoAnexoUpload[]): Promise<ProcessoMontagem> {
+  finalizar(
+    id: string,
+    anexos: ProcessoAnexoUpload[],
+    senhaConfirmacao: string,
+  ): Promise<ProcessoMontagem> {
     return authFetch(`${BASE}/${id}/finalizar`, {
       method: 'POST',
-      body: JSON.stringify({ anexos }),
+      body: JSON.stringify({ anexos, senhaConfirmacao }),
     }).then((r) => handleResponse<ProcessoMontagem>(r));
   },
 

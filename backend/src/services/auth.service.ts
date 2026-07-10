@@ -62,6 +62,14 @@ class AuthService {
     const senhaHash = await bcrypt.hash(novaSenha, SALT_ROUNDS);
     await prisma.usuario.update({ where: { id: userId }, data: { senhaHash } });
   }
+
+  async confirmPassword(userId: string, senha: string) {
+    const usuario = await prisma.usuario.findUniqueOrThrow({ where: { id: userId } });
+
+    if (!(await bcrypt.compare(senha, usuario.senhaHash))) {
+      throw new AppError('Senha incorreta.', 403);
+    }
+  }
 }
 
 export default new AuthService();

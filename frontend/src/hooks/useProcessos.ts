@@ -28,8 +28,15 @@ export function useUpdateProcessoStatus() {
   const qc = useQueryClient();
 
   return useMutation({
-    mutationFn: ({ id, status }: { id: string; status: StatusServico }) =>
-      processosApi.updateStatus(id, status),
+    mutationFn: ({
+      id,
+      status,
+      senhaConfirmacao,
+    }: {
+      id: string;
+      status: StatusServico;
+      senhaConfirmacao?: string;
+    }) => processosApi.updateStatus(id, status, senhaConfirmacao),
     onSuccess: () => qc.invalidateQueries({ queryKey: [QUERY_KEY] }),
   });
 }
@@ -38,8 +45,15 @@ export function useFinalizarProcesso() {
   const qc = useQueryClient();
 
   return useMutation({
-    mutationFn: ({ id, anexos }: { id: string; anexos: ProcessoAnexoUpload[] }) =>
-      processosApi.finalizar(id, anexos),
+    mutationFn: ({
+      id,
+      anexos,
+      senhaConfirmacao,
+    }: {
+      id: string;
+      anexos: ProcessoAnexoUpload[];
+      senhaConfirmacao: string;
+    }) => processosApi.finalizar(id, anexos, senhaConfirmacao),
     onSuccess: () => qc.invalidateQueries({ queryKey: [QUERY_KEY] }),
   });
 }

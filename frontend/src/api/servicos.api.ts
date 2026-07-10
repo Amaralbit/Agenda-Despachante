@@ -31,10 +31,10 @@ export const servicosApi = {
     }).then((r) => handleResponse<Servico>(r));
   },
 
-  updateStatus(id: string, status: StatusServico): Promise<Servico> {
+  updateStatus(id: string, status: StatusServico, senhaConfirmacao?: string): Promise<Servico> {
     return authFetch(`${BASE}/${id}/status`, {
       method: 'PATCH',
-      body: JSON.stringify({ status }),
+      body: JSON.stringify({ status, ...(senhaConfirmacao && { senhaConfirmacao }) }),
     }).then((r) => handleResponse<Servico>(r));
   },
 

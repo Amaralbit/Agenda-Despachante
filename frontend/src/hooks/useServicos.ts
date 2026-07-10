@@ -21,8 +21,15 @@ export function useUpdateStatus() {
   const qc = useQueryClient();
 
   return useMutation({
-    mutationFn: ({ id, status }: { id: string; status: StatusServico }) =>
-      servicosApi.updateStatus(id, status),
+    mutationFn: ({
+      id,
+      status,
+      senhaConfirmacao,
+    }: {
+      id: string;
+      status: StatusServico;
+      senhaConfirmacao?: string;
+    }) => servicosApi.updateStatus(id, status, senhaConfirmacao),
     onSuccess: () => qc.invalidateQueries({ queryKey: [QUERY_KEY] }),
   });
 }
