@@ -128,7 +128,7 @@ const ProcessoCard: React.FC<ProcessoCardProps> = ({
             onClick={() => onFinalize(processo)}
             className="rounded-lg bg-blue-600 px-3 py-1.5 text-xs font-semibold text-white transition hover:bg-blue-700"
           >
-            Ver.obs
+            Ver
           </button>
         )}
 
