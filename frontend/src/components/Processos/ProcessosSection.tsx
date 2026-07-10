@@ -149,6 +149,7 @@ export const ProcessosSection: React.FC = () => {
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [finalizando, setFinalizando] = useState<ProcessoMontagem | null>(null);
   const [searchPlaca, setSearchPlaca] = useState('');
+  const [searchSolicitante, setSearchSolicitante] = useState('');
   const [dateFilter, setDateFilter] = useState('');
   const [showAllCompleted, setShowAllCompleted] = useState(false);
 
@@ -160,15 +161,20 @@ export const ProcessosSection: React.FC = () => {
   const deleteProcesso = useDeleteProcesso();
 
   const filteredProcessos = useMemo(() => {
-    const search = searchPlaca.trim().toLowerCase();
+    const placaSearch = searchPlaca.trim().toLowerCase();
+    const solicitanteSearch = searchSolicitante.trim().toLowerCase();
 
     return processos.filter((processo) => {
-      const matchesPlaca = !search || processo.placa.toLowerCase().includes(search);
+      const matchesPlaca =
+        !placaSearch || processo.placa.toLowerCase().includes(placaSearch);
+      const matchesSolicitante =
+        !solicitanteSearch ||
+        processo.solicitantePa2.toLowerCase().includes(solicitanteSearch);
       const matchesDate = !dateFilter || dateOnly(processo.createdAt) === dateFilter;
 
-      return matchesPlaca && matchesDate;
+      return matchesPlaca && matchesSolicitante && matchesDate;
     });
-  }, [processos, searchPlaca, dateFilter]);
+  }, [processos, searchPlaca, searchSolicitante, dateFilter]);
 
   const byStatus = useMemo(() => {
     const map: Record<StatusServico, ProcessoMontagem[]> = {
@@ -298,10 +304,33 @@ export const ProcessosSection: React.FC = () => {
           title="Filtrar pela data de criacao"
         />
 
-        {(searchPlaca || dateFilter) && (
+        <div className="relative min-w-[260px] max-w-md flex-[1.2]">
+          <input
+            type="text"
+            placeholder="Buscar por solicitante..."
+            value={searchSolicitante}
+            onChange={(e) => setSearchSolicitante(e.target.value)}
+            className="w-full rounded-lg border border-slate-200 bg-white/90 px-3 py-2 text-sm text-slate-800 shadow-sm shadow-slate-200/50 placeholder-slate-400 transition focus:border-transparent focus:outline-none focus:ring-2 focus:ring-indigo-400"
+          />
+          {searchSolicitante && (
+            <button
+              type="button"
+              onClick={() => setSearchSolicitante('')}
+              className="absolute right-3 top-1/2 -translate-y-1/2 text-xs text-gray-400 hover:text-gray-600"
+            >
+              x
+            </button>
+          )}
+        </div>
+
+        {(searchPlaca || searchSolicitante || dateFilter) && (
           <button
             type="button"
-            onClick={() => { setSearchPlaca(''); setDateFilter(''); }}
+            onClick={() => {
+              setSearchPlaca('');
+              setSearchSolicitante('');
+              setDateFilter('');
+            }}
             className="text-xs font-medium text-indigo-500 underline hover:text-indigo-700"
           >
             Limpar filtros
