@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useEffect, useState } from 'react';
 import { Link, useLocation } from 'react-router-dom';
 import { useAuth } from '../../contexts/AuthContext';
 
@@ -13,9 +13,19 @@ const NAV_ITEMS: NavItem[] = [
   { to: '/clientes', label: 'Clientes', icon: 'CL' },
 ];
 
+const LITE_MODE_STORAGE_KEY = 'agenda-despachante-lite-mode';
+
 export const Layout: React.FC<{ children: React.ReactNode }> = ({ children }) => {
   const { pathname } = useLocation();
   const { usuario, logout } = useAuth();
+  const [isLiteMode, setIsLiteMode] = useState(
+    () => window.localStorage.getItem(LITE_MODE_STORAGE_KEY) === 'true',
+  );
+
+  useEffect(() => {
+    document.documentElement.classList.toggle('lite-mode', isLiteMode);
+    window.localStorage.setItem(LITE_MODE_STORAGE_KEY, String(isLiteMode));
+  }, [isLiteMode]);
 
   return (
     <div className="relative min-h-screen overflow-x-hidden bg-slate-100">
@@ -72,6 +82,21 @@ export const Layout: React.FC<{ children: React.ReactNode }> = ({ children }) =>
                 <p className="truncate text-xs text-slate-400">{usuario?.email}</p>
               </div>
             </div>
+            <button
+              type="button"
+              onClick={() => setIsLiteMode((enabled) => !enabled)}
+              aria-pressed={isLiteMode}
+              className={`mb-3 flex w-full items-center justify-between rounded-lg px-3 py-2 text-left text-xs font-medium transition-colors ${
+                isLiteMode
+                  ? 'bg-cyan-400/15 text-cyan-100 ring-1 ring-cyan-300/30'
+                  : 'bg-white/5 text-slate-300 hover:bg-white/10 hover:text-white'
+              }`}
+            >
+              <span>Modo Lite</span>
+              <span className="text-[10px] font-bold uppercase tracking-wide">
+                {isLiteMode ? 'Ativo' : 'Desligado'}
+              </span>
+            </button>
             <button
               onClick={logout}
               className="w-full text-left text-xs font-medium text-slate-400 transition-colors hover:text-red-300"

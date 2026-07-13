@@ -126,3 +126,26 @@
     animation: none;
   }
 }
+
+/*
+ * Reduz o trabalho da GPU em computadores mais modestos. A preferência é
+ * controlada pelo botão "Modo Lite" e fica salva no navegador.
+ */
+html.lite-mode .ambient-backdrop {
+  background: #f1f5f9;
+}
+
+html.lite-mode .ambient-backdrop::before,
+html.lite-mode .ambient-backdrop::after {
+  display: none;
+}
+
+html.lite-mode *,
+html.lite-mode *::before,
+html.lite-mode *::after {
+  animation: none !important;
+  transition: none !important;
+  backdrop-filter: none !important;
+  -webkit-backdrop-filter: none !important;
+  box-shadow: none !important;
+}
