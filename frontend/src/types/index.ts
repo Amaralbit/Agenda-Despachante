@@ -71,6 +71,7 @@ export interface ProcessoMontagem {
   anexos: ProcessoAnexo[];
   createdAt: string;
   updatedAt: string;
+  concluidoEm?: string | null;
 }
 
 export interface CreateProcessoMontagemForm {

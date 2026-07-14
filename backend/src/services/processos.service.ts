@@ -67,7 +67,10 @@ class ProcessosService {
 
     return prisma.processoMontagem.update({
       where: { id },
-      data: { status },
+      data: {
+        status,
+        concluidoEm: status === 'CONCLUIDO' ? new Date() : null,
+      },
       include: includeSummary,
     });
   }
@@ -101,7 +104,7 @@ class ProcessosService {
 
       return tx.processoMontagem.update({
         where: { id },
-        data: { status: 'CONCLUIDO' },
+        data: { status: 'CONCLUIDO', concluidoEm: new Date() },
         include: includeSummary,
       });
     });

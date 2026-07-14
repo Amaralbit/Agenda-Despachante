@@ -4,6 +4,7 @@ import { ProtectedRoute } from './components/ProtectedRoute';
 import { Login } from './pages/Login';
 import { Dashboard } from './pages/Dashboard';
 import { Clientes } from './pages/Clientes';
+import { Graficos } from './pages/Graficos';
 import { HistoricoVeiculo } from './pages/HistoricoVeiculo';
 
 export default function App() {
@@ -28,6 +29,17 @@ export default function App() {
           <ProtectedRoute>
             <Layout>
               <Clientes />
+            </Layout>
+          </ProtectedRoute>
+        }
+      />
+
+      <Route
+        path="/graficos"
+        element={
+          <ProtectedRoute>
+            <Layout>
+              <Graficos />
             </Layout>
           </ProtectedRoute>
         }

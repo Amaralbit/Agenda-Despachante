@@ -108,11 +108,26 @@ export const Layout: React.FC<{ children: React.ReactNode }> = ({ children }) =>
 
         <main className="ml-60 flex min-h-screen min-w-0 flex-1 flex-col">
           <header className="sticky top-0 z-20 border-b border-white/70 bg-white/80 px-8 py-5 shadow-sm shadow-slate-200/60 backdrop-blur-xl">
-            <h1 className="text-lg font-bold text-slate-950">
-              {pathname === '/' && 'Dashboard - Kanban de Servicos'}
-              {pathname === '/clientes' && 'Gestao de Clientes e Veiculos'}
-              {pathname.includes('/historico') && 'Historico do Veiculo'}
-            </h1>
+            <div className="flex items-center justify-between gap-4">
+              <h1 className="text-lg font-bold text-slate-950">
+                {pathname === '/' && 'Dashboard - Kanban de Servicos'}
+                {pathname === '/clientes' && 'Gestao de Clientes e Veiculos'}
+                {pathname === '/graficos' && 'Graficos de Processos'}
+                {pathname.includes('/historico') && 'Historico do Veiculo'}
+              </h1>
+
+              <Link
+                to="/graficos"
+                className={`flex shrink-0 items-center gap-2 rounded-lg px-3 py-2 text-sm font-semibold transition-colors ${
+                  pathname === '/graficos'
+                    ? 'bg-indigo-600 text-white shadow-sm shadow-indigo-600/25'
+                    : 'border border-slate-200 bg-white text-slate-700 hover:border-indigo-200 hover:bg-indigo-50 hover:text-indigo-700'
+                }`}
+              >
+                <span aria-hidden="true">▥</span>
+                Graficos
+              </Link>
+            </div>
           </header>
 
           <div className="min-w-0 flex-1 px-4 py-6 lg:px-8">{children}</div>
