@@ -5,6 +5,7 @@ import { Login } from './pages/Login';
 import { Dashboard } from './pages/Dashboard';
 import { Clientes } from './pages/Clientes';
 import { Graficos } from './pages/Graficos';
+import { Lembretes } from './pages/Lembretes';
 import { HistoricoVeiculo } from './pages/HistoricoVeiculo';
 
 export default function App() {
@@ -40,6 +41,17 @@ export default function App() {
           <ProtectedRoute>
             <Layout>
               <Graficos />
+            </Layout>
+          </ProtectedRoute>
+        }
+      />
+
+      <Route
+        path="/lembretes"
+        element={
+          <ProtectedRoute>
+            <Layout>
+              <Lembretes />
             </Layout>
           </ProtectedRoute>
         }

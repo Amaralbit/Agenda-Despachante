@@ -6,6 +6,7 @@ import servicosRoutes from './servicos.routes';
 import clientesRoutes from './clientes.routes';
 import veiculosRoutes from './veiculos.routes';
 import processosRoutes from './processos.routes';
+import lembretesRoutes from './lembretes.routes';
 
 const router = Router();
 
@@ -14,6 +15,7 @@ router.use('/servicos', authenticate, servicosRoutes);
 router.use('/clientes', authenticate, clientesRoutes);
 router.use('/veiculos', authenticate, veiculosRoutes);
 router.use('/processos', authenticate, processosRoutes);
+router.use('/lembretes', authenticate, lembretesRoutes);
 
 router.get('/health', async (_req, res, next) => {
   try {

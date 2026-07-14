@@ -98,8 +98,24 @@ model Usuario {
   nome      String
   email     String   @unique
   senhaHash String   @map("senha_hash")
+  lembretes Lembrete[]
   createdAt DateTime @default(now()) @map("created_at")
   updatedAt DateTime @updatedAt @map("updated_at")
 
   @@map("usuarios")
+}
+
+model Lembrete {
+  id            String   @id @default(uuid())
+  titulo        String
+  descricao     String?
+  dataLembrete  DateTime? @map("data_lembrete") @db.Date
+  concluido     Boolean  @default(false)
+  usuarioId     String   @map("usuario_id")
+  usuario       Usuario  @relation(fields: [usuarioId], references: [id], onDelete: Cascade)
+  createdAt     DateTime @default(now()) @map("created_at")
+  updatedAt     DateTime @updatedAt @map("updated_at")
+
+  @@index([usuarioId])
+  @@map("lembretes")
 }

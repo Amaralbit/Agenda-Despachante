@@ -74,6 +74,22 @@ export interface ProcessoMontagem {
   concluidoEm?: string | null;
 }
 
+export interface Lembrete {
+  id: string;
+  titulo: string;
+  descricao?: string | null;
+  dataLembrete?: string | null;
+  concluido: boolean;
+  createdAt: string;
+  updatedAt: string;
+}
+
+export interface CreateLembreteForm {
+  titulo: string;
+  descricao?: string;
+  dataLembrete?: string;
+}
+
 export interface CreateProcessoMontagemForm {
   placa: string;
   numeroAtendimento: string;

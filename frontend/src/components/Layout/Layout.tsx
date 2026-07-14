@@ -12,6 +12,7 @@ const NAV_ITEMS: NavItem[] = [
   { to: '/', label: 'Dashboard', icon: 'DB' },
   { to: '/clientes', label: 'Clientes', icon: 'CL' },
   { to: '/graficos', label: 'Graficos', icon: 'GR' },
+  { to: '/lembretes', label: 'Lembretes', icon: 'LM' },
 ];
 
 const LITE_MODE_STORAGE_KEY = 'agenda-despachante-lite-mode';
@@ -113,6 +114,7 @@ export const Layout: React.FC<{ children: React.ReactNode }> = ({ children }) =>
               {pathname === '/' && 'Dashboard - Kanban de Servicos'}
               {pathname === '/clientes' && 'Gestao de Clientes e Veiculos'}
               {pathname === '/graficos' && 'Graficos de Processos'}
+              {pathname === '/lembretes' && 'Lembretes'}
               {pathname.includes('/historico') && 'Historico do Veiculo'}
             </h1>
           </header>
