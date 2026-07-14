@@ -20,6 +20,9 @@ const LITE_MODE_STORAGE_KEY = 'agenda-despachante-lite-mode';
 export const Layout: React.FC<{ children: React.ReactNode }> = ({ children }) => {
   const { pathname } = useLocation();
   const { usuario, logout } = useAuth();
+  const navItems = usuario?.conta?.papel === 'PROPRIETARIO'
+    ? [...NAV_ITEMS, { to: '/equipe', label: 'Equipe', icon: 'EQ' }]
+    : NAV_ITEMS;
   const [isLiteMode, setIsLiteMode] = useState(
     () => window.localStorage.getItem(LITE_MODE_STORAGE_KEY) === 'true',
   );
@@ -46,7 +49,7 @@ export const Layout: React.FC<{ children: React.ReactNode }> = ({ children }) =>
           </div>
 
           <nav className="flex flex-1 flex-col gap-1 px-3 py-4">
-            {NAV_ITEMS.map((item) => {
+            {navItems.map((item) => {
               const isActive = item.to === '/' ? pathname === '/' : pathname.startsWith(item.to);
 
               return (
@@ -115,6 +118,7 @@ export const Layout: React.FC<{ children: React.ReactNode }> = ({ children }) =>
               {pathname === '/clientes' && 'Gestao de Clientes e Veiculos'}
               {pathname === '/graficos' && 'Graficos de Processos'}
               {pathname === '/lembretes' && 'Lembretes'}
+              {pathname === '/equipe' && 'Equipe'}
               {pathname.includes('/historico') && 'Historico do Veiculo'}
             </h1>
           </header>

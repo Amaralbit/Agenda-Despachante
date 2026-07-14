@@ -9,11 +9,12 @@ const includeRelations = {
 } as const;
 
 class ServicosService {
-  async listAll(params: { status?: StatusServico; tipo?: TipoServico; search?: string }) {
+  async listAll(contaId: string, params: { status?: StatusServico; tipo?: TipoServico; search?: string }) {
     const { status, tipo, search } = params;
 
     return prisma.servico.findMany({
       where: {
+        contaId,
         ...(status && { status }),
         ...(tipo && { tipo }),
         ...(search && {
@@ -30,9 +31,9 @@ class ServicosService {
     });
   }
 
-  async findById(id: string) {
-    const servico = await prisma.servico.findUnique({
-      where: { id },
+  async findById(id: string, contaId: string) {
+    const servico = await prisma.servico.findFirst({
+      where: { id, contaId },
       include: includeRelations,
     });
 
@@ -41,7 +42,8 @@ class ServicosService {
     return servico;
   }
 
-  async create(data: CreateServicoBody) {
+  async create(contaId: string, data: CreateServicoBody) {
+    await prisma.cliente.findFirstOrThrow({ where: { id: data.clienteId, contaId } });
     return prisma.servico.create({
       data: {
         tipo: data.tipo,
@@ -49,13 +51,14 @@ class ServicosService {
         observacoes: data.observacoes,
         chassi: data.chassi.toUpperCase(),
         clienteId: data.clienteId,
+        contaId,
       },
       include: includeRelations,
     });
   }
 
-  async update(id: string, data: UpdateServicoBody) {
-    await this.findById(id);
+  async update(id: string, contaId: string, data: UpdateServicoBody) {
+    await this.findById(id, contaId);
 
     return prisma.servico.update({
       where: { id },
@@ -70,8 +73,8 @@ class ServicosService {
     });
   }
 
-  async updateStatus(id: string, status: StatusServico) {
-    await this.findById(id);
+  async updateStatus(id: string, contaId: string, status: StatusServico) {
+    await this.findById(id, contaId);
 
     return prisma.servico.update({
       where: { id },
@@ -80,8 +83,8 @@ class ServicosService {
     });
   }
 
-  async delete(id: string) {
-    await this.findById(id);
+  async delete(id: string, contaId: string) {
+    await this.findById(id, contaId);
     await prisma.servico.delete({ where: { id } });
   }
 }

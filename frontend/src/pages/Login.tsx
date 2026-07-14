@@ -1,10 +1,11 @@
 import React, { FormEvent, useState } from 'react';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, useSearchParams } from 'react-router-dom';
 import { useAuth } from '../contexts/AuthContext';
 
 export const Login: React.FC = () => {
   const { login, register } = useAuth();
   const navigate = useNavigate();
+  const [searchParams] = useSearchParams();
 
   const [modo, setModo] = useState<'login' | 'cadastro'>('login');
   const [nome, setNome] = useState('');
@@ -32,7 +33,8 @@ export const Login: React.FC = () => {
         await register(nome, email, senha);
       }
 
-      navigate('/', { replace: true });
+      const convite = searchParams.get('convite');
+      navigate(convite ? `/convite/${convite}` : '/', { replace: true });
     } catch (err) {
       setErro(
         err instanceof Error

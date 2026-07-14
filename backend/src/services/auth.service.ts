@@ -35,21 +35,40 @@ class AuthService {
 
     const senhaHash = await bcrypt.hash(senha, SALT_ROUNDS);
 
-    return prisma.usuario.create({
-      data: { nome, email, senhaHash },
-      select: { id: true, nome: true, email: true, createdAt: true },
+    return prisma.$transaction(async (tx) => {
+      const usuario = await tx.usuario.create({
+        data: { nome, email: email.toLowerCase(), senhaHash },
+      });
+      const conta = await tx.conta.create({ data: { nome: `Equipe de ${nome.trim()}` } });
+      await tx.membroConta.create({
+        data: { usuarioId: usuario.id, contaId: conta.id, papel: 'PROPRIETARIO' },
+      });
+      return { id: usuario.id, nome: usuario.nome, email: usuario.email, createdAt: usuario.createdAt };
     });
   }
 
   async me(userId: string) {
     const usuario = await prisma.usuario.findUnique({
       where: { id: userId },
-      select: { id: true, nome: true, email: true, createdAt: true },
+      include: {
+        membros: {
+          orderBy: { createdAt: 'desc' },
+          take: 1,
+          include: { conta: { select: { id: true, nome: true } } },
+        },
+      },
     });
 
     if (!usuario) throw new AppError('Usuário não encontrado.', 404);
 
-    return usuario;
+    const membro = usuario.membros[0];
+    return {
+      id: usuario.id,
+      nome: usuario.nome,
+      email: usuario.email,
+      createdAt: usuario.createdAt,
+      conta: membro ? { id: membro.conta.id, nome: membro.conta.nome, papel: membro.papel } : null,
+    };
   }
 
   async changePassword(userId: string, senhaAtual: string, novaSenha: string) {

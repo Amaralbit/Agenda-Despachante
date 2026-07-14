@@ -36,7 +36,7 @@ export const processosController = {
   async list(req: Request, res: Response, next: NextFunction) {
     try {
       const query = querySchema.parse(req.query);
-      const processos = await processosService.listAll(query);
+      const processos = await processosService.listAll(req.contaId, query);
       res.json(processos);
     } catch (err) {
       next(err);
@@ -45,7 +45,7 @@ export const processosController = {
 
   async getById(req: Request, res: Response, next: NextFunction) {
     try {
-      const processo = await processosService.findById(req.params.id);
+      const processo = await processosService.findById(req.params.id, req.contaId);
       res.json(processo);
     } catch (err) {
       next(err);
@@ -55,7 +55,7 @@ export const processosController = {
   async create(req: Request, res: Response, next: NextFunction) {
     try {
       const body = createSchema.parse(req.body);
-      const processo = await processosService.create(body);
+      const processo = await processosService.create(req.contaId, body);
       res.status(201).json(processo);
     } catch (err) {
       next(err);
@@ -65,11 +65,11 @@ export const processosController = {
   async updateStatus(req: Request, res: Response, next: NextFunction) {
     try {
       const { status, senhaConfirmacao } = statusSchema.parse(req.body);
-      const statusAtual = (await processosService.findById(req.params.id)).status;
+      const statusAtual = (await processosService.findById(req.params.id, req.contaId)).status;
       if (precisaConfirmarSenha(status, statusAtual)) {
         await confirmarSenhaParaStatus(req.userId, senhaConfirmacao, status);
       }
-      const processo = await processosService.updateStatus(req.params.id, status);
+      const processo = await processosService.updateStatus(req.params.id, req.contaId, status);
       res.json(processo);
     } catch (err) {
       next(err);
@@ -80,7 +80,7 @@ export const processosController = {
     try {
       const { anexos, senhaConfirmacao } = finalizarSchema.parse(req.body);
       await confirmarSenhaParaStatus(req.userId, senhaConfirmacao, 'CONCLUIDO');
-      const processo = await processosService.finalizar(req.params.id, anexos);
+      const processo = await processosService.finalizar(req.params.id, req.contaId, anexos);
       res.json(processo);
     } catch (err) {
       next(err);
@@ -90,7 +90,7 @@ export const processosController = {
   async salvarAnexos(req: Request, res: Response, next: NextFunction) {
     try {
       const { anexos } = finalizarSchema.parse(req.body);
-      const processo = await processosService.salvarAnexos(req.params.id, anexos);
+      const processo = await processosService.salvarAnexos(req.params.id, req.contaId, anexos);
       res.json(processo);
     } catch (err) {
       next(err);
@@ -99,7 +99,7 @@ export const processosController = {
 
   async getAnexo(req: Request, res: Response, next: NextFunction) {
     try {
-      const anexo = await processosService.getAnexo(req.params.id, req.params.anexoId);
+      const anexo = await processosService.getAnexo(req.params.id, req.contaId, req.params.anexoId);
       res.setHeader('Content-Type', anexo.mimeType);
       res.setHeader('Content-Disposition', `inline; filename="${encodeURIComponent(anexo.nome)}"`);
       res.send(Buffer.from(anexo.conteudo));
@@ -110,7 +110,7 @@ export const processosController = {
 
   async remove(req: Request, res: Response, next: NextFunction) {
     try {
-      await processosService.delete(req.params.id);
+      await processosService.delete(req.params.id, req.contaId);
       res.status(204).send();
     } catch (err) {
       next(err);

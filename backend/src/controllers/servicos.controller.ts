@@ -36,7 +36,7 @@ export const servicosController = {
   async list(req: Request, res: Response, next: NextFunction) {
     try {
       const query = querySchema.parse(req.query);
-      const servicos = await servicosService.listAll(query);
+      const servicos = await servicosService.listAll(req.contaId, query);
       res.json(servicos);
     } catch (err) {
       next(err);
@@ -45,7 +45,7 @@ export const servicosController = {
 
   async getById(req: Request, res: Response, next: NextFunction) {
     try {
-      const servico = await servicosService.findById(req.params.id);
+      const servico = await servicosService.findById(req.params.id, req.contaId);
       res.json(servico);
     } catch (err) {
       next(err);
@@ -55,7 +55,7 @@ export const servicosController = {
   async create(req: Request, res: Response, next: NextFunction) {
     try {
       const body = createSchema.parse(req.body);
-      const servico = await servicosService.create(body);
+      const servico = await servicosService.create(req.contaId, body);
       res.status(201).json(servico);
     } catch (err) {
       next(err);
@@ -65,11 +65,11 @@ export const servicosController = {
   async update(req: Request, res: Response, next: NextFunction) {
     try {
       const body = updateSchema.parse(req.body);
-      const statusAtual = body.status ? (await servicosService.findById(req.params.id)).status : undefined;
+      const statusAtual = body.status ? (await servicosService.findById(req.params.id, req.contaId)).status : undefined;
       if (precisaConfirmarSenha(body.status, statusAtual)) {
         await confirmarSenhaParaStatus(req.userId, body.senhaConfirmacao, body.status);
       }
-      const servico = await servicosService.update(req.params.id, body);
+      const servico = await servicosService.update(req.params.id, req.contaId, body);
       res.json(servico);
     } catch (err) {
       next(err);
@@ -79,11 +79,11 @@ export const servicosController = {
   async updateStatus(req: Request, res: Response, next: NextFunction) {
     try {
       const { status, senhaConfirmacao } = statusSchema.parse(req.body);
-      const statusAtual = (await servicosService.findById(req.params.id)).status;
+      const statusAtual = (await servicosService.findById(req.params.id, req.contaId)).status;
       if (precisaConfirmarSenha(status, statusAtual)) {
         await confirmarSenhaParaStatus(req.userId, senhaConfirmacao, status);
       }
-      const servico = await servicosService.updateStatus(req.params.id, status);
+      const servico = await servicosService.updateStatus(req.params.id, req.contaId, status);
       res.json(servico);
     } catch (err) {
       next(err);
@@ -92,7 +92,7 @@ export const servicosController = {
 
   async remove(req: Request, res: Response, next: NextFunction) {
     try {
-      await servicosService.delete(req.params.id);
+      await servicosService.delete(req.params.id, req.contaId);
       res.status(204).send();
     } catch (err) {
       next(err);

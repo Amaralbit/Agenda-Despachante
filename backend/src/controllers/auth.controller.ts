@@ -1,6 +1,7 @@
 import { Request, Response, NextFunction } from 'express';
 import { z } from 'zod';
 import authService from '../services/auth.service';
+import contaService from '../services/conta.service';
 
 const loginSchema = z.object({
   email: z.string().email('E-mail inválido'),
@@ -52,6 +53,15 @@ export const authController = {
     try {
       const { senhaAtual, novaSenha } = changePasswordSchema.parse(req.body);
       await authService.changePassword(req.userId, senhaAtual, novaSenha);
+      res.status(204).send();
+    } catch (err) {
+      next(err);
+    }
+  },
+
+  async acceptInvite(req: Request, res: Response, next: NextFunction) {
+    try {
+      await contaService.aceitarConvite(req.params.token, req.userId, req.userEmail);
       res.status(204).send();
     } catch (err) {
       next(err);

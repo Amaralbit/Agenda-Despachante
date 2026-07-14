@@ -3,24 +3,25 @@ import { AppError } from '../middleware/errorHandler';
 import { CreateClienteBody, CreateVeiculoBody } from '../types';
 
 class ClientesService {
-  async listAll(search?: string) {
+  async listAll(contaId: string, search?: string) {
     return prisma.cliente.findMany({
       where: search
         ? {
+            contaId,
             OR: [
               { nome: { contains: search, mode: 'insensitive' } },
               { cpfCnpj: { contains: search, mode: 'insensitive' } },
             ],
           }
-        : undefined,
+        : { contaId },
       include: { veiculos: true },
       orderBy: { nome: 'asc' },
     });
   }
 
-  async findById(id: string) {
-    const cliente = await prisma.cliente.findUnique({
-      where: { id },
+  async findById(id: string, contaId: string) {
+    const cliente = await prisma.cliente.findFirst({
+      where: { id, contaId },
       include: { veiculos: true, servicos: { include: { veiculo: true } } },
     });
 
@@ -29,12 +30,12 @@ class ClientesService {
     return cliente;
   }
 
-  async create(data: CreateClienteBody) {
-    return prisma.cliente.create({ data, include: { veiculos: true } });
+  async create(contaId: string, data: CreateClienteBody) {
+    return prisma.cliente.create({ data: { ...data, contaId }, include: { veiculos: true } });
   }
 
-  async update(id: string, data: Partial<CreateClienteBody>) {
-    await this.findById(id);
+  async update(id: string, contaId: string, data: Partial<CreateClienteBody>) {
+    await this.findById(id, contaId);
 
     return prisma.cliente.update({
       where: { id },
@@ -43,22 +44,22 @@ class ClientesService {
     });
   }
 
-  async delete(id: string) {
-    await this.findById(id);
+  async delete(id: string, contaId: string) {
+    await this.findById(id, contaId);
     await prisma.cliente.delete({ where: { id } });
   }
 
-  async createVeiculo(data: CreateVeiculoBody) {
-    await this.findById(data.clienteId);
+  async createVeiculo(contaId: string, data: CreateVeiculoBody) {
+    await this.findById(data.clienteId, contaId);
 
-    return prisma.veiculo.create({ data });
+    return prisma.veiculo.create({ data: { ...data, contaId } });
   }
 
-  async listVeiculosByCliente(clienteId: string) {
-    await this.findById(clienteId);
+  async listVeiculosByCliente(clienteId: string, contaId: string) {
+    await this.findById(clienteId, contaId);
 
     return prisma.veiculo.findMany({
-      where: { clienteId },
+      where: { clienteId, contaId },
       orderBy: { placa: 'asc' },
     });
   }
