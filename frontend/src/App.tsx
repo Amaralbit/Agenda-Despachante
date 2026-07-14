@@ -7,11 +7,14 @@ import { Clientes } from './pages/Clientes';
 import { Graficos } from './pages/Graficos';
 import { Lembretes } from './pages/Lembretes';
 import { HistoricoVeiculo } from './pages/HistoricoVeiculo';
+import { Equipe } from './pages/Equipe';
+import { Convite } from './pages/Convite';
 
 export default function App() {
   return (
     <Routes>
       <Route path="/login" element={<Login />} />
+      <Route path="/convite/:token" element={<Convite />} />
 
       <Route
         path="/"
@@ -56,6 +59,8 @@ export default function App() {
           </ProtectedRoute>
         }
       />
+
+      <Route path="/equipe" element={<ProtectedRoute><Layout><Equipe /></Layout></ProtectedRoute>} />
 
       <Route
         path="/veiculos/:id/historico"

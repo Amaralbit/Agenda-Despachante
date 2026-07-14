@@ -17,11 +17,12 @@ const includeSummary = {
 } as const;
 
 class ProcessosService {
-  async listAll(params: { status?: StatusServico; search?: string }) {
+  async listAll(contaId: string, params: { status?: StatusServico; search?: string }) {
     const { status, search } = params;
 
     return prisma.processoMontagem.findMany({
       where: {
+        contaId,
         ...(status && { status }),
         ...(search && {
           OR: [
@@ -36,9 +37,9 @@ class ProcessosService {
     });
   }
 
-  async findById(id: string) {
-    const processo = await prisma.processoMontagem.findUnique({
-      where: { id },
+  async findById(id: string, contaId: string) {
+    const processo = await prisma.processoMontagem.findFirst({
+      where: { id, contaId },
       include: includeSummary,
     });
 
@@ -47,19 +48,20 @@ class ProcessosService {
     return processo;
   }
 
-  async create(data: CreateProcessoMontagemBody) {
+  async create(contaId: string, data: CreateProcessoMontagemBody) {
     return prisma.processoMontagem.create({
       data: {
         placa: data.placa.toUpperCase(),
         numeroAtendimento: data.numeroAtendimento.trim(),
         solicitantePa2: data.solicitantePa2.trim(),
+        contaId,
       },
       include: includeSummary,
     });
   }
 
-  async updateStatus(id: string, status: StatusServico) {
-    const processo = await this.findById(id);
+  async updateStatus(id: string, contaId: string, status: StatusServico) {
+    const processo = await this.findById(id, contaId);
 
     if (status === 'CONCLUIDO' && processo.anexos.length === 0) {
       throw new AppError('Anexe pelo menos um PDF antes de concluir a montagem.', 422);
@@ -75,8 +77,8 @@ class ProcessosService {
     });
   }
 
-  async finalizar(id: string, anexos: CreateProcessoAnexoBody[]) {
-    const processo = await this.findById(id);
+  async finalizar(id: string, contaId: string, anexos: CreateProcessoAnexoBody[]) {
+    const processo = await this.findById(id, contaId);
 
     if (!['EM_ANDAMENTO', 'AGUARDANDO_IMPRESSAO'].includes(processo.status)) {
       throw new AppError(
@@ -110,8 +112,8 @@ class ProcessosService {
     });
   }
 
-  async salvarAnexos(id: string, anexos: CreateProcessoAnexoBody[]) {
-    const processo = await this.findById(id);
+  async salvarAnexos(id: string, contaId: string, anexos: CreateProcessoAnexoBody[]) {
+    const processo = await this.findById(id, contaId);
 
     if (!['EM_ANDAMENTO', 'AGUARDANDO_IMPRESSAO'].includes(processo.status)) {
       throw new AppError(
@@ -134,11 +136,11 @@ class ProcessosService {
       })),
     });
 
-    return this.findById(id);
+    return this.findById(id, contaId);
   }
 
-  async getAnexo(processoId: string, anexoId: string) {
-    await this.findById(processoId);
+  async getAnexo(processoId: string, contaId: string, anexoId: string) {
+    await this.findById(processoId, contaId);
 
     const anexo = await prisma.processoAnexo.findFirst({
       where: { id: anexoId, processoId },
@@ -149,8 +151,8 @@ class ProcessosService {
     return anexo;
   }
 
-  async delete(id: string) {
-    await this.findById(id);
+  async delete(id: string, contaId: string) {
+    await this.findById(id, contaId);
     await prisma.processoMontagem.delete({ where: { id } });
   }
 }

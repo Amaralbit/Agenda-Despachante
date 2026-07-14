@@ -22,30 +22,88 @@ enum StatusServico {
   CONCLUIDO
 }
 
+enum PapelConta {
+  PROPRIETARIO
+  MEMBRO
+}
+
+model Conta {
+  id        String          @id @default(uuid())
+  nome      String
+  membros   MembroConta[]
+  convites  ConviteConta[]
+  clientes  Cliente[]
+  veiculos  Veiculo[]
+  servicos  Servico[]
+  processos ProcessoMontagem[]
+  createdAt DateTime        @default(now()) @map("created_at")
+  updatedAt DateTime        @updatedAt @map("updated_at")
+
+  @@map("contas")
+}
+
+model MembroConta {
+  id        String     @id @default(uuid())
+  usuarioId String     @map("usuario_id")
+  contaId   String     @map("conta_id")
+  papel     PapelConta @default(MEMBRO)
+  usuario   Usuario    @relation(fields: [usuarioId], references: [id], onDelete: Cascade)
+  conta     Conta      @relation(fields: [contaId], references: [id], onDelete: Cascade)
+  createdAt DateTime   @default(now()) @map("created_at")
+
+  @@unique([usuarioId, contaId])
+  @@index([contaId])
+  @@map("membros_conta")
+}
+
+model ConviteConta {
+  id        String     @id @default(uuid())
+  contaId   String     @map("conta_id")
+  email     String
+  token     String     @unique
+  criadoPor String     @map("criado_por")
+  expiraEm  DateTime   @map("expira_em")
+  aceitoEm  DateTime?  @map("aceito_em")
+  conta     Conta      @relation(fields: [contaId], references: [id], onDelete: Cascade)
+  createdAt DateTime   @default(now()) @map("created_at")
+
+  @@index([contaId])
+  @@map("convites_conta")
+}
+
 model Cliente {
   id        String    @id @default(uuid())
   nome      String
   telefone  String?
-  cpfCnpj  String    @unique @map("cpf_cnpj")
+  cpfCnpj  String    @map("cpf_cnpj")
+  contaId  String    @map("conta_id")
+  conta    Conta     @relation(fields: [contaId], references: [id], onDelete: Cascade)
   veiculos  Veiculo[]
   servicos  Servico[]
   createdAt DateTime  @default(now()) @map("created_at")
   updatedAt DateTime  @updatedAt @map("updated_at")
 
+  @@unique([contaId, cpfCnpj])
+  @@index([contaId])
   @@map("clientes")
 }
 
 model Veiculo {
   id        String    @id @default(uuid())
-  placa     String    @unique
+  placa     String
   modelo    String
-  renavam   String    @unique
+  renavam   String
+  contaId   String    @map("conta_id")
+  conta     Conta     @relation(fields: [contaId], references: [id], onDelete: Cascade)
   clienteId String    @map("cliente_id")
   cliente   Cliente   @relation(fields: [clienteId], references: [id], onDelete: Cascade)
   servicos  Servico[]
   createdAt DateTime  @default(now()) @map("created_at")
   updatedAt DateTime  @updatedAt @map("updated_at")
 
+  @@index([contaId])
+  @@unique([contaId, placa])
+  @@unique([contaId, renavam])
   @@map("veiculos")
 }
 
@@ -57,12 +115,15 @@ model Servico {
   observacoes String?
   chassi      String?
   clienteId   String        @map("cliente_id")
+  contaId     String        @map("conta_id")
+  conta       Conta         @relation(fields: [contaId], references: [id], onDelete: Cascade)
   cliente     Cliente       @relation(fields: [clienteId], references: [id])
   veiculoId   String?       @map("veiculo_id")
   veiculo     Veiculo?      @relation(fields: [veiculoId], references: [id])
   createdAt   DateTime      @default(now()) @map("created_at")
   updatedAt   DateTime      @updatedAt @map("updated_at")
 
+  @@index([contaId])
   @@map("servicos")
 }
 
@@ -71,12 +132,15 @@ model ProcessoMontagem {
   placa             String
   numeroAtendimento String          @map("numero_atendimento")
   solicitantePa2    String          @default("") @map("solicitante_pa2")
+  contaId           String          @map("conta_id")
+  conta             Conta           @relation(fields: [contaId], references: [id], onDelete: Cascade)
   status            StatusServico   @default(PENDENTE)
   anexos            ProcessoAnexo[]
   createdAt         DateTime        @default(now()) @map("created_at")
   updatedAt         DateTime        @updatedAt @map("updated_at")
   concluidoEm       DateTime?       @map("concluido_em")
 
+  @@index([contaId])
   @@map("processos_montagem")
 }
 
@@ -98,6 +162,7 @@ model Usuario {
   nome      String
   email     String   @unique
   senhaHash String   @map("senha_hash")
+  membros   MembroConta[]
   lembretes Lembrete[]
   createdAt DateTime @default(now()) @map("created_at")
   updatedAt DateTime @updatedAt @map("updated_at")

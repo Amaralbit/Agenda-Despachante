@@ -11,7 +11,7 @@ const updateSchema = z.object({
 export const veiculosController = {
   async getById(req: Request, res: Response, next: NextFunction) {
     try {
-      const veiculo = await veiculosService.findById(req.params.id);
+      const veiculo = await veiculosService.findById(req.params.id, req.contaId);
       res.json(veiculo);
     } catch (err) {
       next(err);
@@ -21,7 +21,7 @@ export const veiculosController = {
   async update(req: Request, res: Response, next: NextFunction) {
     try {
       const body = updateSchema.parse(req.body);
-      const veiculo = await veiculosService.update(req.params.id, body);
+      const veiculo = await veiculosService.update(req.params.id, req.contaId, body);
       res.json(veiculo);
     } catch (err) {
       next(err);
@@ -30,7 +30,7 @@ export const veiculosController = {
 
   async remove(req: Request, res: Response, next: NextFunction) {
     try {
-      await veiculosService.delete(req.params.id);
+      await veiculosService.delete(req.params.id, req.contaId);
       res.status(204).send();
     } catch (err) {
       next(err);

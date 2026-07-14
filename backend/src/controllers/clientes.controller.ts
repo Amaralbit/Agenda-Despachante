@@ -19,7 +19,7 @@ export const clientesController = {
   async list(req: Request, res: Response, next: NextFunction) {
     try {
       const search = req.query.search as string | undefined;
-      const clientes = await clientesService.listAll(search);
+      const clientes = await clientesService.listAll(req.contaId, search);
       res.json(clientes);
     } catch (err) {
       next(err);
@@ -28,7 +28,7 @@ export const clientesController = {
 
   async getById(req: Request, res: Response, next: NextFunction) {
     try {
-      const cliente = await clientesService.findById(req.params.id);
+      const cliente = await clientesService.findById(req.params.id, req.contaId);
       res.json(cliente);
     } catch (err) {
       next(err);
@@ -38,7 +38,7 @@ export const clientesController = {
   async create(req: Request, res: Response, next: NextFunction) {
     try {
       const body = createClienteSchema.parse(req.body);
-      const cliente = await clientesService.create(body);
+      const cliente = await clientesService.create(req.contaId, body);
       res.status(201).json(cliente);
     } catch (err) {
       next(err);
@@ -48,7 +48,7 @@ export const clientesController = {
   async update(req: Request, res: Response, next: NextFunction) {
     try {
       const body = createClienteSchema.partial().parse(req.body);
-      const cliente = await clientesService.update(req.params.id, body);
+      const cliente = await clientesService.update(req.params.id, req.contaId, body);
       res.json(cliente);
     } catch (err) {
       next(err);
@@ -57,7 +57,7 @@ export const clientesController = {
 
   async remove(req: Request, res: Response, next: NextFunction) {
     try {
-      await clientesService.delete(req.params.id);
+      await clientesService.delete(req.params.id, req.contaId);
       res.status(204).send();
     } catch (err) {
       next(err);
@@ -67,7 +67,7 @@ export const clientesController = {
   async createVeiculo(req: Request, res: Response, next: NextFunction) {
     try {
       const body = createVeiculoSchema.parse({ ...req.body, clienteId: req.params.id });
-      const veiculo = await clientesService.createVeiculo(body);
+      const veiculo = await clientesService.createVeiculo(req.contaId, body);
       res.status(201).json(veiculo);
     } catch (err) {
       next(err);
@@ -76,7 +76,7 @@ export const clientesController = {
 
   async listVeiculos(req: Request, res: Response, next: NextFunction) {
     try {
-      const veiculos = await clientesService.listVeiculosByCliente(req.params.id);
+      const veiculos = await clientesService.listVeiculosByCliente(req.params.id, req.contaId);
       res.json(veiculos);
     } catch (err) {
       next(err);
