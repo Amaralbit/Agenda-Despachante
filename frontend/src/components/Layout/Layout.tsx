@@ -98,21 +98,6 @@ export const Layout: React.FC<{ children: React.ReactNode }> = ({ children }) =>
             </div>
             <button
               type="button"
-              onClick={() => setIsDarkMode((enabled) => !enabled)}
-              aria-pressed={isDarkMode}
-              className={`mb-3 flex w-full items-center justify-between rounded-lg px-3 py-2 text-left text-xs font-medium transition-colors ${
-                isDarkMode
-                  ? 'bg-indigo-400/20 text-indigo-100 ring-1 ring-indigo-300/30'
-                  : 'bg-white/5 text-slate-300 hover:bg-white/10 hover:text-white'
-              }`}
-            >
-              <span>{isDarkMode ? 'Modo escuro' : 'Modo normal'}</span>
-              <span className="text-[10px] font-bold uppercase tracking-wide">
-                {isDarkMode ? 'Escuro' : 'Normal'}
-              </span>
-            </button>
-            <button
-              type="button"
               onClick={() => setIsLiteMode((enabled) => !enabled)}
               aria-pressed={isLiteMode}
               className={`mb-3 flex w-full items-center justify-between rounded-lg px-3 py-2 text-left text-xs font-medium transition-colors ${
@@ -136,7 +121,7 @@ export const Layout: React.FC<{ children: React.ReactNode }> = ({ children }) =>
         </aside>
 
         <main className="ml-60 flex min-h-screen min-w-0 flex-1 flex-col">
-          <header className="sticky top-0 z-20 border-b border-white/70 bg-white/80 px-8 py-5 shadow-sm shadow-slate-200/60 backdrop-blur-xl">
+          <header className="sticky top-0 z-20 flex items-center justify-between gap-4 border-b border-white/70 bg-white/80 px-8 py-5 shadow-sm shadow-slate-200/60 backdrop-blur-xl">
             <h1 className="text-lg font-bold text-slate-950">
               {pathname === '/' && 'Dashboard - Kanban de Servicos'}
               {pathname === '/clientes' && 'Gestao de Clientes e Veiculos'}
@@ -145,6 +130,23 @@ export const Layout: React.FC<{ children: React.ReactNode }> = ({ children }) =>
               {pathname === '/equipe' && 'Equipe'}
               {pathname.includes('/historico') && 'Historico do Veiculo'}
             </h1>
+            <button
+              type="button"
+              onClick={() => setIsDarkMode((enabled) => !enabled)}
+              aria-pressed={isDarkMode}
+              aria-label={isDarkMode ? 'Ativar modo claro' : 'Ativar modo escuro'}
+              title={isDarkMode ? 'Ativar modo claro' : 'Ativar modo escuro'}
+              className={`inline-flex shrink-0 items-center gap-2 rounded-lg px-3 py-2 text-xs font-semibold shadow-sm transition-colors focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2 ${
+                isDarkMode
+                  ? 'bg-amber-300 text-slate-950 hover:bg-amber-200'
+                  : 'bg-slate-950 text-white hover:bg-slate-800'
+              }`}
+            >
+              <span aria-hidden="true" className="text-base leading-none">
+                {isDarkMode ? '☀' : '☾'}
+              </span>
+              {isDarkMode ? 'Modo claro' : 'Modo escuro'}
+            </button>
           </header>
 
           <div className="min-w-0 flex-1 px-4 py-6 lg:px-8">{children}</div>
