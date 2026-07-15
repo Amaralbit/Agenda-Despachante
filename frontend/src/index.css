@@ -149,3 +149,103 @@ html.lite-mode *::after {
   -webkit-backdrop-filter: none !important;
   box-shadow: none !important;
 }
+
+/* Tema escuro, acionado pelo controle no menu lateral. */
+html.dark-mode {
+  color-scheme: dark;
+}
+
+html.dark-mode body,
+html.dark-mode .bg-slate-100 {
+  background-color: #0f172a !important;
+  color: #e2e8f0;
+}
+
+html.dark-mode .ambient-backdrop {
+  background:
+    linear-gradient(115deg, rgba(99, 102, 241, 0.12), transparent 42%),
+    linear-gradient(180deg, #0f172a 0%, #111827 50%, #172033 100%);
+}
+
+html.dark-mode .ambient-backdrop::before {
+  opacity: 0.32;
+}
+
+html.dark-mode .bg-white,
+html.dark-mode .bg-white\/90,
+html.dark-mode .bg-white\/95,
+html.dark-mode .bg-white\/80,
+html.dark-mode .bg-white\/60,
+html.dark-mode .bg-white\/50,
+html.dark-mode .glass-panel,
+html.dark-mode .metric-card {
+  background-color: rgba(30, 41, 59, 0.94) !important;
+}
+
+html.dark-mode .bg-slate-50,
+html.dark-mode .bg-slate-50\/80,
+html.dark-mode .bg-slate-100\/80,
+html.dark-mode .bg-slate-100 {
+  background-color: #1e293b !important;
+}
+
+html.dark-mode .bg-gray-100,
+html.dark-mode .bg-gray-50 {
+  background-color: #334155 !important;
+}
+
+html.dark-mode .border-white\/80,
+html.dark-mode .border-white\/70,
+html.dark-mode .border-slate-100,
+html.dark-mode .border-slate-200,
+html.dark-mode .border-slate-200\/80,
+html.dark-mode .border-gray-100,
+html.dark-mode .border-gray-200,
+html.dark-mode .border-gray-300,
+html.dark-mode .border-gray-200 {
+  border-color: #475569 !important;
+}
+
+html.dark-mode .divide-slate-100 > :not([hidden]) ~ :not([hidden]) {
+  border-color: #475569 !important;
+}
+
+html.dark-mode .text-slate-950,
+html.dark-mode .text-slate-900,
+html.dark-mode .text-slate-800,
+html.dark-mode .text-gray-900 {
+  color: #f8fafc !important;
+}
+
+html.dark-mode .text-slate-700,
+html.dark-mode .text-gray-700,
+html.dark-mode .text-slate-600,
+html.dark-mode .text-gray-600 {
+  color: #cbd5e1 !important;
+}
+
+html.dark-mode .text-slate-500,
+html.dark-mode .text-gray-500,
+html.dark-mode .text-slate-400,
+html.dark-mode .text-gray-400 {
+  color: #94a3b8 !important;
+}
+
+html.dark-mode input,
+html.dark-mode select,
+html.dark-mode textarea {
+  background-color: #0f172a !important;
+  border-color: #475569 !important;
+  color: #e2e8f0 !important;
+}
+
+html.dark-mode input::placeholder,
+html.dark-mode textarea::placeholder {
+  color: #94a3b8 !important;
+}
+
+html.dark-mode .shadow-slate-200\/70,
+html.dark-mode .shadow-slate-200\/60,
+html.dark-mode .shadow-slate-200\/50 {
+  --tw-shadow-color: rgba(2, 6, 23, 0.45) !important;
+}

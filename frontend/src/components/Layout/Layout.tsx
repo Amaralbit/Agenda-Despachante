@@ -16,6 +16,7 @@ const NAV_ITEMS: NavItem[] = [
 ];
 
 const LITE_MODE_STORAGE_KEY = 'agenda-despachante-lite-mode';
+const DARK_MODE_STORAGE_KEY = 'agenda-despachante-dark-mode';
 
 export const Layout: React.FC<{ children: React.ReactNode }> = ({ children }) => {
   const { pathname } = useLocation();
@@ -26,11 +27,19 @@ export const Layout: React.FC<{ children: React.ReactNode }> = ({ children }) =>
   const [isLiteMode, setIsLiteMode] = useState(
     () => window.localStorage.getItem(LITE_MODE_STORAGE_KEY) === 'true',
   );
+  const [isDarkMode, setIsDarkMode] = useState(
+    () => window.localStorage.getItem(DARK_MODE_STORAGE_KEY) === 'true',
+  );
 
   useEffect(() => {
     document.documentElement.classList.toggle('lite-mode', isLiteMode);
     window.localStorage.setItem(LITE_MODE_STORAGE_KEY, String(isLiteMode));
   }, [isLiteMode]);
+
+  useEffect(() => {
+    document.documentElement.classList.toggle('dark-mode', isDarkMode);
+    window.localStorage.setItem(DARK_MODE_STORAGE_KEY, String(isDarkMode));
+  }, [isDarkMode]);
 
   return (
     <div className="relative min-h-screen overflow-x-hidden bg-slate-100">
@@ -87,6 +96,21 @@ export const Layout: React.FC<{ children: React.ReactNode }> = ({ children }) =>
                 <p className="truncate text-xs text-slate-400">{usuario?.email}</p>
               </div>
             </div>
+            <button
+              type="button"
+              onClick={() => setIsDarkMode((enabled) => !enabled)}
+              aria-pressed={isDarkMode}
+              className={`mb-3 flex w-full items-center justify-between rounded-lg px-3 py-2 text-left text-xs font-medium transition-colors ${
+                isDarkMode
+                  ? 'bg-indigo-400/20 text-indigo-100 ring-1 ring-indigo-300/30'
+                  : 'bg-white/5 text-slate-300 hover:bg-white/10 hover:text-white'
+              }`}
+            >
+              <span>{isDarkMode ? 'Modo escuro' : 'Modo normal'}</span>
+              <span className="text-[10px] font-bold uppercase tracking-wide">
+                {isDarkMode ? 'Escuro' : 'Normal'}
+              </span>
+            </button>
             <button
               type="button"
               onClick={() => setIsLiteMode((enabled) => !enabled)}
