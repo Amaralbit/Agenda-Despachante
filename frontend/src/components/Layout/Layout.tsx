@@ -13,6 +13,7 @@ const NAV_ITEMS: NavItem[] = [
   { to: '/clientes', label: 'Clientes', icon: 'CL' },
   { to: '/graficos', label: 'Graficos', icon: 'GR' },
   { to: '/lembretes', label: 'Lembretes', icon: 'LM' },
+  { to: '/emplacamentos-mobile', label: 'Emplacamentos Mobile', icon: 'EM' },
 ];
 
 const LITE_MODE_STORAGE_KEY = 'agenda-despachante-lite-mode';
@@ -127,6 +128,7 @@ export const Layout: React.FC<{ children: React.ReactNode }> = ({ children }) =>
               {pathname === '/clientes' && 'Gestao de Clientes e Veiculos'}
               {pathname === '/graficos' && 'Graficos de Processos'}
               {pathname === '/lembretes' && 'Lembretes'}
+              {pathname === '/emplacamentos-mobile' && 'Emplacamentos Mobile'}
               {pathname === '/equipe' && 'Equipe'}
               {pathname.includes('/historico') && 'Historico do Veiculo'}
             </h1>

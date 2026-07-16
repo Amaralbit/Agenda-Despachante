@@ -36,6 +36,7 @@ model Conta {
   veiculos  Veiculo[]
   servicos  Servico[]
   processos ProcessoMontagem[]
+  emplacamentosMobile EmplacamentoMobile[]
   createdAt DateTime        @default(now()) @map("created_at")
   updatedAt DateTime        @updatedAt @map("updated_at")
 
@@ -155,6 +156,23 @@ model ProcessoAnexo {
   createdAt  DateTime         @default(now()) @map("created_at")
 
   @@map("processos_anexos")
+}
+
+model EmplacamentoMobile {
+  id                String   @id @default(uuid())
+  contaId           String   @map("conta_id")
+  conta             Conta    @relation(fields: [contaId], references: [id], onDelete: Cascade)
+  data              DateTime @db.Date
+  peugeotPasseio    Int      @default(0) @map("peugeot_passeio")
+  peugeotUtilitario Int      @default(0) @map("peugeot_utilitario")
+  citroenPasseio    Int      @default(0) @map("citroen_passeio")
+  citroenUtilitario Int      @default(0) @map("citroen_utilitario")
+  createdAt         DateTime @default(now()) @map("created_at")
+  updatedAt         DateTime @updatedAt @map("updated_at")
+
+  @@unique([contaId, data])
+  @@index([contaId])
+  @@map("emplacamentos_mobile")
 }
 
 model Usuario {

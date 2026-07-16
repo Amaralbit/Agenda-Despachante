@@ -8,6 +8,7 @@ import veiculosRoutes from './veiculos.routes';
 import processosRoutes from './processos.routes';
 import lembretesRoutes from './lembretes.routes';
 import contaRoutes from './conta.routes';
+import emplacamentosMobileRoutes from './emplacamentosMobile.routes';
 
 const router = Router();
 
@@ -18,6 +19,7 @@ router.use('/veiculos', authenticate, veiculosRoutes);
 router.use('/processos', authenticate, processosRoutes);
 router.use('/lembretes', authenticate, lembretesRoutes);
 router.use('/conta', authenticate, contaRoutes);
+router.use('/emplacamentos-mobile', authenticate, emplacamentosMobileRoutes);
 
 router.get('/health', async (_req, res, next) => {
   try {
