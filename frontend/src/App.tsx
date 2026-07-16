@@ -9,6 +9,7 @@ import { Lembretes } from './pages/Lembretes';
 import { HistoricoVeiculo } from './pages/HistoricoVeiculo';
 import { Equipe } from './pages/Equipe';
 import { Convite } from './pages/Convite';
+import { EmplacamentosMobile } from './pages/EmplacamentosMobile';
 
 export default function App() {
   return (
@@ -55,6 +56,17 @@ export default function App() {
           <ProtectedRoute>
             <Layout>
               <Lembretes />
+            </Layout>
+          </ProtectedRoute>
+        }
+      />
+
+      <Route
+        path="/emplacamentos-mobile"
+        element={
+          <ProtectedRoute>
+            <Layout>
+              <EmplacamentosMobile />
             </Layout>
           </ProtectedRoute>
         }

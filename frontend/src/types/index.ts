@@ -90,6 +90,22 @@ export interface CreateLembreteForm {
   dataLembrete?: string;
 }
 
+export interface EmplacamentoMobile {
+  id: string | null;
+  data: string;
+  peugeotPasseio: number;
+  peugeotUtilitario: number;
+  citroenPasseio: number;
+  citroenUtilitario: number;
+  createdAt: string | null;
+  updatedAt: string | null;
+}
+
+export type EmplacamentoMobileQuantidades = Pick<
+  EmplacamentoMobile,
+  'peugeotPasseio' | 'peugeotUtilitario' | 'citroenPasseio' | 'citroenUtilitario'
+>;
+
 export interface CreateProcessoMontagemForm {
   placa: string;
   numeroAtendimento: string;
