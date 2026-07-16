@@ -99,12 +99,22 @@ export interface EmplacamentoMobile {
   citroenUtilitario: number;
   createdAt: string | null;
   updatedAt: string | null;
+  veiculos: EmplacamentoMobileVeiculo[];
 }
 
-export type EmplacamentoMobileQuantidades = Pick<
-  EmplacamentoMobile,
-  'peugeotPasseio' | 'peugeotUtilitario' | 'citroenPasseio' | 'citroenUtilitario'
->;
+export interface EmplacamentoMobileVeiculo {
+  id: string;
+  placa: string;
+  marca: 'PEUGEOT' | 'CITROEN';
+  categoria: 'PASSEIO' | 'UTILITARIO';
+  createdAt: string;
+}
+
+export interface CreateEmplacamentoMobileVeiculo {
+  placa: string;
+  marca: EmplacamentoMobileVeiculo['marca'];
+  categoria: EmplacamentoMobileVeiculo['categoria'];
+}
 
 export interface CreateProcessoMontagemForm {
   placa: string;
