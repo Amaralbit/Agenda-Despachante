@@ -4,6 +4,7 @@ import { emplacamentosMobileController } from '../controllers/emplacamentosMobil
 const router = Router();
 
 router.get('/', emplacamentosMobileController.getByDate);
-router.put('/:data', emplacamentosMobileController.save);
+router.post('/:data/veiculos', emplacamentosMobileController.addVeiculo);
+router.delete('/veiculos/:id', emplacamentosMobileController.removeVeiculo);
 
 export default router;

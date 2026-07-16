@@ -169,10 +169,35 @@ model EmplacamentoMobile {
   citroenUtilitario Int      @default(0) @map("citroen_utilitario")
   createdAt         DateTime @default(now()) @map("created_at")
   updatedAt         DateTime @updatedAt @map("updated_at")
+  veiculos          EmplacamentoMobileVeiculo[]
 
   @@unique([contaId, data])
   @@index([contaId])
   @@map("emplacamentos_mobile")
+}
+
+enum MarcaEmplacamentoMobile {
+  PEUGEOT
+  CITROEN
+}
+
+enum CategoriaEmplacamentoMobile {
+  PASSEIO
+  UTILITARIO
+}
+
+model EmplacamentoMobileVeiculo {
+  id                    String                     @id @default(uuid())
+  emplacamentoMobileId  String                     @map("emplacamento_mobile_id")
+  emplacamentoMobile    EmplacamentoMobile         @relation(fields: [emplacamentoMobileId], references: [id], onDelete: Cascade)
+  placa                 String
+  marca                 MarcaEmplacamentoMobile
+  categoria             CategoriaEmplacamentoMobile
+  createdAt             DateTime                   @default(now()) @map("created_at")
+
+  @@unique([emplacamentoMobileId, placa])
+  @@index([emplacamentoMobileId])
+  @@map("emplacamentos_mobile_veiculos")
 }
 
 model Usuario {
