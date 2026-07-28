@@ -74,11 +74,7 @@ class ProcessosService {
   }
 
   async updateStatus(id: string, contaId: string, status: StatusServico) {
-    const processo = await this.findById(id, contaId);
-
-    if (status === 'CONCLUIDO' && processo.anexos.length === 0) {
-      throw new AppError('Anexe pelo menos um PDF antes de concluir a montagem.', 422);
-    }
+    await this.findById(id, contaId);
 
     return prisma.processoMontagem.update({
       where: { id },
@@ -98,10 +94,6 @@ class ProcessosService {
         'A montagem precisa estar em andamento ou aguardando impressao para ser concluida.',
         422,
       );
-    }
-
-    if (processo.anexos.length + anexos.length === 0) {
-      throw new AppError('Anexe pelo menos um PDF antes de concluir a montagem.', 422);
     }
 
     return prisma.$transaction(async (tx) => {
