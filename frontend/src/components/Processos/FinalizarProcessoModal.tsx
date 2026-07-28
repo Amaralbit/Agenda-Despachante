@@ -87,7 +87,10 @@ export const FinalizarProcessoModal: React.FC<Props> = ({
         <div className="flex items-center justify-between border-b border-slate-100 px-6 py-4">
           <div>
             <h2 className="text-lg font-bold text-slate-950">Finalizar montagem</h2>
-            <p className="text-xs text-slate-500">{processo.placa} - {processo.numeroAtendimento}</p>
+            <p className="text-xs text-slate-500">
+              {processo.placa} - Protocolo {processo.numeroProtocolo || '-'}
+              {processo.numeroAtendimento ? ` - Atendimento ${processo.numeroAtendimento}` : ''}
+            </p>
           </div>
           <button onClick={onClose} className="text-xl font-light text-slate-400 hover:text-slate-600">
             x

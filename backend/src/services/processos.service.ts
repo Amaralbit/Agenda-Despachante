@@ -28,6 +28,7 @@ class ProcessosService {
           OR: [
             { placa: { contains: search, mode: 'insensitive' } },
             { numeroAtendimento: { contains: search, mode: 'insensitive' } },
+            { numeroProtocolo: { contains: search, mode: 'insensitive' } },
             { solicitantePa2: { contains: search, mode: 'insensitive' } },
           ],
         }),
@@ -52,9 +53,21 @@ class ProcessosService {
     return prisma.processoMontagem.create({
       data: {
         placa: data.placa.toUpperCase(),
-        numeroAtendimento: data.numeroAtendimento.trim(),
+        numeroAtendimento: data.numeroAtendimento?.trim() || null,
+        numeroProtocolo: data.numeroProtocolo.trim(),
         solicitantePa2: data.solicitantePa2.trim(),
+        tipoVeiculo: data.tipoVeiculo,
         contaId,
+        anexos: data.anexos?.length
+          ? {
+              create: data.anexos.map((anexo) => ({
+                nome: anexo.nome,
+                mimeType: anexo.mimeType,
+                tamanho: anexo.tamanho,
+                conteudo: Buffer.from(anexo.conteudoBase64, 'base64'),
+              })),
+            }
+          : undefined,
       },
       include: includeSummary,
     });

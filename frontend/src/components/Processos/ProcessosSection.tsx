@@ -65,6 +65,16 @@ function dateOnly(value: string) {
   return value.slice(0, 10);
 }
 
+function formatarEntrada(value: string) {
+  return new Intl.DateTimeFormat('pt-BR', {
+    day: '2-digit',
+    month: '2-digit',
+    year: 'numeric',
+    hour: '2-digit',
+    minute: '2-digit',
+  }).format(new Date(value));
+}
+
 interface ProcessoCardProps {
   processo: ProcessoMontagem;
   onStart: (id: string) => void;
@@ -87,14 +97,23 @@ const ProcessoCard: React.FC<ProcessoCardProps> = ({
   isUpdating,
 }) => {
   return (
-    <div className={`rounded-lg border border-white/80 bg-white/90 p-3 shadow-sm shadow-slate-200/70 backdrop-blur-xl transition-all duration-200 hover:-translate-y-0.5 hover:shadow-md ${isUpdating ? 'pointer-events-none opacity-60' : ''}`}>
+    <div className={`relative rounded-lg border border-white/80 bg-white/90 p-3 shadow-sm shadow-slate-200/70 backdrop-blur-xl transition-all duration-200 hover:-translate-y-0.5 hover:shadow-md ${isUpdating ? 'pointer-events-none opacity-60' : ''}`}>
+      <span
+        className={`absolute right-2.5 top-2.5 h-3 w-3 rounded-full ring-2 ring-white ${processo.tipoVeiculo === 'NOVO' ? 'bg-emerald-500' : 'bg-red-500'}`}
+        title={processo.tipoVeiculo === 'NOVO' ? 'Veiculo novo' : 'Veiculo usado'}
+        aria-label={processo.tipoVeiculo === 'NOVO' ? 'Veiculo novo' : 'Veiculo usado'}
+      />
       <div className="mb-3 flex items-start justify-between gap-3">
         <div className="min-w-0">
           <p className="truncate font-mono text-base font-black tracking-wide text-slate-950">{processo.placa}</p>
-          <p className="text-xs text-slate-500">Atendimento {processo.numeroAtendimento}</p>
+          <p className="text-xs font-medium text-slate-700">Protocolo {processo.numeroProtocolo || '-'}</p>
+          {processo.numeroAtendimento && (
+            <p className="text-xs text-slate-500">Atendimento {processo.numeroAtendimento}</p>
+          )}
           <p className="break-words text-xs font-medium text-slate-700">Solicitante: {processo.solicitantePa2 || '-'}</p>
+          <p className="mt-1 text-[11px] text-slate-500">Entrada: {formatarEntrada(processo.createdAt)}</p>
         </div>
-        <span className="shrink-0 rounded-md bg-slate-950 px-2 py-0.5 text-[10px] font-bold uppercase tracking-wide text-white">
+        <span className="mr-3 shrink-0 rounded-md bg-slate-950 px-2 py-0.5 text-[10px] font-bold uppercase tracking-wide text-white">
           Detran
         </span>
       </div>
@@ -219,8 +238,20 @@ export const ProcessosSection: React.FC = () => {
     return map;
   }, [filteredProcessos]);
 
-  function handleCreate(data: CreateProcessoMontagemForm) {
-    createProcesso.mutate(data, { onSuccess: () => setIsModalOpen(false) });
+  async function handleCreate(data: CreateProcessoMontagemForm, pdf?: File) {
+    const anexos: ProcessoAnexoUpload[] = pdf
+      ? [{
+          nome: pdf.name,
+          mimeType: 'application/pdf',
+          tamanho: pdf.size,
+          conteudoBase64: await fileToBase64(pdf),
+        }]
+      : [];
+
+    createProcesso.mutate(
+      { ...data, anexos },
+      { onSuccess: () => setIsModalOpen(false) },
+    );
   }
 
   function handleStart(id: string) {
