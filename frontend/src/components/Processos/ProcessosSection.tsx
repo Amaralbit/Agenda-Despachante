@@ -199,6 +199,7 @@ export const ProcessosSection: React.FC = () => {
   const [searchPlaca, setSearchPlaca] = useState('');
   const [searchSolicitante, setSearchSolicitante] = useState('');
   const [dateFilter, setDateFilter] = useState('');
+  const [dateOrder, setDateOrder] = useState<'desc' | 'asc'>('desc');
   const [showAllCompleted, setShowAllCompleted] = useState(false);
 
   const { data: processos = [], isLoading, isError } = useProcessos();
@@ -232,11 +233,15 @@ export const ProcessosSection: React.FC = () => {
       CONCLUIDO: [],
     };
     for (const processo of filteredProcessos) map[processo.status].push(processo);
-    map.CONCLUIDO.sort(
-      (a, b) => new Date(b.updatedAt).getTime() - new Date(a.updatedAt).getTime(),
-    );
+    const direction = dateOrder === 'desc' ? -1 : 1;
+    for (const status of COLUMNS) {
+      map[status].sort(
+        (a, b) =>
+          (new Date(a.createdAt).getTime() - new Date(b.createdAt).getTime()) * direction,
+      );
+    }
     return map;
-  }, [filteredProcessos]);
+  }, [filteredProcessos, dateOrder]);
 
   async function handleCreate(data: CreateProcessoMontagemForm, pdf?: File) {
     const anexos: ProcessoAnexoUpload[] = pdf
@@ -378,6 +383,16 @@ export const ProcessosSection: React.FC = () => {
           className="w-full rounded-lg border border-slate-200 bg-white/90 px-3 py-2 text-sm text-slate-700 shadow-sm shadow-slate-200/50 transition focus:outline-none focus:ring-2 focus:ring-indigo-400"
           title="Filtrar pela data de criacao"
         />
+
+        <select
+          value={dateOrder}
+          onChange={(e) => setDateOrder(e.target.value as 'desc' | 'asc')}
+          className="w-full rounded-lg border border-slate-200 bg-white/90 px-3 py-2 text-sm text-slate-700 shadow-sm shadow-slate-200/50 transition focus:outline-none focus:ring-2 focus:ring-indigo-400"
+          aria-label="Ordenar montagens por data"
+        >
+          <option value="desc">Mais recentes primeiro</option>
+          <option value="asc">Mais antigas primeiro</option>
+        </select>
 
         <div className="relative min-w-0">
           <input
