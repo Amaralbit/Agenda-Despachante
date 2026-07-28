@@ -54,6 +54,7 @@ class ProcessosService {
         placa: data.placa.toUpperCase(),
         numeroAtendimento: data.numeroAtendimento.trim(),
         solicitantePa2: data.solicitantePa2.trim(),
+        tipoVeiculo: data.tipoVeiculo,
         contaId,
       },
       include: includeSummary,

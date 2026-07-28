@@ -18,6 +18,7 @@ const createSchema = z.object({
   placa: z.string().trim().min(7, 'Placa invalida').max(10, 'Placa invalida'),
   numeroAtendimento: z.string().trim().min(1, 'Numero do atendimento obrigatorio'),
   solicitantePa2: z.string().trim().min(1, 'Nome do solicitante obrigatorio'),
+  tipoVeiculo: z.enum(['NOVO', 'USADO'], { required_error: 'Informe se o veiculo e novo ou usado' }),
 });
 
 const anexoSchema = z.object({

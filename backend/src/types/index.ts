@@ -1,6 +1,6 @@
-import { TipoServico, StatusServico } from '@prisma/client';
+import { TipoServico, StatusServico, TipoVeiculoMontagem } from '@prisma/client';
 
-export { TipoServico, StatusServico };
+export { TipoServico, StatusServico, TipoVeiculoMontagem };
 
 export interface ListServicosQuery {
   status?: StatusServico;
@@ -47,6 +47,7 @@ export interface CreateProcessoMontagemBody {
   placa: string;
   numeroAtendimento: string;
   solicitantePa2: string;
+  tipoVeiculo: TipoVeiculoMontagem;
 }
 
 export interface CreateProcessoAnexoBody {

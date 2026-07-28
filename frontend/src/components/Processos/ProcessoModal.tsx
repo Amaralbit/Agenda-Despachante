@@ -11,6 +11,7 @@ export const ProcessoModal: React.FC<Props> = ({ onClose, onSubmit, isLoading })
   const [placa, setPlaca] = useState('');
   const [numeroAtendimento, setNumeroAtendimento] = useState('');
   const [solicitantePa2, setSolicitantePa2] = useState('');
+  const [tipoVeiculo, setTipoVeiculo] = useState<CreateProcessoMontagemForm['tipoVeiculo']>('NOVO');
 
   function handleSubmit(e: React.FormEvent) {
     e.preventDefault();
@@ -18,6 +19,7 @@ export const ProcessoModal: React.FC<Props> = ({ onClose, onSubmit, isLoading })
       placa: placa.trim().toUpperCase(),
       numeroAtendimento: numeroAtendimento.trim(),
       solicitantePa2: solicitantePa2.trim(),
+      tipoVeiculo,
     });
   }
 
@@ -74,6 +76,39 @@ export const ProcessoModal: React.FC<Props> = ({ onClose, onSubmit, isLoading })
               className="w-full rounded-lg border border-slate-200 bg-white px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-indigo-400"
             />
           </div>
+
+          <fieldset>
+            <legend className="mb-2 text-sm font-medium text-slate-700">
+              Tipo de veiculo <span className="text-red-500">*</span>
+            </legend>
+            <div className="grid grid-cols-2 gap-3">
+              {([
+                ['NOVO', 'Veiculo novo'],
+                ['USADO', 'Veiculo usado'],
+              ] as const).map(([value, label]) => (
+                <label
+                  key={value}
+                  className={`flex cursor-pointer items-center gap-2 rounded-lg border px-3 py-2.5 text-sm font-medium transition ${
+                    tipoVeiculo === value
+                      ? value === 'NOVO'
+                        ? 'border-emerald-400 bg-emerald-50 text-emerald-800'
+                        : 'border-red-400 bg-red-50 text-red-800'
+                      : 'border-slate-200 bg-white text-slate-600 hover:bg-slate-50'
+                  }`}
+                >
+                  <input
+                    type="radio"
+                    name="tipoVeiculo"
+                    value={value}
+                    checked={tipoVeiculo === value}
+                    onChange={() => setTipoVeiculo(value)}
+                    className="accent-slate-950"
+                  />
+                  {label}
+                </label>
+              ))}
+            </div>
+          </fieldset>
 
           <div className="flex gap-3 pt-1">
             <button
