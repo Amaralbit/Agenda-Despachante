@@ -14,18 +14,20 @@ const querySchema = z.object({
   search: z.string().optional(),
 });
 
-const createSchema = z.object({
-  placa: z.string().trim().min(7, 'Placa invalida').max(10, 'Placa invalida'),
-  numeroAtendimento: z.string().trim().min(1, 'Numero do atendimento obrigatorio'),
-  solicitantePa2: z.string().trim().min(1, 'Nome do solicitante obrigatorio'),
-  tipoVeiculo: z.enum(['NOVO', 'USADO'], { required_error: 'Informe se o veiculo e novo ou usado' }),
-});
-
 const anexoSchema = z.object({
   nome: z.string().trim().min(1),
   mimeType: z.literal('application/pdf'),
   tamanho: z.number().int().positive().max(15 * 1024 * 1024),
   conteudoBase64: z.string().min(1),
+});
+
+const createSchema = z.object({
+  placa: z.string().trim().min(7, 'Placa invalida').max(10, 'Placa invalida'),
+  numeroAtendimento: z.string().trim().max(100, 'Numero do atendimento muito longo').optional(),
+  numeroProtocolo: z.string().trim().min(1, 'Numero do protocolo obrigatorio').max(100, 'Numero do protocolo muito longo'),
+  solicitantePa2: z.string().trim().min(1, 'Nome do solicitante obrigatorio'),
+  tipoVeiculo: z.enum(['NOVO', 'USADO'], { required_error: 'Informe se o veiculo e novo ou usado' }),
+  anexos: z.array(anexoSchema).max(1, 'Anexe no maximo um PDF ao criar a montagem').default([]),
 });
 
 const finalizarSchema = z.object({

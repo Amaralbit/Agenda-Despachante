@@ -136,7 +136,8 @@ model Servico {
 model ProcessoMontagem {
   id                String          @id @default(uuid())
   placa             String
-  numeroAtendimento String          @map("numero_atendimento")
+  numeroAtendimento String?         @map("numero_atendimento")
+  numeroProtocolo   String          @default("") @map("numero_protocolo")
   solicitantePa2    String          @default("") @map("solicitante_pa2")
   tipoVeiculo       TipoVeiculoMontagem @default(USADO) @map("tipo_veiculo")
   contaId           String          @map("conta_id")

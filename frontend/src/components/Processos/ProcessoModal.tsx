@@ -3,31 +3,50 @@ import { CreateProcessoMontagemForm } from '../../types';
 
 interface Props {
   onClose: () => void;
-  onSubmit: (data: CreateProcessoMontagemForm) => void;
+  onSubmit: (data: CreateProcessoMontagemForm, pdf?: File) => void;
   isLoading: boolean;
 }
+
+const MAX_PDF_SIZE = 15 * 1024 * 1024;
 
 export const ProcessoModal: React.FC<Props> = ({ onClose, onSubmit, isLoading }) => {
   const [placa, setPlaca] = useState('');
   const [numeroAtendimento, setNumeroAtendimento] = useState('');
+  const [numeroProtocolo, setNumeroProtocolo] = useState('');
   const [solicitantePa2, setSolicitantePa2] = useState('');
   const [tipoVeiculo, setTipoVeiculo] = useState<CreateProcessoMontagemForm['tipoVeiculo']>('NOVO');
+  const [pdf, setPdf] = useState<File>();
 
   function handleSubmit(e: React.FormEvent) {
     e.preventDefault();
-    onSubmit({
-      placa: placa.trim().toUpperCase(),
-      numeroAtendimento: numeroAtendimento.trim(),
-      solicitantePa2: solicitantePa2.trim(),
-      tipoVeiculo,
-    });
+
+    if (pdf && pdf.type !== 'application/pdf') {
+      window.alert('Selecione um arquivo PDF.');
+      return;
+    }
+
+    if (pdf && pdf.size > MAX_PDF_SIZE) {
+      window.alert('O PDF deve ter no maximo 15 MB.');
+      return;
+    }
+
+    onSubmit(
+      {
+        placa: placa.trim().toUpperCase(),
+        numeroAtendimento: numeroAtendimento.trim() || undefined,
+        numeroProtocolo: numeroProtocolo.trim(),
+        solicitantePa2: solicitantePa2.trim(),
+        tipoVeiculo,
+      },
+      pdf,
+    );
   }
 
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center p-4">
       <div className="absolute inset-0 bg-black/40 backdrop-blur-sm" onClick={onClose} />
 
-      <div className="relative w-full max-w-md rounded-lg border border-white/80 bg-white/95 shadow-2xl shadow-slate-950/15 backdrop-blur-xl">
+      <div className="relative max-h-[90vh] w-full max-w-md overflow-y-auto rounded-lg border border-white/80 bg-white/95 shadow-2xl shadow-slate-950/15 backdrop-blur-xl">
         <div className="flex items-center justify-between border-b border-slate-100 px-6 py-4">
           <h2 className="text-lg font-bold text-slate-950">Montagem de Processo</h2>
           <button onClick={onClose} className="text-xl font-light text-slate-400 hover:text-slate-600">
@@ -66,10 +85,22 @@ export const ProcessoModal: React.FC<Props> = ({ onClose, onSubmit, isLoading })
 
           <div>
             <label className="mb-1 block text-sm font-medium text-slate-700">
-              Atendimento Detran <span className="text-red-500">*</span>
+              Numero do protocolo <span className="text-red-500">*</span>
             </label>
             <input
               required
+              value={numeroProtocolo}
+              onChange={(e) => setNumeroProtocolo(e.target.value)}
+              placeholder="Numero do protocolo"
+              className="w-full rounded-lg border border-slate-200 bg-white px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-indigo-400"
+            />
+          </div>
+
+          <div>
+            <label className="mb-1 block text-sm font-medium text-slate-700">
+              Atendimento Detran <span className="text-xs font-normal text-slate-400">(opcional)</span>
+            </label>
+            <input
               value={numeroAtendimento}
               onChange={(e) => setNumeroAtendimento(e.target.value)}
               placeholder="Numero do atendimento"
@@ -109,6 +140,19 @@ export const ProcessoModal: React.FC<Props> = ({ onClose, onSubmit, isLoading })
               ))}
             </div>
           </fieldset>
+
+          <div>
+            <label className="mb-1 block text-sm font-medium text-slate-700">
+              PDF inicial <span className="text-xs font-normal text-slate-400">(opcional)</span>
+            </label>
+            <input
+              type="file"
+              accept="application/pdf,.pdf"
+              onChange={(e) => setPdf(e.target.files?.[0])}
+              className="block w-full rounded-lg border border-slate-200 bg-white text-sm text-slate-600 file:mr-3 file:border-0 file:bg-slate-100 file:px-3 file:py-2 file:text-sm file:font-medium file:text-slate-700 hover:file:bg-slate-200"
+            />
+            <p className="mt-1 text-xs text-slate-400">Um arquivo PDF de ate 15 MB.</p>
+          </div>
 
           <div className="flex gap-3 pt-1">
             <button

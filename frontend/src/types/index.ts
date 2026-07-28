@@ -65,7 +65,8 @@ export interface ProcessoAnexo {
 export interface ProcessoMontagem {
   id: string;
   placa: string;
-  numeroAtendimento: string;
+  numeroAtendimento?: string | null;
+  numeroProtocolo: string;
   solicitantePa2: string;
   tipoVeiculo: 'NOVO' | 'USADO';
   status: StatusProcessoMontagem;
@@ -119,9 +120,11 @@ export interface CreateEmplacamentoMobileVeiculo {
 
 export interface CreateProcessoMontagemForm {
   placa: string;
-  numeroAtendimento: string;
+  numeroAtendimento?: string;
+  numeroProtocolo: string;
   solicitantePa2: string;
   tipoVeiculo: ProcessoMontagem['tipoVeiculo'];
+  anexos?: ProcessoAnexoUpload[];
 }
 
 export interface ProcessoAnexoUpload {

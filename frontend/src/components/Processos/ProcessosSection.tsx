@@ -106,7 +106,10 @@ const ProcessoCard: React.FC<ProcessoCardProps> = ({
       <div className="mb-3 flex items-start justify-between gap-3">
         <div className="min-w-0">
           <p className="truncate font-mono text-base font-black tracking-wide text-slate-950">{processo.placa}</p>
-          <p className="text-xs text-slate-500">Atendimento {processo.numeroAtendimento}</p>
+          <p className="text-xs font-medium text-slate-700">Protocolo {processo.numeroProtocolo || '-'}</p>
+          {processo.numeroAtendimento && (
+            <p className="text-xs text-slate-500">Atendimento {processo.numeroAtendimento}</p>
+          )}
           <p className="break-words text-xs font-medium text-slate-700">Solicitante: {processo.solicitantePa2 || '-'}</p>
           <p className="mt-1 text-[11px] text-slate-500">Entrada: {formatarEntrada(processo.createdAt)}</p>
         </div>
@@ -235,8 +238,20 @@ export const ProcessosSection: React.FC = () => {
     return map;
   }, [filteredProcessos]);
 
-  function handleCreate(data: CreateProcessoMontagemForm) {
-    createProcesso.mutate(data, { onSuccess: () => setIsModalOpen(false) });
+  async function handleCreate(data: CreateProcessoMontagemForm, pdf?: File) {
+    const anexos: ProcessoAnexoUpload[] = pdf
+      ? [{
+          nome: pdf.name,
+          mimeType: 'application/pdf',
+          tamanho: pdf.size,
+          conteudoBase64: await fileToBase64(pdf),
+        }]
+      : [];
+
+    createProcesso.mutate(
+      { ...data, anexos },
+      { onSuccess: () => setIsModalOpen(false) },
+    );
   }
 
   function handleStart(id: string) {
