@@ -121,7 +121,6 @@ export interface CreateEmplacamentoMobileVeiculo {
 export interface CreateProcessoMontagemForm {
   placa: string;
   numeroAtendimento?: string;
-  numeroProtocolo: string;
   solicitantePa2: string;
   tipoVeiculo: ProcessoMontagem['tipoVeiculo'];
   anexos?: ProcessoAnexoUpload[];

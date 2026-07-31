@@ -32,11 +32,13 @@ export function useUpdateProcessoStatus() {
       id,
       status,
       senhaConfirmacao,
+      numeroProtocolo,
     }: {
       id: string;
       status: StatusProcessoMontagem;
       senhaConfirmacao?: string;
-    }) => processosApi.updateStatus(id, status, senhaConfirmacao),
+      numeroProtocolo?: string;
+    }) => processosApi.updateStatus(id, status, senhaConfirmacao, numeroProtocolo),
     onSuccess: () => qc.invalidateQueries({ queryKey: [QUERY_KEY] }),
   });
 }

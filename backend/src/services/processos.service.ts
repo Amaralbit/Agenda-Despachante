@@ -54,7 +54,7 @@ class ProcessosService {
       data: {
         placa: data.placa.toUpperCase(),
         numeroAtendimento: data.numeroAtendimento?.trim() || null,
-        numeroProtocolo: data.numeroProtocolo.trim(),
+        numeroProtocolo: '',
         solicitantePa2: data.solicitantePa2.trim(),
         tipoVeiculo: data.tipoVeiculo,
         contaId,
@@ -73,13 +73,24 @@ class ProcessosService {
     });
   }
 
-  async updateStatus(id: string, contaId: string, status: StatusServico) {
-    await this.findById(id, contaId);
+  async updateStatus(
+    id: string,
+    contaId: string,
+    status: StatusServico,
+    numeroProtocolo?: string,
+  ) {
+    const processo = await this.findById(id, contaId);
+
+    const iniciandoMontagem = processo.status === 'PENDENTE' && status === 'EM_ANDAMENTO';
+    if (iniciandoMontagem && !numeroProtocolo?.trim()) {
+      throw new AppError('Informe o numero do protocolo para iniciar a montagem.', 422);
+    }
 
     return prisma.processoMontagem.update({
       where: { id },
       data: {
         status,
+        ...(iniciandoMontagem && { numeroProtocolo: numeroProtocolo!.trim() }),
         concluidoEm: status === 'CONCLUIDO' ? new Date() : null,
       },
       include: includeSummary,

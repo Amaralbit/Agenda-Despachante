@@ -7,6 +7,7 @@ import processosService from '../services/processos.service';
 const statusSchema = z.object({
   status: z.enum(['PENDENTE', 'EM_ANDAMENTO', 'AGUARDANDO_IMPRESSAO', 'CONCLUIDO']),
   senhaConfirmacao: z.string().optional(),
+  numeroProtocolo: z.string().trim().min(1, 'Numero do protocolo obrigatorio').max(100, 'Numero do protocolo muito longo').optional(),
 });
 
 const querySchema = z.object({
@@ -24,7 +25,6 @@ const anexoSchema = z.object({
 const createSchema = z.object({
   placa: z.string().trim().min(7, 'Placa invalida').max(10, 'Placa invalida'),
   numeroAtendimento: z.string().trim().max(100, 'Numero do atendimento muito longo').optional(),
-  numeroProtocolo: z.string().trim().min(1, 'Numero do protocolo obrigatorio').max(100, 'Numero do protocolo muito longo'),
   solicitantePa2: z.string().trim().min(1, 'Nome do solicitante obrigatorio'),
   tipoVeiculo: z.enum(['NOVO', 'USADO'], { required_error: 'Informe se o veiculo e novo ou usado' }),
   anexos: z.array(anexoSchema).max(1, 'Anexe no maximo um PDF ao criar a montagem').default([]),
@@ -67,12 +67,17 @@ export const processosController = {
 
   async updateStatus(req: Request, res: Response, next: NextFunction) {
     try {
-      const { status, senhaConfirmacao } = statusSchema.parse(req.body);
+      const { status, senhaConfirmacao, numeroProtocolo } = statusSchema.parse(req.body);
       const statusAtual = (await processosService.findById(req.params.id, req.contaId)).status;
       if (precisaConfirmarSenha(status, statusAtual)) {
         await confirmarSenhaParaStatus(req.userId, senhaConfirmacao, status);
       }
-      const processo = await processosService.updateStatus(req.params.id, req.contaId, status);
+      const processo = await processosService.updateStatus(
+        req.params.id,
+        req.contaId,
+        status,
+        numeroProtocolo,
+      );
       res.json(processo);
     } catch (err) {
       next(err);

@@ -25,10 +25,15 @@ export const processosApi = {
     id: string,
     status: StatusProcessoMontagem,
     senhaConfirmacao?: string,
+    numeroProtocolo?: string,
   ): Promise<ProcessoMontagem> {
     return authFetch(`${BASE}/${id}/status`, {
       method: 'PATCH',
-      body: JSON.stringify({ status, ...(senhaConfirmacao && { senhaConfirmacao }) }),
+      body: JSON.stringify({
+        status,
+        ...(senhaConfirmacao && { senhaConfirmacao }),
+        ...(numeroProtocolo && { numeroProtocolo }),
+      }),
     }).then((r) => handleResponse<ProcessoMontagem>(r));
   },
 

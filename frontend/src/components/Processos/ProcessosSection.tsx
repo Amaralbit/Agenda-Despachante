@@ -77,7 +77,7 @@ function formatarEntrada(value: string) {
 
 interface ProcessoCardProps {
   processo: ProcessoMontagem;
-  onStart: (id: string) => void;
+  onStart: (processo: ProcessoMontagem) => void;
   onAwaitPrint: (id: string) => void;
   onFinalize: (processo: ProcessoMontagem) => void;
   onReopen: (processo: ProcessoMontagem) => void;
@@ -147,7 +147,7 @@ const ProcessoCard: React.FC<ProcessoCardProps> = ({
 
         {processo.status === 'PENDENTE' && (
           <button
-            onClick={() => onStart(processo.id)}
+            onClick={() => onStart(processo)}
             className="ml-auto whitespace-nowrap rounded-lg bg-slate-950 px-3 py-1.5 text-xs font-semibold text-white transition hover:bg-slate-800"
           >
             Iniciar
@@ -259,8 +259,21 @@ export const ProcessosSection: React.FC = () => {
     );
   }
 
-  function handleStart(id: string) {
-    updateStatus.mutate({ id, status: 'EM_ANDAMENTO' });
+  function handleStart(processo: ProcessoMontagem) {
+    const numeroProtocolo = window.prompt(
+      `Digite o numero do protocolo para iniciar a montagem da placa ${processo.placa}:`,
+    );
+    if (numeroProtocolo === null) return;
+
+    if (!numeroProtocolo.trim()) {
+      window.alert('Informe o numero do protocolo para iniciar a montagem.');
+      return;
+    }
+
+    updateStatus.mutate(
+      { id: processo.id, status: 'EM_ANDAMENTO', numeroProtocolo: numeroProtocolo.trim() },
+      { onError: (error) => window.alert(error.message) },
+    );
   }
 
   function handleAwaitPrint(id: string) {

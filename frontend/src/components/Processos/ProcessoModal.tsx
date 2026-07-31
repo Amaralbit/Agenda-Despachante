@@ -12,7 +12,6 @@ const MAX_PDF_SIZE = 15 * 1024 * 1024;
 export const ProcessoModal: React.FC<Props> = ({ onClose, onSubmit, isLoading }) => {
   const [placa, setPlaca] = useState('');
   const [numeroAtendimento, setNumeroAtendimento] = useState('');
-  const [numeroProtocolo, setNumeroProtocolo] = useState('');
   const [solicitantePa2, setSolicitantePa2] = useState('');
   const [tipoVeiculo, setTipoVeiculo] = useState<CreateProcessoMontagemForm['tipoVeiculo']>('NOVO');
   const [pdf, setPdf] = useState<File>();
@@ -34,7 +33,6 @@ export const ProcessoModal: React.FC<Props> = ({ onClose, onSubmit, isLoading })
       {
         placa: placa.trim().toUpperCase(),
         numeroAtendimento: numeroAtendimento.trim() || undefined,
-        numeroProtocolo: numeroProtocolo.trim(),
         solicitantePa2: solicitantePa2.trim(),
         tipoVeiculo,
       },
@@ -79,19 +77,6 @@ export const ProcessoModal: React.FC<Props> = ({ onClose, onSubmit, isLoading })
               value={solicitantePa2}
               onChange={(e) => setSolicitantePa2(e.target.value)}
               placeholder="Nome de quem solicitou"
-              className="w-full rounded-lg border border-slate-200 bg-white px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-indigo-400"
-            />
-          </div>
-
-          <div>
-            <label className="mb-1 block text-sm font-medium text-slate-700">
-              Numero do protocolo <span className="text-red-500">*</span>
-            </label>
-            <input
-              required
-              value={numeroProtocolo}
-              onChange={(e) => setNumeroProtocolo(e.target.value)}
-              placeholder="Numero do protocolo"
               className="w-full rounded-lg border border-slate-200 bg-white px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-indigo-400"
             />
           </div>
