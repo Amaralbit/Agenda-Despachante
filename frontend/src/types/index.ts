@@ -74,6 +74,7 @@ export interface ProcessoMontagem {
   createdAt: string;
   updatedAt: string;
   concluidoEm?: string | null;
+  aviso?: string;
 }
 
 export interface Lembrete {

@@ -294,7 +294,12 @@ export const ProcessosSection: React.FC = () => {
 
     updateStatus.mutate(
       { id, status: 'AGUARDANDO_IMPRESSAO' },
-      { onError: (error) => window.alert(error.message) },
+      {
+        onSuccess: (processoAtualizado) => {
+          if (processoAtualizado.aviso) window.alert(processoAtualizado.aviso);
+        },
+        onError: (error) => window.alert(error.message),
+      },
     );
   }
 

@@ -16,6 +16,11 @@ const includeSummary = {
   },
 } as const;
 
+const LIMITE_PROCESSOS_PARA_IMPRESSAO = 5;
+const JANELA_AVISO_IMPRESSAO_MS = 10 * 60 * 1000;
+const AVISO_ACUMULO_IMPRESSAO =
+  'Não é recomendável mandar muitos processos de uma vez, pois isso acumula serviço para quem imprime, que também precisa fazer outras coisas.\n\nDICA: TERMINOU O ATENDIMENTO, JÁ MONTE.';
+
 class ProcessosService {
   async listAll(contaId: string, params: { status?: StatusServico; search?: string }) {
     const { status, search } = params;
@@ -82,11 +87,13 @@ class ProcessosService {
     const processo = await this.findById(id, contaId);
 
     const iniciandoMontagem = processo.status === 'PENDENTE' && status === 'EM_ANDAMENTO';
+    const movendoParaImpressao =
+      processo.status !== 'AGUARDANDO_IMPRESSAO' && status === 'AGUARDANDO_IMPRESSAO';
     if (iniciandoMontagem && !numeroProtocolo?.trim()) {
       throw new AppError('Informe o numero do protocolo para iniciar a montagem.', 422);
     }
 
-    return prisma.processoMontagem.update({
+    const processoAtualizado = await prisma.processoMontagem.update({
       where: { id },
       data: {
         status,
@@ -95,6 +102,21 @@ class ProcessosService {
       },
       include: includeSummary,
     });
+
+    if (!movendoParaImpressao) return processoAtualizado;
+
+    const inicioDaJanela = new Date(Date.now() - JANELA_AVISO_IMPRESSAO_MS);
+    const quantidadeRecente = await prisma.processoMontagem.count({
+      where: {
+        contaId,
+        status: 'AGUARDANDO_IMPRESSAO',
+        updatedAt: { gte: inicioDaJanela },
+      },
+    });
+
+    return quantidadeRecente >= LIMITE_PROCESSOS_PARA_IMPRESSAO
+      ? { ...processoAtualizado, aviso: AVISO_ACUMULO_IMPRESSAO }
+      : processoAtualizado;
   }
 
   async finalizar(id: string, contaId: string, anexos: CreateProcessoAnexoBody[]) {
