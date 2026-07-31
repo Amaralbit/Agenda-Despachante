@@ -33,7 +33,7 @@ export const KanbanBoard: React.FC<Props> = ({
   }, [servicos]);
 
   return (
-    <div className="flex gap-6 items-start overflow-x-auto pb-6 px-1">
+    <div className="flex items-start gap-5 overflow-x-auto px-1 pb-6 scrollbar-thin">
       {COLUMNS.map((status) => (
         <KanbanColumn
           key={status}

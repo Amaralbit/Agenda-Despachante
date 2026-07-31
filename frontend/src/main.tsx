@@ -6,6 +6,12 @@ import { AuthProvider } from './contexts/AuthContext';
 import App from './App';
 import './index.css';
 
+const temaSalvo = window.localStorage.getItem('agenda-despachante-dark-mode');
+const usarTemaEscuro = temaSalvo === null
+  ? window.matchMedia('(prefers-color-scheme: dark)').matches
+  : temaSalvo === 'true';
+document.documentElement.classList.toggle('dark-mode', usarTemaEscuro);
+
 const queryClient = new QueryClient({
   defaultOptions: {
     queries: { staleTime: 1000 * 30, retry: 1 },

@@ -95,10 +95,6 @@ export interface CreateLembreteForm {
 export interface EmplacamentoMobile {
   id: string | null;
   data: string;
-  peugeotPasseio: number;
-  peugeotUtilitario: number;
-  citroenPasseio: number;
-  citroenUtilitario: number;
   createdAt: string | null;
   updatedAt: string | null;
   veiculos: EmplacamentoMobileVeiculo[];
@@ -107,15 +103,23 @@ export interface EmplacamentoMobile {
 export interface EmplacamentoMobileVeiculo {
   id: string;
   placa: string;
-  marca: 'PEUGEOT' | 'CITROEN';
+  marcaId: string;
+  marca: Pick<MarcaEmplacamento, 'id' | 'nome' | 'ativa'>;
   categoria: 'PASSEIO' | 'UTILITARIO';
   createdAt: string;
 }
 
 export interface CreateEmplacamentoMobileVeiculo {
   placa: string;
-  marca: EmplacamentoMobileVeiculo['marca'];
+  marcaId: string;
   categoria: EmplacamentoMobileVeiculo['categoria'];
+}
+
+export interface MarcaEmplacamento {
+  id: string;
+  nome: string;
+  ativa: boolean;
+  createdAt: string;
 }
 
 export interface CreateProcessoMontagemForm {

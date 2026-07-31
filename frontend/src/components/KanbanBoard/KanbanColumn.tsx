@@ -68,7 +68,7 @@ export const KanbanColumn: React.FC<Props> = ({
   }).length;
 
   return (
-    <div className="flex flex-col min-w-[320px] w-full max-w-sm">
+    <div className="flex min-w-[300px] w-full max-w-sm flex-col sm:min-w-[320px]">
       {/* Cabeçalho da coluna */}
       <div className="flex items-center gap-2 mb-3 px-1">
         <div className={`w-2.5 h-2.5 rounded-full ${style.dot}`} />
@@ -91,7 +91,7 @@ export const KanbanColumn: React.FC<Props> = ({
         onDragLeave={handleDragLeave}
         onDrop={handleDrop}
         className={`
-          min-h-[200px] flex-1 rounded-lg border p-3 shadow-sm shadow-slate-200/60 backdrop-blur-xl transition-all duration-200
+          min-h-[200px] flex-1 rounded-2xl border p-3 shadow-sm shadow-slate-200/60 backdrop-blur-xl transition-all duration-200
           ${style.bg}
           ${isDragOver ? 'scale-[1.01] ring-2 ring-indigo-400 ring-offset-2 ring-offset-white/60' : ''}
         `}

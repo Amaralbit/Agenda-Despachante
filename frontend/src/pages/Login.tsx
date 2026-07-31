@@ -1,4 +1,4 @@
-import React, { FormEvent, useState } from 'react';
+import React, { FormEvent, useEffect, useState } from 'react';
 import { useNavigate, useSearchParams } from 'react-router-dom';
 import { useAuth } from '../contexts/AuthContext';
 
@@ -14,6 +14,14 @@ export const Login: React.FC = () => {
   const [confirmarSenha, setConfirmarSenha] = useState('');
   const [erro, setErro] = useState('');
   const [loading, setLoading] = useState(false);
+  const [isDarkMode, setIsDarkMode] = useState(
+    () => document.documentElement.classList.contains('dark-mode'),
+  );
+
+  useEffect(() => {
+    document.documentElement.classList.toggle('dark-mode', isDarkMode);
+    window.localStorage.setItem('agenda-despachante-dark-mode', String(isDarkMode));
+  }, [isDarkMode]);
 
   async function handleSubmit(e: FormEvent) {
     e.preventDefault();
@@ -48,24 +56,33 @@ export const Login: React.FC = () => {
     }
   }
 
-  const inputClass =
-    'w-full rounded-lg border border-slate-200 bg-white/90 px-3 py-2.5 text-sm text-slate-900 shadow-sm shadow-slate-200/50 placeholder-slate-400 transition focus:border-transparent focus:outline-none focus:ring-2 focus:ring-indigo-400';
+  const inputClass = 'field-control w-full';
 
   return (
-    <div className="relative flex min-h-screen items-center justify-center overflow-hidden bg-slate-100 p-4">
+    <div className="app-shell items-center justify-center p-4">
       <div className="ambient-backdrop" />
 
-      <div className="relative z-10 w-full max-w-sm">
+      <button
+        type="button"
+        onClick={() => setIsDarkMode((value) => !value)}
+        className="theme-toggle absolute right-4 top-4 z-20"
+        aria-label={isDarkMode ? 'Ativar modo claro' : 'Ativar modo escuro'}
+      >
+        <span className="theme-toggle-indicator" aria-hidden="true">{isDarkMode ? '☀' : '☾'}</span>
+        {isDarkMode ? 'Tema claro' : 'Tema escuro'}
+      </button>
+
+      <div className="relative z-10 w-full max-w-md">
         <div className="mb-8 text-center">
-          <div className="mb-4 inline-flex h-14 w-14 items-center justify-center rounded-lg bg-slate-950 text-lg font-black tracking-tight text-white shadow-xl shadow-slate-950/20">
+          <div className="brand-mark mb-4 inline-flex h-14 w-14 text-base">
             AD
           </div>
-          <h1 className="text-2xl font-black text-slate-950">Agenda Despachante</h1>
-          <p className="mt-1 text-sm text-slate-500">Gestao de Servicos Veiculares</p>
+          <h1 className="text-3xl font-black tracking-tight text-slate-950">Agenda Despachante</h1>
+          <p className="mt-1 text-sm text-slate-500">Sua operação veicular, organizada de ponta a ponta.</p>
         </div>
 
-        <div className="glass-panel rounded-lg p-8">
-          <div className="mb-6 flex rounded-lg border border-white/80 bg-slate-100/80 p-1">
+        <div className="glass-panel rounded-2xl p-6 sm:p-8">
+          <div className="mb-6 flex rounded-xl border border-white/80 bg-slate-100/80 p-1">
             <button
               type="button"
               onClick={() => {
@@ -178,7 +195,7 @@ export const Login: React.FC = () => {
           </form>
 
           <p className="mt-6 text-center text-xs text-slate-400">
-            Usuario padrao para teste: admin@despachante.com / admin123
+            Acesso seguro e separado por equipe.
           </p>
         </div>
       </div>

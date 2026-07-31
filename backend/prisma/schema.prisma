@@ -33,17 +33,18 @@ enum PapelConta {
 }
 
 model Conta {
-  id        String          @id @default(uuid())
-  nome      String
-  membros   MembroConta[]
-  convites  ConviteConta[]
-  clientes  Cliente[]
-  veiculos  Veiculo[]
-  servicos  Servico[]
-  processos ProcessoMontagem[]
+  id                  String               @id @default(uuid())
+  nome                String
+  membros             MembroConta[]
+  convites            ConviteConta[]
+  clientes            Cliente[]
+  veiculos            Veiculo[]
+  servicos            Servico[]
+  processos           ProcessoMontagem[]
   emplacamentosMobile EmplacamentoMobile[]
-  createdAt DateTime        @default(now()) @map("created_at")
-  updatedAt DateTime        @updatedAt @map("updated_at")
+  marcasEmplacamento  MarcaEmplacamento[]
+  createdAt           DateTime             @default(now()) @map("created_at")
+  updatedAt           DateTime             @updatedAt @map("updated_at")
 
   @@map("contas")
 }
@@ -63,15 +64,15 @@ model MembroConta {
 }
 
 model ConviteConta {
-  id        String     @id @default(uuid())
-  contaId   String     @map("conta_id")
+  id        String    @id @default(uuid())
+  contaId   String    @map("conta_id")
   email     String
-  token     String     @unique
-  criadoPor String     @map("criado_por")
-  expiraEm  DateTime   @map("expira_em")
-  aceitoEm  DateTime?  @map("aceito_em")
-  conta     Conta      @relation(fields: [contaId], references: [id], onDelete: Cascade)
-  createdAt DateTime   @default(now()) @map("created_at")
+  token     String    @unique
+  criadoPor String    @map("criado_por")
+  expiraEm  DateTime  @map("expira_em")
+  aceitoEm  DateTime? @map("aceito_em")
+  conta     Conta     @relation(fields: [contaId], references: [id], onDelete: Cascade)
+  createdAt DateTime  @default(now()) @map("created_at")
 
   @@index([contaId])
   @@map("convites_conta")
@@ -81,9 +82,9 @@ model Cliente {
   id        String    @id @default(uuid())
   nome      String
   telefone  String?
-  cpfCnpj  String    @map("cpf_cnpj")
-  contaId  String    @map("conta_id")
-  conta    Conta     @relation(fields: [contaId], references: [id], onDelete: Cascade)
+  cpfCnpj   String    @map("cpf_cnpj")
+  contaId   String    @map("conta_id")
+  conta     Conta     @relation(fields: [contaId], references: [id], onDelete: Cascade)
   veiculos  Veiculo[]
   servicos  Servico[]
   createdAt DateTime  @default(now()) @map("created_at")
@@ -107,9 +108,9 @@ model Veiculo {
   createdAt DateTime  @default(now()) @map("created_at")
   updatedAt DateTime  @updatedAt @map("updated_at")
 
-  @@index([contaId])
   @@unique([contaId, placa])
   @@unique([contaId, renavam])
+  @@index([contaId])
   @@map("veiculos")
 }
 
@@ -134,19 +135,19 @@ model Servico {
 }
 
 model ProcessoMontagem {
-  id                String          @id @default(uuid())
+  id                String              @id @default(uuid())
   placa             String
-  numeroAtendimento String?         @map("numero_atendimento")
-  numeroProtocolo   String          @default("") @map("numero_protocolo")
-  solicitantePa2    String          @default("") @map("solicitante_pa2")
+  numeroAtendimento String?             @map("numero_atendimento")
+  numeroProtocolo   String              @default("") @map("numero_protocolo")
+  solicitantePa2    String              @default("") @map("solicitante_pa2")
   tipoVeiculo       TipoVeiculoMontagem @default(USADO) @map("tipo_veiculo")
-  contaId           String          @map("conta_id")
-  conta             Conta           @relation(fields: [contaId], references: [id], onDelete: Cascade)
-  status            StatusServico   @default(PENDENTE)
+  contaId           String              @map("conta_id")
+  conta             Conta               @relation(fields: [contaId], references: [id], onDelete: Cascade)
+  status            StatusServico       @default(PENDENTE)
   anexos            ProcessoAnexo[]
-  createdAt         DateTime        @default(now()) @map("created_at")
-  updatedAt         DateTime        @updatedAt @map("updated_at")
-  concluidoEm       DateTime?       @map("concluido_em")
+  createdAt         DateTime            @default(now()) @map("created_at")
+  updatedAt         DateTime            @updatedAt @map("updated_at")
+  concluidoEm       DateTime?           @map("concluido_em")
 
   @@index([contaId])
   @@map("processos_montagem")
@@ -166,16 +167,16 @@ model ProcessoAnexo {
 }
 
 model EmplacamentoMobile {
-  id                String   @id @default(uuid())
-  contaId           String   @map("conta_id")
-  conta             Conta    @relation(fields: [contaId], references: [id], onDelete: Cascade)
-  data              DateTime @db.Date
-  peugeotPasseio    Int      @default(0) @map("peugeot_passeio")
-  peugeotUtilitario Int      @default(0) @map("peugeot_utilitario")
-  citroenPasseio    Int      @default(0) @map("citroen_passeio")
-  citroenUtilitario Int      @default(0) @map("citroen_utilitario")
-  createdAt         DateTime @default(now()) @map("created_at")
-  updatedAt         DateTime @updatedAt @map("updated_at")
+  id                String                      @id @default(uuid())
+  contaId           String                      @map("conta_id")
+  conta             Conta                       @relation(fields: [contaId], references: [id], onDelete: Cascade)
+  data              DateTime                    @db.Date
+  peugeotPasseio    Int                         @default(0) @map("peugeot_passeio")
+  peugeotUtilitario Int                         @default(0) @map("peugeot_utilitario")
+  citroenPasseio    Int                         @default(0) @map("citroen_passeio")
+  citroenUtilitario Int                         @default(0) @map("citroen_utilitario")
+  createdAt         DateTime                    @default(now()) @map("created_at")
+  updatedAt         DateTime                    @updatedAt @map("updated_at")
   veiculos          EmplacamentoMobileVeiculo[]
 
   @@unique([contaId, data])
@@ -183,53 +184,66 @@ model EmplacamentoMobile {
   @@map("emplacamentos_mobile")
 }
 
-enum MarcaEmplacamentoMobile {
-  PEUGEOT
-  CITROEN
-}
-
 enum CategoriaEmplacamentoMobile {
   PASSEIO
   UTILITARIO
 }
 
+model MarcaEmplacamento {
+  id              String                      @id @default(uuid())
+  contaId         String                      @map("conta_id")
+  conta           Conta                       @relation(fields: [contaId], references: [id], onDelete: Cascade)
+  nome            String
+  nomeNormalizado String                      @map("nome_normalizado")
+  ativa           Boolean                     @default(true)
+  veiculos        EmplacamentoMobileVeiculo[]
+  createdAt       DateTime                    @default(now()) @map("created_at")
+  updatedAt       DateTime                    @updatedAt @map("updated_at")
+
+  @@unique([contaId, nomeNormalizado])
+  @@index([contaId])
+  @@map("marcas_emplacamento")
+}
+
 model EmplacamentoMobileVeiculo {
-  id                    String                     @id @default(uuid())
-  emplacamentoMobileId  String                     @map("emplacamento_mobile_id")
-  emplacamentoMobile    EmplacamentoMobile         @relation(fields: [emplacamentoMobileId], references: [id], onDelete: Cascade)
-  placa                 String
-  marca                 MarcaEmplacamentoMobile
-  categoria             CategoriaEmplacamentoMobile
-  createdAt             DateTime                   @default(now()) @map("created_at")
+  id                   String                      @id @default(uuid())
+  emplacamentoMobileId String                      @map("emplacamento_mobile_id")
+  emplacamentoMobile   EmplacamentoMobile          @relation(fields: [emplacamentoMobileId], references: [id], onDelete: Cascade)
+  placa                String
+  marcaId              String                      @map("marca_id")
+  marca                MarcaEmplacamento           @relation(fields: [marcaId], references: [id])
+  categoria            CategoriaEmplacamentoMobile
+  createdAt            DateTime                    @default(now()) @map("created_at")
 
   @@unique([emplacamentoMobileId, placa])
   @@index([emplacamentoMobileId])
+  @@index([marcaId])
   @@map("emplacamentos_mobile_veiculos")
 }
 
 model Usuario {
-  id        String   @id @default(uuid())
+  id        String        @id @default(uuid())
   nome      String
-  email     String   @unique
-  senhaHash String   @map("senha_hash")
+  email     String        @unique
+  senhaHash String        @map("senha_hash")
   membros   MembroConta[]
   lembretes Lembrete[]
-  createdAt DateTime @default(now()) @map("created_at")
-  updatedAt DateTime @updatedAt @map("updated_at")
+  createdAt DateTime      @default(now()) @map("created_at")
+  updatedAt DateTime      @updatedAt @map("updated_at")
 
   @@map("usuarios")
 }
 
 model Lembrete {
-  id            String   @id @default(uuid())
-  titulo        String
-  descricao     String?
-  dataLembrete  DateTime? @map("data_lembrete") @db.Date
-  concluido     Boolean  @default(false)
-  usuarioId     String   @map("usuario_id")
-  usuario       Usuario  @relation(fields: [usuarioId], references: [id], onDelete: Cascade)
-  createdAt     DateTime @default(now()) @map("created_at")
-  updatedAt     DateTime @updatedAt @map("updated_at")
+  id           String    @id @default(uuid())
+  titulo       String
+  descricao    String?
+  dataLembrete DateTime? @map("data_lembrete") @db.Date
+  concluido    Boolean   @default(false)
+  usuarioId    String    @map("usuario_id")
+  usuario      Usuario   @relation(fields: [usuarioId], references: [id], onDelete: Cascade)
+  createdAt    DateTime  @default(now()) @map("created_at")
+  updatedAt    DateTime  @updatedAt @map("updated_at")
 
   @@index([usuarioId])
   @@map("lembretes")

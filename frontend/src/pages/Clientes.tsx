@@ -43,9 +43,9 @@ export const Clientes: React.FC = () => {
   }
 
   return (
-    <div className="flex flex-col gap-5">
+    <div className="mx-auto flex w-full max-w-screen-xl flex-col gap-6">
       {/* Toolbar */}
-      <div className="flex items-center justify-between gap-4">
+      <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
         <div className="relative flex-1 max-w-xs">
           <span className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400 text-sm">🔍</span>
           <input
@@ -58,7 +58,7 @@ export const Clientes: React.FC = () => {
         </div>
         <button
           onClick={() => setClienteModal({ open: true })}
-          className="flex items-center gap-2 rounded-lg bg-slate-950 px-4 py-2 text-sm font-semibold text-white shadow-lg shadow-slate-950/20 transition-all duration-200 hover:-translate-y-0.5 hover:bg-slate-800"
+          className="primary-action w-full sm:w-auto"
         >
           <span>+</span> Novo Cliente
         </button>
@@ -82,7 +82,7 @@ export const Clientes: React.FC = () => {
           {clientes.map((cliente) => {
             const isOpen = expanded === cliente.id;
             return (
-              <div key={cliente.id} className="overflow-hidden rounded-lg border border-white/80 bg-white/90 shadow-sm shadow-slate-200/70 backdrop-blur-xl transition-all duration-200 hover:-translate-y-0.5 hover:shadow-md">
+              <div key={cliente.id} className="surface-panel overflow-hidden rounded-2xl transition-all duration-200 hover:-translate-y-0.5 hover:shadow-md">
                 {/* Header do cliente */}
                 <div className="flex items-center gap-3 px-5 py-4">
                   <button

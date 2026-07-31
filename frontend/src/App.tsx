@@ -62,7 +62,7 @@ export default function App() {
       />
 
       <Route
-        path="/emplacamentos-mobile"
+        path="/emplacamento"
         element={
           <ProtectedRoute>
             <Layout>
@@ -71,6 +71,8 @@ export default function App() {
           </ProtectedRoute>
         }
       />
+
+      <Route path="/emplacamentos-mobile" element={<Navigate to="/emplacamento" replace />} />
 
       <Route path="/equipe" element={<ProtectedRoute><Layout><Equipe /></Layout></ProtectedRoute>} />
 

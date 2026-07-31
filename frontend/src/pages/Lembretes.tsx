@@ -33,7 +33,7 @@ const CartaoLembrete: React.FC<{
   );
 
   return (
-    <article className={`rounded-xl border bg-white/90 p-4 shadow-sm shadow-slate-200/70 transition ${lembrete.concluido ? 'border-slate-200 opacity-70' : 'border-white/80 hover:shadow-md'}`}>
+    <article className={`surface-panel rounded-2xl p-4 transition ${lembrete.concluido ? 'opacity-70' : 'hover:shadow-md'}`}>
       <div className="flex items-start gap-3">
         <button
           type="button"
@@ -110,13 +110,13 @@ export const Lembretes: React.FC = () => {
   const emAlteracao = criar.isPending || atualizarConclusao.isPending || excluir.isPending;
 
   return (
-    <section className="mx-auto flex w-full max-w-screen-xl flex-col gap-5">
+    <section className="mx-auto flex w-full max-w-screen-xl flex-col gap-6">
       <div>
         <h2 className="text-xl font-black text-slate-950">Meus lembretes</h2>
         <p className="mt-1 text-sm text-slate-500">Cadastre tarefas para uma data específica ou deixe-as sem prazo.</p>
       </div>
 
-      <form onSubmit={enviarFormulario} className="glass-panel grid gap-3 rounded-xl p-4 sm:grid-cols-2">
+      <form onSubmit={enviarFormulario} className="glass-panel grid gap-3 rounded-2xl p-4 sm:grid-cols-2">
         <input
           value={titulo}
           onChange={(event) => setTitulo(event.target.value)}

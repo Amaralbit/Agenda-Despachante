@@ -1,19 +1,24 @@
 import React, { FormEvent, useMemo, useState } from 'react';
 import {
   useAdicionarVeiculoEmplacamento,
+  useAtualizarMarcaEmplacamento,
+  useCriarMarcaEmplacamento,
   useEmplacamentosMobile,
+  useMarcasEmplacamento,
   useRemoverVeiculoEmplacamento,
 } from '../hooks/useEmplacamentosMobile';
-import { CreateEmplacamentoMobileVeiculo, EmplacamentoMobile, EmplacamentoMobileVeiculo } from '../types';
+import { EmplacamentoMobileVeiculo, MarcaEmplacamento } from '../types';
 
-type Campo = Omit<CreateEmplacamentoMobileVeiculo, 'placa'> & { chave: keyof Pick<EmplacamentoMobile, 'peugeotPasseio' | 'peugeotUtilitario' | 'citroenPasseio' | 'citroenUtilitario'>; marcaLabel: string; categoriaLabel: string };
+type Categoria = EmplacamentoMobileVeiculo['categoria'];
+type RegistroSelecionado = { marca: MarcaEmplacamento; categoria: Categoria };
+const EMPTY_VEICULOS: EmplacamentoMobileVeiculo[] = [];
 
-const campos: Campo[] = [
-  { chave: 'peugeotPasseio', marca: 'PEUGEOT', categoria: 'PASSEIO', marcaLabel: 'Peugeot', categoriaLabel: 'Passeio' },
-  { chave: 'peugeotUtilitario', marca: 'PEUGEOT', categoria: 'UTILITARIO', marcaLabel: 'Peugeot', categoriaLabel: 'Utilitário' },
-  { chave: 'citroenPasseio', marca: 'CITROEN', categoria: 'PASSEIO', marcaLabel: 'Citroën', categoriaLabel: 'Passeio' },
-  { chave: 'citroenUtilitario', marca: 'CITROEN', categoria: 'UTILITARIO', marcaLabel: 'Citroën', categoriaLabel: 'Utilitário' },
-];
+const PALETAS = [
+  { linha: 'from-violet-500 to-indigo-500', botao: 'bg-indigo-600 hover:bg-indigo-700', selo: 'bg-indigo-50 text-indigo-700' },
+  { linha: 'from-cyan-500 to-sky-500', botao: 'bg-sky-600 hover:bg-sky-700', selo: 'bg-sky-50 text-sky-700' },
+  { linha: 'from-emerald-500 to-teal-500', botao: 'bg-emerald-600 hover:bg-emerald-700', selo: 'bg-emerald-50 text-emerald-700' },
+  { linha: 'from-amber-500 to-orange-500', botao: 'bg-amber-600 hover:bg-amber-700', selo: 'bg-amber-50 text-amber-700' },
+] as const;
 
 function hojeComoChave() {
   const hoje = new Date();
@@ -22,8 +27,11 @@ function hojeComoChave() {
 }
 
 function formatarData(data: string) {
-  return new Intl.DateTimeFormat('pt-BR', { day: '2-digit', month: 'long', year: 'numeric' })
-    .format(new Date(`${data}T12:00:00`));
+  return new Intl.DateTimeFormat('pt-BR', {
+    day: '2-digit',
+    month: 'long',
+    year: 'numeric',
+  }).format(new Date(`${data}T12:00:00`));
 }
 
 function formatarPlaca(placa: string) {
@@ -33,143 +41,368 @@ function formatarPlaca(placa: string) {
 
 export const EmplacamentosMobile: React.FC = () => {
   const [data, setData] = useState(hojeComoChave);
-  const [campoSelecionado, setCampoSelecionado] = useState<Campo | null>(null);
+  const [registroSelecionado, setRegistroSelecionado] = useState<RegistroSelecionado | null>(null);
+  const [gerenciandoMarcas, setGerenciandoMarcas] = useState(false);
   const [placa, setPlaca] = useState('');
   const { data: registro, isLoading, isError } = useEmplacamentosMobile(data);
+  const { data: marcas = [], isLoading: carregandoMarcas } = useMarcasEmplacamento();
   const adicionar = useAdicionarVeiculoEmplacamento(data);
   const remover = useRemoverVeiculoEmplacamento(data);
 
-  const total = useMemo(() => registro ? registro.peugeotPasseio + registro.peugeotUtilitario + registro.citroenPasseio + registro.citroenUtilitario : 0, [registro]);
-  const totalPeugeot = (registro?.peugeotPasseio ?? 0) + (registro?.peugeotUtilitario ?? 0);
-  const totalCitroen = (registro?.citroenPasseio ?? 0) + (registro?.citroenUtilitario ?? 0);
+  const marcasAtivas = useMemo(() => marcas.filter((marca) => marca.ativa), [marcas]);
+  const veiculos = registro?.veiculos ?? EMPTY_VEICULOS;
+  const veiculosPorMarca = useMemo(() => {
+    const agrupados = new Map<string, EmplacamentoMobileVeiculo[]>();
+    for (const veiculo of veiculos) {
+      const grupo = agrupados.get(veiculo.marcaId);
+      if (grupo) grupo.push(veiculo);
+      else agrupados.set(veiculo.marcaId, [veiculo]);
+    }
+    return agrupados;
+  }, [veiculos]);
+  const totalPasseio = veiculos.filter((veiculo) => veiculo.categoria === 'PASSEIO').length;
+  const totalUtilitario = veiculos.length - totalPasseio;
 
-  function abrirRegistro(campo: Campo) {
+  function abrirRegistro(marca: MarcaEmplacamento, categoria: Categoria) {
     setPlaca('');
-    setCampoSelecionado(campo);
+    setRegistroSelecionado({ marca, categoria });
   }
 
   function salvarVeiculo(event: FormEvent<HTMLFormElement>) {
     event.preventDefault();
-    if (!campoSelecionado) return;
+    if (!registroSelecionado) return;
     adicionar.mutate(
-      { placa, marca: campoSelecionado.marca, categoria: campoSelecionado.categoria },
-      { onSuccess: () => { setCampoSelecionado(null); setPlaca(''); } },
+      {
+        placa,
+        marcaId: registroSelecionado.marca.id,
+        categoria: registroSelecionado.categoria,
+      },
+      {
+        onSuccess: () => {
+          setRegistroSelecionado(null);
+          setPlaca('');
+        },
+      },
     );
   }
 
-  const veiculosPorCampo = (campo: Campo) => registro?.veiculos.filter((veiculo) => veiculo.marca === campo.marca && veiculo.categoria === campo.categoria) ?? [];
+  const aguardando = isLoading || carregandoMarcas;
 
   return (
-    <section className="mx-auto flex w-full max-w-5xl flex-col gap-6">
-      <div className="flex flex-col justify-between gap-4 sm:flex-row sm:items-end">
+    <section className="mx-auto flex w-full max-w-screen-xl flex-col gap-6">
+      <div className="page-intro">
         <div>
-          <p className="text-xs font-black uppercase tracking-[0.18em] text-indigo-600">Controle diário</p>
-          <h2 className="mt-1 text-2xl font-black text-slate-950">Emplacamentos Mobile</h2>
-          <p className="mt-1 text-sm text-slate-500">Cada veículo emplacado é registrado com a sua placa.</p>
+          <p className="page-kicker">Controle diário</p>
+          <h2 className="page-title">Emplacamento</h2>
+          <p className="page-description">
+            Registre cada placa nas marcas atendidas pela sua equipe e acompanhe o volume do dia.
+          </p>
         </div>
-        <label className="flex flex-col gap-1 text-xs font-bold text-slate-600">
-          Data do emplacamento
-          <input type="date" value={data} onChange={(event) => setData(event.target.value)} className="rounded-lg border border-slate-200 bg-white px-3 py-2 text-sm font-medium text-slate-800 outline-none transition focus:border-indigo-400 focus:ring-2 focus:ring-indigo-100" />
-        </label>
+        <div className="flex flex-col gap-2 sm:flex-row sm:items-end">
+          <label className="field-label">
+            Data do emplacamento
+            <input
+              type="date"
+              value={data}
+              onChange={(event) => setData(event.target.value)}
+              className="field-control"
+            />
+          </label>
+          <button
+            type="button"
+            onClick={() => setGerenciandoMarcas(true)}
+            className="secondary-action h-[42px]"
+          >
+            Gerenciar marcas
+          </button>
+        </div>
       </div>
 
       <div className="grid gap-3 sm:grid-cols-3">
-        <Resumo label="Total do dia" valor={total} classe="from-slate-950 to-slate-700" />
-        <Resumo label="Peugeot" valor={totalPeugeot} classe="from-indigo-600 to-violet-500" />
-        <Resumo label="Citroën" valor={totalCitroen} classe="from-cyan-600 to-teal-500" />
+        <Resumo label="Total do dia" valor={veiculos.length} detalhe={formatarData(data)} classe="from-indigo-500 to-violet-500" />
+        <Resumo label="Veículos de passeio" valor={totalPasseio} detalhe="Placas registradas" classe="from-emerald-500 to-teal-500" />
+        <Resumo label="Utilitários" valor={totalUtilitario} detalhe={`${marcasAtivas.length} marca${marcasAtivas.length === 1 ? '' : 's'} ativa${marcasAtivas.length === 1 ? '' : 's'}`} classe="from-amber-500 to-orange-500" />
       </div>
 
-      {isLoading && <p className="py-10 text-center text-sm text-slate-400">Carregando emplacamentos...</p>}
-      {isError && <p className="rounded-lg bg-red-50 px-4 py-3 text-sm text-red-600">Não foi possível carregar os emplacamentos deste dia.</p>}
+      {aguardando ? <Estado texto="Carregando emplacamentos..." /> : null}
+      {isError ? <div className="error-banner">Não foi possível carregar os emplacamentos deste dia.</div> : null}
 
-      {!isLoading && !isError && registro && (
-        <>
-          <div className="glass-panel rounded-2xl p-4 sm:p-6">
-            <div className="mb-5">
-              <h3 className="font-bold text-slate-900">Registro de {formatarData(data)}</h3>
-              <p className="mt-1 text-xs text-slate-500">Para aumentar um total, informe a placa do veículo antes de salvar.</p>
+      {!aguardando && !isError && marcasAtivas.length === 0 ? (
+        <div className="surface-panel flex flex-col items-center rounded-2xl px-6 py-14 text-center">
+          <div className="mb-4 flex h-12 w-12 items-center justify-center rounded-2xl bg-indigo-100 text-lg font-black text-indigo-700">01</div>
+          <h3 className="text-lg font-bold text-slate-950">Cadastre a primeira marca atendida</h3>
+          <p className="mt-2 max-w-md text-sm leading-6 text-slate-500">
+            As marcas não vêm mais preenchidas. Adicione somente as montadoras com as quais sua equipe trabalha.
+          </p>
+          <button type="button" onClick={() => setGerenciandoMarcas(true)} className="primary-action mt-5">
+            Cadastrar marca
+          </button>
+        </div>
+      ) : null}
+
+      {!aguardando && !isError && marcasAtivas.length > 0 ? (
+        <div className="grid items-start gap-4 lg:grid-cols-2">
+          {marcasAtivas.map((marca, indice) => {
+            const paleta = PALETAS[indice % PALETAS.length];
+            const veiculosDaMarca = veiculosPorMarca.get(marca.id) ?? [];
+            const passeio = veiculosDaMarca.filter((veiculo) => veiculo.categoria === 'PASSEIO').length;
+            const utilitario = veiculosDaMarca.length - passeio;
+
+            return (
+              <article key={marca.id} className="surface-panel relative overflow-hidden rounded-2xl p-5">
+                <div className={`absolute inset-x-0 top-0 h-1 bg-gradient-to-r ${paleta.linha}`} />
+                <div className="mb-5 flex items-start justify-between gap-4">
+                  <div>
+                    <span className={`inline-flex rounded-full px-2.5 py-1 text-[11px] font-bold uppercase tracking-wider ${paleta.selo}`}>
+                      Marca atendida
+                    </span>
+                    <h3 className="mt-2 text-xl font-black text-slate-950">{marca.nome}</h3>
+                  </div>
+                  <div className="text-right">
+                    <p className="text-3xl font-black tracking-tight text-slate-950">{veiculosDaMarca.length}</p>
+                    <p className="text-xs font-medium text-slate-500">no dia</p>
+                  </div>
+                </div>
+
+                <div className="grid gap-3 sm:grid-cols-2">
+                  <CategoriaCard
+                    label="Passeio"
+                    valor={passeio}
+                    onAdicionar={() => abrirRegistro(marca, 'PASSEIO')}
+                    botaoClasse={paleta.botao}
+                  />
+                  <CategoriaCard
+                    label="Utilitário"
+                    valor={utilitario}
+                    onAdicionar={() => abrirRegistro(marca, 'UTILITARIO')}
+                    botaoClasse={paleta.botao}
+                  />
+                </div>
+              </article>
+            );
+          })}
+        </div>
+      ) : null}
+
+      {!aguardando && !isError ? (
+        <section className="surface-panel rounded-2xl p-5 sm:p-6">
+          <div className="mb-5 flex flex-wrap items-end justify-between gap-3">
+            <div>
+              <p className="page-kicker">Detalhamento</p>
+              <h3 className="mt-1 text-lg font-bold text-slate-950">Placas de {formatarData(data)}</h3>
             </div>
-            <div className="grid gap-3 sm:grid-cols-2">
-              {campos.map((campo) => {
-                const valor = registro[campo.chave];
-                const isPeugeot = campo.marca === 'PEUGEOT';
-                return (
-                  <article key={campo.chave} className={`rounded-xl border p-4 ${isPeugeot ? 'border-indigo-100 bg-indigo-50/60' : 'border-cyan-100 bg-cyan-50/60'}`}>
-                    <div className="flex items-center justify-between gap-4">
-                      <div>
-                        <p className={`text-xs font-black uppercase tracking-wider ${isPeugeot ? 'text-indigo-600' : 'text-cyan-700'}`}>{campo.marcaLabel}</p>
-                        <h4 className="text-lg font-black text-slate-900">{campo.categoriaLabel}</h4>
-                      </div>
-                      <p className="text-3xl font-black text-slate-950">{valor}</p>
-                    </div>
-                    <button type="button" onClick={() => abrirRegistro(campo)} className={`mt-4 flex w-full items-center justify-center gap-2 rounded-lg py-2.5 text-sm font-bold text-white transition ${isPeugeot ? 'bg-indigo-600 hover:bg-indigo-700' : 'bg-cyan-600 hover:bg-cyan-700'}`}>
-                      <span className="text-lg leading-none">+</span> Adicionar placa
-                    </button>
-                  </article>
-                );
-              })}
-            </div>
+            <span className="count-badge">{veiculos.length} registro{veiculos.length === 1 ? '' : 's'}</span>
           </div>
 
-          <section className="glass-panel rounded-2xl p-4 sm:p-6">
-            <div className="mb-5 flex items-center justify-between gap-3">
-              <div>
-                <h3 className="font-bold text-slate-900">Resumo do dia</h3>
-                <p className="mt-1 text-xs text-slate-500">{registro.veiculos.length} placa{registro.veiculos.length === 1 ? '' : 's'} registrada{registro.veiculos.length === 1 ? '' : 's'}.</p>
-              </div>
-              {adicionar.isSuccess && <span className="rounded-full bg-emerald-100 px-2.5 py-1 text-xs font-bold text-emerald-700">Salvo</span>}
+          {veiculos.length === 0 ? (
+            <div className="empty-state">Nenhuma placa registrada nesta data.</div>
+          ) : (
+            <div className="grid gap-3 md:grid-cols-2">
+              {marcas
+                .filter((marca) => (veiculosPorMarca.get(marca.id)?.length ?? 0) > 0)
+                .map((marca) => (
+                  <GrupoResumo
+                    key={marca.id}
+                    marca={marca}
+                    veiculos={veiculosPorMarca.get(marca.id) ?? []}
+                    onRemover={(id) => remover.mutate(id)}
+                    removendo={remover.isPending}
+                  />
+                ))}
             </div>
+          )}
+          {adicionar.isError ? (
+            <div className="error-banner mt-4">{adicionar.error.message}</div>
+          ) : null}
+        </section>
+      ) : null}
 
-            {registro.veiculos.length === 0 ? (
-              <p className="rounded-xl border border-dashed border-slate-300 px-4 py-8 text-center text-sm text-slate-400">Nenhuma placa registrada nesta data.</p>
-            ) : (
-              <div className="grid gap-3 sm:grid-cols-2">
-                {campos.map((campo) => <GrupoResumo key={campo.chave} campo={campo} veiculos={veiculosPorCampo(campo)} onRemover={(id) => remover.mutate(id)} removendo={remover.isPending} />)}
-              </div>
-            )}
-            {adicionar.isError && <p className="mt-4 text-sm font-medium text-red-600">Não foi possível salvar a placa. Verifique se ela já não foi registrada neste dia.</p>}
-          </section>
-        </>
-      )}
+      {registroSelecionado ? (
+        <RegistroModal
+          registro={registroSelecionado}
+          placa={placa}
+          onPlacaChange={(valor) => setPlaca(formatarPlaca(valor))}
+          onClose={() => setRegistroSelecionado(null)}
+          onSubmit={salvarVeiculo}
+          salvando={adicionar.isPending}
+        />
+      ) : null}
 
-      {campoSelecionado && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center bg-slate-950/45 p-4 backdrop-blur-sm">
-          <form onSubmit={salvarVeiculo} className="w-full max-w-md rounded-2xl bg-white p-6 shadow-2xl">
-            <p className="text-xs font-black uppercase tracking-wider text-indigo-600">Novo emplacamento</p>
-            <h3 className="mt-1 text-xl font-black text-slate-950">{campoSelecionado.marcaLabel} · {campoSelecionado.categoriaLabel}</h3>
-            <label className="mt-5 flex flex-col gap-1.5 text-sm font-bold text-slate-700">
-              Placa do veículo
-              <input autoFocus required value={placa} onChange={(event) => setPlaca(formatarPlaca(event.target.value))} placeholder="ABC-1D23" maxLength={8} className="rounded-lg border border-slate-300 px-3 py-2.5 uppercase text-slate-950 outline-none transition focus:border-indigo-500 focus:ring-2 focus:ring-indigo-100" />
-            </label>
-            <p className="mt-2 text-xs text-slate-500">Aceita placas no formato antigo e Mercosul.</p>
-            <div className="mt-6 flex justify-end gap-3">
-              <button type="button" onClick={() => setCampoSelecionado(null)} disabled={adicionar.isPending} className="rounded-lg px-4 py-2.5 text-sm font-bold text-slate-600 transition hover:bg-slate-100">Cancelar</button>
-              <button type="submit" disabled={adicionar.isPending || placa.replace(/[^A-Z0-9]/g, '').length !== 7} className="rounded-lg bg-slate-950 px-4 py-2.5 text-sm font-bold text-white transition hover:bg-slate-800 disabled:cursor-not-allowed disabled:opacity-60">{adicionar.isPending ? 'Salvando...' : 'Salvar no resumo'}</button>
-            </div>
-          </form>
-        </div>
-      )}
+      {gerenciandoMarcas ? (
+        <GerenciarMarcasModal marcas={marcas} onClose={() => setGerenciandoMarcas(false)} />
+      ) : null}
     </section>
   );
 };
 
-const GrupoResumo: React.FC<{ campo: Campo; veiculos: EmplacamentoMobileVeiculo[]; onRemover: (id: string) => void; removendo: boolean }> = ({ campo, veiculos, onRemover, removendo }) => {
-  const isPeugeot = campo.marca === 'PEUGEOT';
-  return (
-    <article className={`rounded-xl border p-4 ${isPeugeot ? 'border-indigo-100 bg-indigo-50/50' : 'border-cyan-100 bg-cyan-50/50'}`}>
-      <div className="mb-3 flex items-center justify-between gap-3">
-        <h4 className="text-sm font-black text-slate-900">{campo.marcaLabel} · {campo.categoriaLabel}</h4>
-        <span className="rounded-full bg-white px-2 py-0.5 text-xs font-bold text-slate-600">{veiculos.length}</span>
+const CategoriaCard: React.FC<{
+  label: string;
+  valor: number;
+  onAdicionar: () => void;
+  botaoClasse: string;
+}> = ({ label, valor, onAdicionar, botaoClasse }) => (
+  <div className="soft-panel rounded-xl p-4">
+    <div className="flex items-center justify-between gap-3">
+      <p className="text-sm font-bold text-slate-700">{label}</p>
+      <span className="text-2xl font-black text-slate-950">{valor}</span>
+    </div>
+    <button
+      type="button"
+      onClick={onAdicionar}
+      className={`mt-4 w-full rounded-lg px-3 py-2 text-xs font-bold text-white transition ${botaoClasse}`}
+    >
+      + Adicionar placa
+    </button>
+  </div>
+);
+
+const GrupoResumo: React.FC<{
+  marca: MarcaEmplacamento;
+  veiculos: EmplacamentoMobileVeiculo[];
+  onRemover: (id: string) => void;
+  removendo: boolean;
+}> = ({ marca, veiculos, onRemover, removendo }) => (
+  <article className="soft-panel rounded-xl p-4">
+    <div className="mb-3 flex items-center justify-between gap-3">
+      <h4 className="text-sm font-black text-slate-900">{marca.nome}</h4>
+      <span className="count-badge">{veiculos.length}</span>
+    </div>
+    <ul className="flex flex-wrap gap-2">
+      {veiculos.map((veiculo) => (
+        <li key={veiculo.id} className="plate-chip">
+          <span>{formatarPlaca(veiculo.placa)}</span>
+          <span className="text-[10px] font-semibold text-slate-400">
+            {veiculo.categoria === 'PASSEIO' ? 'Passeio' : 'Utilitário'}
+          </span>
+          <button
+            type="button"
+            onClick={() => onRemover(veiculo.id)}
+            disabled={removendo}
+            className="ml-1 text-slate-400 transition hover:text-red-600 disabled:opacity-50"
+            aria-label={`Excluir placa ${veiculo.placa}`}
+          >
+            ×
+          </button>
+        </li>
+      ))}
+    </ul>
+  </article>
+);
+
+const RegistroModal: React.FC<{
+  registro: RegistroSelecionado;
+  placa: string;
+  onPlacaChange: (placa: string) => void;
+  onClose: () => void;
+  onSubmit: (event: FormEvent<HTMLFormElement>) => void;
+  salvando: boolean;
+}> = ({ registro, placa, onPlacaChange, onClose, onSubmit, salvando }) => (
+  <div className="modal-backdrop" role="presentation">
+    <form onSubmit={onSubmit} className="modal-panel" role="dialog" aria-modal="true" aria-labelledby="registro-title">
+      <p className="page-kicker">Novo emplacamento</p>
+      <h3 id="registro-title" className="mt-1 text-xl font-black text-slate-950">
+        {registro.marca.nome} · {registro.categoria === 'PASSEIO' ? 'Passeio' : 'Utilitário'}
+      </h3>
+      <label className="field-label mt-5">
+        Placa do veículo
+        <input
+          autoFocus
+          required
+          value={placa}
+          onChange={(event) => onPlacaChange(event.target.value)}
+          placeholder="ABC-1D23"
+          maxLength={8}
+          className="field-control uppercase"
+        />
+      </label>
+      <p className="mt-2 text-xs text-slate-500">Aceita placas no formato antigo e Mercosul.</p>
+      <div className="mt-6 flex justify-end gap-3">
+        <button type="button" onClick={onClose} disabled={salvando} className="secondary-action">Cancelar</button>
+        <button
+          type="submit"
+          disabled={salvando || placa.replace(/[^A-Z0-9]/g, '').length !== 7}
+          className="primary-action disabled:cursor-not-allowed disabled:opacity-60"
+        >
+          {salvando ? 'Salvando...' : 'Salvar emplacamento'}
+        </button>
       </div>
-      {veiculos.length === 0 ? <p className="text-xs text-slate-400">Nenhuma placa.</p> : <ul className="flex flex-wrap gap-2">{veiculos.map((veiculo) => <li key={veiculo.id} className="flex items-center gap-1 rounded-lg bg-white px-2 py-1 text-xs font-black text-slate-700 shadow-sm"><span>{formatarPlaca(veiculo.placa)}</span><button type="button" onClick={() => onRemover(veiculo.id)} disabled={removendo} className="ml-1 text-slate-400 transition hover:text-red-600 disabled:opacity-50" aria-label={`Excluir placa ${veiculo.placa}`}>×</button></li>)}</ul>}
-    </article>
+    </form>
+  </div>
+);
+
+const GerenciarMarcasModal: React.FC<{ marcas: MarcaEmplacamento[]; onClose: () => void }> = ({ marcas, onClose }) => {
+  const [nome, setNome] = useState('');
+  const criar = useCriarMarcaEmplacamento();
+  const atualizar = useAtualizarMarcaEmplacamento();
+
+  function cadastrar(event: FormEvent<HTMLFormElement>) {
+    event.preventDefault();
+    if (!nome.trim()) return;
+    criar.mutate(nome.trim(), { onSuccess: () => setNome('') });
+  }
+
+  return (
+    <div className="modal-backdrop" role="presentation">
+      <div className="modal-panel max-w-lg" role="dialog" aria-modal="true" aria-labelledby="marcas-title">
+        <div className="flex items-start justify-between gap-4">
+          <div>
+            <p className="page-kicker">Configuração</p>
+            <h3 id="marcas-title" className="mt-1 text-xl font-black text-slate-950">Marcas atendidas</h3>
+            <p className="mt-1 text-sm text-slate-500">Cadastre somente as marcas que fazem parte da sua operação.</p>
+          </div>
+          <button type="button" onClick={onClose} className="icon-button" aria-label="Fechar">×</button>
+        </div>
+
+        <form onSubmit={cadastrar} className="mt-6 flex gap-2">
+          <input
+            value={nome}
+            onChange={(event) => setNome(event.target.value)}
+            placeholder="Ex.: Volkswagen"
+            maxLength={60}
+            className="field-control min-w-0 flex-1"
+            aria-label="Nome da marca"
+          />
+          <button type="submit" disabled={criar.isPending || nome.trim().length < 2} className="primary-action disabled:opacity-50">
+            Adicionar
+          </button>
+        </form>
+        {criar.isError ? <div className="error-banner mt-3">{criar.error.message}</div> : null}
+
+        <div className="mt-5 max-h-72 space-y-2 overflow-y-auto pr-1 scrollbar-thin">
+          {marcas.length === 0 ? (
+            <div className="empty-state">Nenhuma marca cadastrada.</div>
+          ) : marcas.map((marca) => (
+            <div key={marca.id} className="soft-panel flex items-center justify-between gap-3 rounded-xl px-4 py-3">
+              <div>
+                <p className="text-sm font-bold text-slate-900">{marca.nome}</p>
+                <p className="text-xs text-slate-500">{marca.ativa ? 'Disponível para novos registros' : 'Oculta para novos registros'}</p>
+              </div>
+              <button
+                type="button"
+                onClick={() => atualizar.mutate({ id: marca.id, ativa: !marca.ativa })}
+                disabled={atualizar.isPending}
+                className={marca.ativa ? 'status-toggle-active' : 'status-toggle-inactive'}
+                aria-pressed={marca.ativa}
+              >
+                {marca.ativa ? 'Ativa' : 'Inativa'}
+              </button>
+            </div>
+          ))}
+        </div>
+      </div>
+    </div>
   );
 };
 
-const Resumo: React.FC<{ label: string; valor: number; classe: string }> = ({ label, valor, classe }) => (
-  <div className="metric-card relative overflow-hidden rounded-xl px-5 py-4">
+const Resumo: React.FC<{ label: string; valor: number; detalhe: string; classe: string }> = ({ label, valor, detalhe, classe }) => (
+  <div className="metric-card relative overflow-hidden rounded-2xl px-5 py-4">
     <div className={`absolute inset-x-0 top-0 h-1 bg-gradient-to-r ${classe}`} />
-    <p className="text-xs font-bold text-slate-500">{label}</p>
-    <p className="mt-1 text-3xl font-black text-slate-950">{valor}</p>
+    <p className="text-xs font-bold uppercase tracking-wide text-slate-500">{label}</p>
+    <p className="mt-2 text-3xl font-black tracking-tight text-slate-950">{valor}</p>
+    <p className="mt-1 text-xs text-slate-400">{detalhe}</p>
   </div>
+);
+
+const Estado: React.FC<{ texto: string }> = ({ texto }) => (
+  <div className="surface-panel rounded-2xl py-14 text-center text-sm text-slate-400">{texto}</div>
 );

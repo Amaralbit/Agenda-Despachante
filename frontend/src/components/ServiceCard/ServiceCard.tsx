@@ -67,7 +67,7 @@ export const ServiceCard: React.FC<Props> = ({
       draggable
       onDragStart={handleDragStart}
       className={`
-        bg-white/90 rounded-lg shadow-sm shadow-slate-200/70 border border-white/80 border-l-4 backdrop-blur-xl
+        bg-white/90 rounded-xl shadow-sm shadow-slate-200/70 border border-white/80 border-l-4 backdrop-blur-xl
         ${TIPO_BORDER[servico.tipo]}
         p-4 cursor-grab active:cursor-grabbing hover:shadow-md
         transition-all duration-200 select-none hover:-translate-y-0.5

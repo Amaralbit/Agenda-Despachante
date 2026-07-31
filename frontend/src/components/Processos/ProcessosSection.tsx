@@ -351,7 +351,7 @@ export const ProcessosSection: React.FC = () => {
   }
 
   return (
-    <section className="mt-2 flex flex-col gap-4">
+    <section className="mt-2 flex flex-col gap-5 border-t border-slate-200/80 pt-7">
       <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
         <div>
           <h2 className="text-base font-black text-slate-950">Montagens de Processo</h2>
@@ -359,7 +359,7 @@ export const ProcessosSection: React.FC = () => {
         </div>
         <button
           onClick={() => setIsModalOpen(true)}
-          className="flex w-fit shrink-0 items-center gap-2 rounded-lg bg-indigo-600 px-4 py-2 text-sm font-semibold text-white shadow-lg shadow-indigo-600/20 transition-all duration-200 hover:-translate-y-0.5 hover:bg-indigo-700"
+          className="primary-action w-full shrink-0 sm:w-auto"
         >
           <span className="text-lg leading-none">+</span>
           Montagem de Processo
@@ -367,7 +367,7 @@ export const ProcessosSection: React.FC = () => {
       </div>
 
       <div
-        className="glass-panel grid gap-3 rounded-lg px-4 py-3"
+        className="glass-panel grid gap-3 rounded-2xl px-4 py-4"
         style={{ gridTemplateColumns: 'repeat(auto-fit, minmax(min(100%, 220px), 1fr))' }}
       >
         <div className="relative min-w-0">
@@ -472,7 +472,7 @@ export const ProcessosSection: React.FC = () => {
                   </span>
                 </div>
 
-                <div className={`min-h-[160px] flex-1 rounded-lg border p-3 shadow-sm shadow-slate-200/60 backdrop-blur-xl ${style.bg}`}>
+                <div className={`min-h-[160px] flex-1 rounded-2xl border p-3 shadow-sm shadow-slate-200/60 backdrop-blur-xl ${style.bg}`}>
                   <div className="flex flex-col gap-3">
                     {items.length === 0 ? (
                       <div className="py-10 text-center text-xs text-slate-400">Nenhuma montagem</div>

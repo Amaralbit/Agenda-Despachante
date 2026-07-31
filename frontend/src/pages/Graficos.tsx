@@ -111,7 +111,7 @@ export const Graficos: React.FC = () => {
   const concluidosPeriodo = dias.reduce((total, dia) => total + dia.concluidos, 0);
 
   return (
-    <section className="mx-auto flex w-full max-w-screen-xl flex-col gap-5">
+    <section className="mx-auto flex w-full max-w-screen-xl flex-col gap-6">
       <div className="flex flex-col gap-3 sm:flex-row sm:items-end sm:justify-between">
         <div>
           <h2 className="text-xl font-black text-slate-950">Processos por dia</h2>
@@ -140,7 +140,7 @@ export const Graficos: React.FC = () => {
         <Resumo label={`Concluídos em ${periodo} dias`} valor={concluidosPeriodo} classe="text-slate-900" />
       </div>
 
-      <div className="glass-panel rounded-xl p-4 sm:p-6">
+      <div className="glass-panel rounded-2xl p-4 sm:p-6">
         <div className="mb-5 flex flex-wrap items-center gap-x-5 gap-y-2 text-xs font-semibold text-slate-600">
           <span className="flex items-center gap-2"><i className="h-3 w-3 rounded-sm bg-indigo-600" />Enviados</span>
           <span className="flex items-center gap-2"><i className="h-3 w-3 rounded-sm bg-emerald-500" />Concluídos</span>
@@ -157,7 +157,7 @@ export const Graficos: React.FC = () => {
 };
 
 const Resumo: React.FC<{ label: string; valor: number; classe: string }> = ({ label, valor, classe }) => (
-  <div className="metric-card rounded-lg px-4 py-3">
+  <div className="metric-card rounded-2xl px-4 py-4">
     <p className="text-xs font-medium text-slate-500">{label}</p>
     <p className={`mt-1 text-2xl font-black ${classe}`}>{valor}</p>
   </div>

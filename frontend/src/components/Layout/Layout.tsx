@@ -5,16 +5,26 @@ import { useAuth } from '../../contexts/AuthContext';
 interface NavItem {
   to: string;
   label: string;
+  shortLabel: string;
   icon: string;
 }
 
 const NAV_ITEMS: NavItem[] = [
-  { to: '/', label: 'Dashboard', icon: 'DB' },
-  { to: '/clientes', label: 'Clientes', icon: 'CL' },
-  { to: '/graficos', label: 'Graficos', icon: 'GR' },
-  { to: '/lembretes', label: 'Lembretes', icon: 'LM' },
-  { to: '/emplacamentos-mobile', label: 'Emplacamentos Mobile', icon: 'EM' },
+  { to: '/', label: 'Visão geral', shortLabel: 'Início', icon: 'VG' },
+  { to: '/clientes', label: 'Clientes', shortLabel: 'Clientes', icon: 'CL' },
+  { to: '/graficos', label: 'Desempenho', shortLabel: 'Gráficos', icon: 'DS' },
+  { to: '/lembretes', label: 'Lembretes', shortLabel: 'Lembretes', icon: 'LM' },
+  { to: '/emplacamento', label: 'Emplacamento', shortLabel: 'Emplacar', icon: 'EP' },
 ];
+
+const PAGE_META: Record<string, { kicker: string; title: string }> = {
+  '/': { kicker: 'Operação', title: 'Visão geral dos serviços' },
+  '/clientes': { kicker: 'Relacionamento', title: 'Clientes e veículos' },
+  '/graficos': { kicker: 'Inteligência', title: 'Desempenho dos processos' },
+  '/lembretes': { kicker: 'Organização', title: 'Lembretes da equipe' },
+  '/emplacamento': { kicker: 'Operação', title: 'Emplacamento' },
+  '/equipe': { kicker: 'Administração', title: 'Equipe e acessos' },
+};
 
 const LITE_MODE_STORAGE_KEY = 'agenda-despachante-lite-mode';
 const DARK_MODE_STORAGE_KEY = 'agenda-despachante-dark-mode';
@@ -23,14 +33,15 @@ export const Layout: React.FC<{ children: React.ReactNode }> = ({ children }) =>
   const { pathname } = useLocation();
   const { usuario, logout } = useAuth();
   const navItems = usuario?.conta?.papel === 'PROPRIETARIO'
-    ? [...NAV_ITEMS, { to: '/equipe', label: 'Equipe', icon: 'EQ' }]
+    ? [...NAV_ITEMS, { to: '/equipe', label: 'Equipe', shortLabel: 'Equipe', icon: 'EQ' }]
     : NAV_ITEMS;
   const [isLiteMode, setIsLiteMode] = useState(
     () => window.localStorage.getItem(LITE_MODE_STORAGE_KEY) === 'true',
   );
-  const [isDarkMode, setIsDarkMode] = useState(
-    () => window.localStorage.getItem(DARK_MODE_STORAGE_KEY) === 'true',
-  );
+  const [isDarkMode, setIsDarkMode] = useState(() => {
+    const salvo = window.localStorage.getItem(DARK_MODE_STORAGE_KEY);
+    return salvo === null ? window.matchMedia('(prefers-color-scheme: dark)').matches : salvo === 'true';
+  });
 
   useEffect(() => {
     document.documentElement.classList.toggle('lite-mode', isLiteMode);
@@ -42,118 +53,89 @@ export const Layout: React.FC<{ children: React.ReactNode }> = ({ children }) =>
     window.localStorage.setItem(DARK_MODE_STORAGE_KEY, String(isDarkMode));
   }, [isDarkMode]);
 
+  const activePath = pathname === '/emplacamentos-mobile' ? '/emplacamento' : pathname;
+  const pageMeta = pathname.includes('/historico')
+    ? { kicker: 'Veículos', title: 'Histórico do veículo' }
+    : PAGE_META[activePath] ?? PAGE_META['/'];
+
+  function isActive(to: string) {
+    return to === '/' ? activePath === '/' : activePath.startsWith(to);
+  }
+
   return (
-    <div className="relative min-h-screen overflow-x-hidden bg-slate-100">
+    <div className="app-shell">
       <div className="ambient-backdrop" />
 
-      <div className="relative z-10 flex min-h-screen">
-        <aside className="fixed inset-y-0 left-0 z-30 flex w-60 shrink-0 flex-col border-r border-white/10 bg-slate-950/95 text-white shadow-2xl shadow-slate-950/20">
-          <div className="flex items-center gap-3 border-b border-white/10 px-5 py-5">
-            <div className="flex h-9 w-9 shrink-0 items-center justify-center rounded-lg bg-white text-sm font-black tracking-tight text-slate-950 shadow-sm">
-              AD
-            </div>
+      <aside className="app-sidebar">
+        <div className="border-b border-white/10 px-5 py-6">
+          <Link to="/" className="flex items-center gap-3" aria-label="Ir para a visão geral">
+            <div className="brand-mark">AD</div>
             <div>
-              <p className="text-sm font-bold leading-tight text-white">Agenda</p>
-              <p className="text-xs text-slate-400">Despachante</p>
+              <p className="text-sm font-extrabold tracking-tight text-white">Agenda Despachante</p>
+              <p className="mt-0.5 text-[11px] font-medium uppercase tracking-[0.18em] text-slate-500">Gestão veicular</p>
+            </div>
+          </Link>
+        </div>
+
+        <nav className="flex flex-1 flex-col gap-1.5 px-3 py-5" aria-label="Navegação principal">
+          <p className="mb-2 px-3 text-[10px] font-bold uppercase tracking-[0.2em] text-slate-600">Menu principal</p>
+          {navItems.map((item) => (
+            <Link key={item.to} to={item.to} className={isActive(item.to) ? 'nav-link nav-link-active' : 'nav-link'}>
+              <span className="nav-icon">{item.icon}</span>
+              <span>{item.label}</span>
+            </Link>
+          ))}
+        </nav>
+
+        <div className="border-t border-white/10 p-4">
+          <div className="mb-4 flex items-center gap-3 rounded-xl bg-white/[0.04] p-3 ring-1 ring-white/[0.06]">
+            <div className="user-avatar">{usuario?.nome.charAt(0).toUpperCase()}</div>
+            <div className="min-w-0 flex-1">
+              <p className="truncate text-sm font-semibold text-white">{usuario?.nome}</p>
+              <p className="truncate text-xs text-slate-500">{usuario?.conta?.nome ?? usuario?.email}</p>
             </div>
           </div>
-
-          <nav className="flex flex-1 flex-col gap-1 px-3 py-4">
-            {navItems.map((item) => {
-              const isActive = item.to === '/' ? pathname === '/' : pathname.startsWith(item.to);
-
-              return (
-                <Link
-                  key={item.to}
-                  to={item.to}
-                  className={`
-                    flex items-center gap-3 rounded-lg px-3 py-2.5 text-sm font-medium transition-all duration-200
-                    ${isActive
-                      ? 'bg-white text-slate-950 shadow-sm'
-                      : 'text-slate-300 hover:bg-white/10 hover:text-white'}
-                  `}
-                >
-                  <span
-                    className={`
-                      flex h-6 w-6 items-center justify-center rounded-md text-[10px] font-black tracking-tight
-                      ${isActive ? 'bg-slate-950 text-white' : 'bg-white/10 text-slate-300'}
-                    `}
-                  >
-                    {item.icon}
-                  </span>
-                  {item.label}
-                </Link>
-              );
-            })}
-          </nav>
-
-          <div className="border-t border-white/10 px-4 py-4">
-            <div className="mb-3 flex items-center gap-3">
-              <div className="flex h-8 w-8 shrink-0 items-center justify-center rounded-lg bg-cyan-400/15 text-xs font-bold text-cyan-200 ring-1 ring-cyan-300/25">
-                {usuario?.nome.charAt(0).toUpperCase()}
-              </div>
-              <div className="min-w-0 flex-1">
-                <p className="truncate text-sm font-medium text-white">{usuario?.nome}</p>
-                <p className="truncate text-xs text-slate-400">{usuario?.email}</p>
-              </div>
-            </div>
-            <button
-              type="button"
-              onClick={() => setIsLiteMode((enabled) => !enabled)}
-              aria-pressed={isLiteMode}
-              className={`mb-3 flex w-full items-center justify-between rounded-lg px-3 py-2 text-left text-xs font-medium transition-colors ${
-                isLiteMode
-                  ? 'bg-cyan-400/15 text-cyan-100 ring-1 ring-cyan-300/30'
-                  : 'bg-white/5 text-slate-300 hover:bg-white/10 hover:text-white'
-              }`}
-            >
-              <span>Modo Lite</span>
-              <span className="text-[10px] font-bold uppercase tracking-wide">
-                {isLiteMode ? 'Ativo' : 'Desligado'}
-              </span>
+          <div className="grid grid-cols-2 gap-2">
+            <button type="button" onClick={() => setIsLiteMode((value) => !value)} className="sidebar-control" aria-pressed={isLiteMode}>
+              {isLiteMode ? 'Lite ativo' : 'Modo lite'}
             </button>
-            <button
-              onClick={logout}
-              className="w-full text-left text-xs font-medium text-slate-400 transition-colors hover:text-red-300"
-            >
-              Sair
-            </button>
+            <button type="button" onClick={logout} className="sidebar-control hover:text-rose-300">Sair</button>
           </div>
-        </aside>
+        </div>
+      </aside>
 
-        <main className="ml-60 flex min-h-screen min-w-0 flex-1 flex-col">
-          <header className="sticky top-0 z-20 flex items-center justify-between gap-4 border-b border-white/70 bg-white/80 px-8 py-5 shadow-sm shadow-slate-200/60 backdrop-blur-xl">
-            <h1 className="text-lg font-bold text-slate-950">
-              {pathname === '/' && 'Dashboard - Kanban de Servicos'}
-              {pathname === '/clientes' && 'Gestao de Clientes e Veiculos'}
-              {pathname === '/graficos' && 'Graficos de Processos'}
-              {pathname === '/lembretes' && 'Lembretes'}
-              {pathname === '/emplacamentos-mobile' && 'Emplacamentos Mobile'}
-              {pathname === '/equipe' && 'Equipe'}
-              {pathname.includes('/historico') && 'Historico do Veiculo'}
-            </h1>
-            <button
-              type="button"
-              onClick={() => setIsDarkMode((enabled) => !enabled)}
-              aria-pressed={isDarkMode}
-              aria-label={isDarkMode ? 'Ativar modo claro' : 'Ativar modo escuro'}
-              title={isDarkMode ? 'Ativar modo claro' : 'Ativar modo escuro'}
-              className={`inline-flex shrink-0 items-center gap-2 rounded-lg px-3 py-2 text-xs font-semibold shadow-sm transition-colors focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2 ${
-                isDarkMode
-                  ? 'bg-amber-300 text-slate-950 hover:bg-amber-200'
-                  : 'bg-slate-950 text-white hover:bg-slate-800'
-              }`}
-            >
-              <span aria-hidden="true" className="text-base leading-none">
-                {isDarkMode ? '☀' : '☾'}
-              </span>
-              {isDarkMode ? 'Modo claro' : 'Modo escuro'}
-            </button>
-          </header>
+      <main className="relative z-10 min-h-screen min-w-0 flex-1 lg:ml-64">
+        <header className="app-topbar">
+          <div className="flex min-w-0 items-center gap-3">
+            <Link to="/" className="brand-mark h-9 w-9 lg:hidden" aria-label="Ir para a visão geral">AD</Link>
+            <div className="min-w-0">
+              <p className="text-[10px] font-bold uppercase tracking-[0.18em] text-indigo-600">{pageMeta.kicker}</p>
+              <h1 className="truncate text-base font-extrabold tracking-tight text-slate-950 sm:text-lg">{pageMeta.title}</h1>
+            </div>
+          </div>
+          <button
+            type="button"
+            onClick={() => setIsDarkMode((value) => !value)}
+            aria-pressed={isDarkMode}
+            aria-label={isDarkMode ? 'Ativar modo claro' : 'Ativar modo escuro'}
+            className="theme-toggle"
+          >
+            <span className="theme-toggle-indicator" aria-hidden="true">{isDarkMode ? '☀' : '☾'}</span>
+            <span className="hidden sm:inline">{isDarkMode ? 'Tema claro' : 'Tema escuro'}</span>
+          </button>
+        </header>
 
-          <div className="min-w-0 flex-1 px-4 py-6 lg:px-8">{children}</div>
-        </main>
-      </div>
+        <div className="min-w-0 px-4 pb-28 pt-6 sm:px-6 lg:px-8 lg:pb-10 lg:pt-8">{children}</div>
+      </main>
+
+      <nav className="mobile-nav scrollbar-thin" aria-label="Navegação principal móvel">
+        {navItems.map((item) => (
+          <Link key={item.to} to={item.to} className={isActive(item.to) ? 'mobile-nav-link mobile-nav-link-active' : 'mobile-nav-link'}>
+            <span className="text-[10px] font-black">{item.icon}</span>
+            <span>{item.shortLabel}</span>
+          </Link>
+        ))}
+      </nav>
     </div>
   );
 };
