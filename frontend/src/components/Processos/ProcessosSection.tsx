@@ -65,7 +65,13 @@ function dateOnly(value: string) {
   return value.slice(0, 10);
 }
 
-function formatarEntrada(value: string) {
+function dataDeReferencia(processo: ProcessoMontagem) {
+  return processo.status === 'CONCLUIDO'
+    ? processo.concluidoEm ?? processo.updatedAt
+    : processo.createdAt;
+}
+
+function formatarDataHora(value: string) {
   return new Intl.DateTimeFormat('pt-BR', {
     day: '2-digit',
     month: '2-digit',
@@ -111,7 +117,12 @@ const ProcessoCard: React.FC<ProcessoCardProps> = ({
             <p className="text-xs text-slate-500">Atendimento {processo.numeroAtendimento}</p>
           )}
           <p className="break-words text-xs font-medium text-slate-700">Solicitante: {processo.solicitantePa2 || '-'}</p>
-          <p className="mt-1 text-[11px] text-slate-500">Entrada: {formatarEntrada(processo.createdAt)}</p>
+          <p className="mt-1 text-[11px] text-slate-500">Entrada: {formatarDataHora(processo.createdAt)}</p>
+          {processo.status === 'CONCLUIDO' && (
+            <p className="mt-0.5 text-[11px] font-semibold text-emerald-600">
+              Conclusão: {formatarDataHora(dataDeReferencia(processo))}
+            </p>
+          )}
         </div>
         <span className="mr-3 shrink-0 rounded-md bg-slate-950 px-2 py-0.5 text-[10px] font-bold uppercase tracking-wide text-white">
           Detran
@@ -219,7 +230,7 @@ export const ProcessosSection: React.FC = () => {
       const matchesSolicitante =
         !solicitanteSearch ||
         processo.solicitantePa2.toLowerCase().includes(solicitanteSearch);
-      const matchesDate = !dateFilter || dateOnly(processo.createdAt) === dateFilter;
+      const matchesDate = !dateFilter || dateOnly(dataDeReferencia(processo)) === dateFilter;
 
       return matchesPlaca && matchesSolicitante && matchesDate;
     });
@@ -237,7 +248,7 @@ export const ProcessosSection: React.FC = () => {
     for (const status of COLUMNS) {
       map[status].sort(
         (a, b) =>
-          (new Date(a.createdAt).getTime() - new Date(b.createdAt).getTime()) * direction,
+          (new Date(dataDeReferencia(a)).getTime() - new Date(dataDeReferencia(b)).getTime()) * direction,
       );
     }
     return map;
@@ -394,7 +405,7 @@ export const ProcessosSection: React.FC = () => {
           value={dateFilter}
           onChange={(e) => setDateFilter(e.target.value)}
           className="w-full rounded-lg border border-slate-200 bg-white/90 px-3 py-2 text-sm text-slate-700 shadow-sm shadow-slate-200/50 transition focus:outline-none focus:ring-2 focus:ring-indigo-400"
-          title="Filtrar pela data de criacao"
+          title="Filtrar pela data de entrada ou, nos concluídos, pela data de conclusão"
         />
 
         <select
