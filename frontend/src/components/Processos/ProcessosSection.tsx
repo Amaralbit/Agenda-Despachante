@@ -211,6 +211,7 @@ export const ProcessosSection: React.FC = () => {
   const [searchSolicitante, setSearchSolicitante] = useState('');
   const [dateFilter, setDateFilter] = useState('');
   const [dateOrder, setDateOrder] = useState<'desc' | 'asc'>('desc');
+  const [tipoVeiculoFilter, setTipoVeiculoFilter] = useState<ProcessoMontagem['tipoVeiculo'] | ''>('');
   const [showAllCompleted, setShowAllCompleted] = useState(false);
 
   const { data: processos = [], isLoading, isError } = useProcessos();
@@ -231,10 +232,12 @@ export const ProcessosSection: React.FC = () => {
         !solicitanteSearch ||
         processo.solicitantePa2.toLowerCase().includes(solicitanteSearch);
       const matchesDate = !dateFilter || dateOnly(dataDeReferencia(processo)) === dateFilter;
+      const matchesTipoVeiculo =
+        !tipoVeiculoFilter || processo.tipoVeiculo === tipoVeiculoFilter;
 
-      return matchesPlaca && matchesSolicitante && matchesDate;
+      return matchesPlaca && matchesSolicitante && matchesDate && matchesTipoVeiculo;
     });
-  }, [processos, searchPlaca, searchSolicitante, dateFilter]);
+  }, [processos, searchPlaca, searchSolicitante, dateFilter, tipoVeiculoFilter]);
 
   const byStatus = useMemo(() => {
     const map: Record<StatusProcessoMontagem, ProcessoMontagem[]> = {
@@ -423,6 +426,17 @@ export const ProcessosSection: React.FC = () => {
           <option value="asc">Mais antigas primeiro</option>
         </select>
 
+        <select
+          value={tipoVeiculoFilter}
+          onChange={(e) => setTipoVeiculoFilter(e.target.value as ProcessoMontagem['tipoVeiculo'] | '')}
+          className="w-full rounded-lg border border-slate-200 bg-white/90 px-3 py-2 text-sm text-slate-700 shadow-sm shadow-slate-200/50 transition focus:outline-none focus:ring-2 focus:ring-indigo-400"
+          aria-label="Filtrar montagens por tipo de veiculo"
+        >
+          <option value="">Todos os veiculos</option>
+          <option value="NOVO">Veiculos novos</option>
+          <option value="USADO">Veiculos usados</option>
+        </select>
+
         <div className="relative min-w-0">
           <input
             type="text"
@@ -442,13 +456,14 @@ export const ProcessosSection: React.FC = () => {
           )}
         </div>
 
-        {(searchPlaca || searchSolicitante || dateFilter) && (
+        {(searchPlaca || searchSolicitante || dateFilter || tipoVeiculoFilter) && (
           <button
             type="button"
             onClick={() => {
               setSearchPlaca('');
               setSearchSolicitante('');
               setDateFilter('');
+              setTipoVeiculoFilter('');
             }}
             className="self-center justify-self-start text-xs font-medium text-indigo-500 underline hover:text-indigo-700"
           >
