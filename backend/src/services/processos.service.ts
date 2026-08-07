@@ -16,7 +16,7 @@ const includeSummary = {
   },
 } as const;
 
-const LIMITE_PROCESSOS_PARA_IMPRESSAO = 5;
+const LIMITE_PROCESSOS_PARA_IMPRESSAO = 10;
 const JANELA_AVISO_IMPRESSAO_MS = 10 * 60 * 1000;
 const AVISO_ACUMULO_IMPRESSAO =
   'Não é recomendável mandar muitos processos de uma vez, pois isso acumula serviço para quem imprime, que também precisa fazer outras coisas.\n\nDICA: TERMINOU O ATENDIMENTO, JÁ MONTE.';
