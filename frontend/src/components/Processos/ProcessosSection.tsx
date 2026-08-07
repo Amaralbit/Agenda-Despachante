@@ -81,6 +81,19 @@ function formatarDataHora(value: string) {
   }).format(new Date(value));
 }
 
+async function unirPdfs(blobs: Blob[]) {
+  const { PDFDocument } = await import('pdf-lib');
+  const pdfUnificado = await PDFDocument.create();
+
+  for (const blob of blobs) {
+    const pdf = await PDFDocument.load(await blob.arrayBuffer());
+    const paginas = await pdfUnificado.copyPages(pdf, pdf.getPageIndices());
+    paginas.forEach((pagina) => pdfUnificado.addPage(pagina));
+  }
+
+  return pdfUnificado.save();
+}
+
 interface ProcessoCardProps {
   processo: ProcessoMontagem;
   onStart: (processo: ProcessoMontagem) => void;
@@ -213,6 +226,7 @@ export const ProcessosSection: React.FC = () => {
   const [dateOrder, setDateOrder] = useState<'desc' | 'asc'>('desc');
   const [tipoVeiculoFilter, setTipoVeiculoFilter] = useState<ProcessoMontagem['tipoVeiculo'] | ''>('');
   const [showAllCompleted, setShowAllCompleted] = useState(false);
+  const [isPrintingAll, setIsPrintingAll] = useState(false);
 
   const { data: processos = [], isLoading, isError } = useProcessos();
   const createProcesso = useCreateProcesso();
@@ -256,6 +270,16 @@ export const ProcessosSection: React.FC = () => {
     }
     return map;
   }, [filteredProcessos, dateOrder]);
+
+  const aguardandoImpressao = useMemo(
+    () => processos.filter((processo) => processo.status === 'AGUARDANDO_IMPRESSAO'),
+    [processos],
+  );
+
+  const totalPdfsAguardando = useMemo(
+    () => aguardandoImpressao.reduce((total, processo) => total + processo.anexos.length, 0),
+    [aguardandoImpressao],
+  );
 
   async function handleCreate(data: CreateProcessoMontagemForm, pdf?: File) {
     const anexos: ProcessoAnexoUpload[] = pdf
@@ -364,6 +388,59 @@ export const ProcessosSection: React.FC = () => {
     window.setTimeout(() => URL.revokeObjectURL(url), 60_000);
   }
 
+  async function handlePrintAll() {
+    if (totalPdfsAguardando === 0) {
+      window.alert('Nenhum PDF está aguardando impressão.');
+      return;
+    }
+
+    const processosComPdf = aguardandoImpressao.filter((processo) => processo.anexos.length > 0);
+    const processosSemPdf = aguardandoImpressao.length - processosComPdf.length;
+    const complemento = processosSemPdf > 0
+      ? `\n\n${processosSemPdf} processo${processosSemPdf !== 1 ? 's' : ''} sem PDF será${processosSemPdf !== 1 ? 'o' : ''} ignorado${processosSemPdf !== 1 ? 's' : ''}.`
+      : '';
+
+    if (!window.confirm(
+      `Unir e imprimir ${totalPdfsAguardando} PDF${totalPdfsAguardando !== 1 ? 's' : ''} de ${processosComPdf.length} processo${processosComPdf.length !== 1 ? 's' : ''}?${complemento}`,
+    )) return;
+
+    const printWindow = window.open('', '_blank');
+    if (!printWindow) {
+      window.alert('O navegador bloqueou a janela de impressão. Permita pop-ups para este site e tente novamente.');
+      return;
+    }
+
+    printWindow.document.title = 'Preparando impressão';
+    printWindow.document.body.innerHTML = '<p style="font-family: sans-serif; padding: 24px">Preparando PDFs para impressão...</p>';
+    setIsPrintingAll(true);
+
+    try {
+      const anexos = processosComPdf.flatMap((processo) =>
+        processo.anexos.map((anexo) => ({ processo, anexo })),
+      );
+      const blobs = await Promise.all(
+        anexos.map(({ processo, anexo }) => processosApi.getAnexoBlob(processo.id, anexo.id)),
+      );
+      const pdfUnificado = await unirPdfs(blobs);
+      const pdfBuffer = new ArrayBuffer(pdfUnificado.byteLength);
+      new Uint8Array(pdfBuffer).set(pdfUnificado);
+      const url = URL.createObjectURL(new Blob([pdfBuffer], { type: 'application/pdf' }));
+
+      printWindow.location.href = url;
+      window.setTimeout(() => {
+        printWindow.focus();
+        printWindow.print();
+      }, 1_000);
+      window.setTimeout(() => URL.revokeObjectURL(url), 5 * 60_000);
+    } catch (error) {
+      printWindow.close();
+      const mensagem = error instanceof Error ? error.message : 'Erro desconhecido';
+      window.alert(`Não foi possível preparar os PDFs para impressão. ${mensagem}`);
+    } finally {
+      setIsPrintingAll(false);
+    }
+  }
+
   function handleDelete(id: string) {
     if (!window.confirm('Excluir esta montagem de processo e seus arquivos?')) return;
     deleteProcesso.mutate(id);
@@ -376,13 +453,23 @@ export const ProcessosSection: React.FC = () => {
           <h2 className="text-base font-black text-slate-950">Montagens de Processo</h2>
           <p className="text-xs text-slate-500">Controle por placa, atendimento Detran e PDFs anexados.</p>
         </div>
-        <button
-          onClick={() => setIsModalOpen(true)}
-          className="primary-action w-full shrink-0 sm:w-auto"
-        >
-          <span className="text-lg leading-none">+</span>
-          Montagem de Processo
-        </button>
+        <div className="flex w-full flex-col gap-2 sm:w-auto sm:flex-row">
+          <button
+            type="button"
+            onClick={handlePrintAll}
+            disabled={isPrintingAll || totalPdfsAguardando === 0}
+            className="w-full shrink-0 rounded-lg border border-blue-200 bg-blue-50 px-4 py-2 text-sm font-semibold text-blue-700 transition hover:bg-blue-100 disabled:cursor-not-allowed disabled:opacity-50 sm:w-auto"
+          >
+            {isPrintingAll ? 'Preparando impressão...' : `Imprimir fila (${totalPdfsAguardando} PDF${totalPdfsAguardando !== 1 ? 's' : ''})`}
+          </button>
+          <button
+            onClick={() => setIsModalOpen(true)}
+            className="primary-action w-full shrink-0 sm:w-auto"
+          >
+            <span className="text-lg leading-none">+</span>
+            Montagem de Processo
+          </button>
+        </div>
       </div>
 
       <div
