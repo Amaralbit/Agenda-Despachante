@@ -9,8 +9,8 @@
       "root": ".",
       "entrypoint": "api/index.js",
       "framework": "express",
-      "installCommand": "npm ci --workspaces=false --include=dev",
-      "buildCommand": "npm run build"
+      "installCommand": "cd backend && npm ci --workspaces=false --include=dev",
+      "buildCommand": "cd backend && npm run build"
     }
   },
   "rewrites": [
