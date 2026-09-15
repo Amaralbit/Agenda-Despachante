@@ -81,15 +81,6 @@ export const Login: React.FC = () => {
           <p className="mt-1 text-sm text-slate-500">Sua operação veicular, organizada de ponta a ponta.</p>
         </div>
 
-        <div className="mb-6 rounded-2xl border-4 border-red-600 bg-red-50 px-4 py-5 text-center shadow-lg">
-          <p className="text-xl font-black leading-tight text-red-700 sm:text-2xl">
-            EM MANUTENÇÃO
-          </p>
-          <p className="mt-2 text-base font-semibold text-red-700 sm:text-lg">
-            Caso precise, mande direto para o Sergio
-          </p>
-        </div>
-
         <div className="glass-panel rounded-2xl p-6 sm:p-8">
           <div className="mb-6 flex rounded-xl border border-white/80 bg-slate-100/80 p-1">
             <button

@@ -218,9 +218,6 @@ const ProcessoCard: React.FC<ProcessoCardProps> = ({
 };
 
 export const ProcessosSection: React.FC = () => {
-  const showMaintenanceAlert = () => {
-    window.alert('em manutenção! Enquanto isso, mande para o sergio diretamente pelo zap');
-  };
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [finalizando, setFinalizando] = useState<ProcessoMontagem | null>(null);
   const [searchPlaca, setSearchPlaca] = useState('');
@@ -450,8 +447,7 @@ export const ProcessosSection: React.FC = () => {
   }
 
   return (
-    <section className="relative mt-2 flex flex-col gap-5 border-t border-slate-200/80 pt-7">
-      <div aria-hidden="true" className="pointer-events-none select-none opacity-45">
+    <section className="mt-2 flex flex-col gap-5 border-t border-slate-200/80 pt-7">
       <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
         <div>
           <h2 className="text-base font-black text-slate-950">Montagens de Processo</h2>
@@ -655,18 +651,6 @@ export const ProcessosSection: React.FC = () => {
           errorMessage={finalizarProcesso.error?.message}
         />
       )}
-      </div>
-
-      <button
-        type="button"
-        onClick={showMaintenanceAlert}
-        className="absolute inset-0 z-10 cursor-not-allowed rounded-2xl focus:outline-none focus-visible:ring-2 focus-visible:ring-amber-500 focus-visible:ring-offset-2"
-        aria-label="Montagens de processo em manutenção. Clique para ver o aviso."
-      >
-        <span className="absolute inset-x-0 top-16 flex min-h-20 items-center justify-center border-y-4 border-amber-600 bg-yellow-400 px-4 text-center text-xl font-black uppercase tracking-[0.18em] text-amber-950 shadow-lg sm:text-2xl">
-          Em manutenção
-        </span>
-      </button>
     </section>
   );
 };
