@@ -6,15 +6,11 @@
       "framework": "vite"
     },
     "backend": {
-      "root": "backend",
-      "entrypoint": "src/app.ts",
+      "root": ".",
+      "entrypoint": "api/index.js",
       "framework": "express",
       "installCommand": "npm ci --workspaces=false --include=dev",
-      "functions": {
-        "src/app.ts": {
-          "includeFiles": "backend/node_modules/**"
-        }
-      }
+      "buildCommand": "npm run build"
     }
   },
   "rewrites": [
