@@ -8,7 +8,8 @@
     "backend": {
       "root": "backend",
       "entrypoint": "src/app.ts",
-      "framework": "express"
+      "framework": "express",
+      "installCommand": "npm ci --workspaces=false"
     }
   },
   "rewrites": [
