@@ -9,7 +9,12 @@
       "root": "backend",
       "entrypoint": "src/app.ts",
       "framework": "express",
-      "installCommand": "npm ci --workspaces=false --include=dev"
+      "installCommand": "npm ci --workspaces=false --include=dev",
+      "functions": {
+        "src/app.ts": {
+          "includeFiles": "backend/node_modules/**"
+        }
+      }
     }
   },
   "rewrites": [
